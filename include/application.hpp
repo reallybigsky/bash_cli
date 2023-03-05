@@ -3,6 +3,7 @@
 
 #include "ioservice.hpp"
 #include "handler.hpp"
+#include "common.hpp"
 
 #include <unordered_map>
 #include <filesystem>
@@ -13,7 +14,7 @@ public:
 
     Application(std::istream& is, std::ostream& os, std::ostream& es)
         : ios(is, os, es)
-        , path(std::filesystem::current_path())
+        , envState(std::filesystem::current_path(), es)
         , lastReturnCode(0)
         {}
 
@@ -23,8 +24,7 @@ public:
 private:
     IOservice ios;
     Handler handler;
-    std::unordered_map<std::string, std::string> varEnv;
-    std::filesystem::path path;
+    EnvState envState;
     int lastReturnCode;
 };
 

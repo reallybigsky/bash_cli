@@ -14,10 +14,10 @@ Handler::Handler() {
 }
 
 
-int Handler::handleMsg(const msg& m, EnvState es) {
+int Handler::handle(const job& j, EnvState& envState, std::istream& is, std::ostream& os) {
 //TODO: exceptions and errors
-    if (commands.contains(m.name)) {
-        commands[m.name]->run(m, es);
+    if (commands.contains(j.name)) {
+        commands[j.name]->run(j, envState, is, os);
     }
     // поиск внешней программы
     // либо ошибка - неизвестная команда

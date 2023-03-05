@@ -9,16 +9,25 @@
 
 //TODO: documentation
 
-struct msg {
+struct job {
     std::string name;
     std::vector<std::string> args;
 };
 
 struct EnvState {
-    std::filesystem::path& path;
-    std::unordered_map<std::string, std::string>& varEnv;
-    std::istream& input;
-    std::ostream& output;
+//    EnvState(std::filesystem::path p, std::unordered_map<std::string, std::string> v, std::ostream& es)
+//        : path(p)
+//        , varEnv(v)
+//        , serr(es) {}
+
+    EnvState(std::filesystem::path p, std::ostream& es)
+            : path(p)
+            , varEnv()
+            , serr(es) {}
+
+    std::filesystem::path path;
+    std::unordered_map<std::string, std::string> varEnv;
+    std::ostream& serr;
 };
 
 #endif //BASH_CLI_COMMON_HPP

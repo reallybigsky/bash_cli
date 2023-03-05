@@ -12,7 +12,7 @@ std::vector<std::string> runLexer(const std::string& input) {
     return {};
 }
 
-std::vector<msg> runParser(const std::vector<std::string>& string_commands) {
+std::vector<job> runParser(const std::vector<std::string>& string_commands) {
     return {};
 }
 

@@ -18,7 +18,7 @@ class Handler {
 public:
     Handler();
 
-    int handleMsg(const msg& m, EnvState es);
+    int handle(const job& j, EnvState& envState, std::istream& is, std::ostream& os);
 
 private:
     std::unordered_map<std::string, std::shared_ptr<BaseCmd>> commands;

@@ -3,8 +3,8 @@
 
 #include "basecmd.hpp"
 
-class Echo : public PureCmd {
-    virtual int run(const msg&, EnvState) override {
+class Echo : public Cmd {
+    virtual int run(const job&, EnvState&, std::istream&, std::ostream&) override {
         return 0;
     }
 };

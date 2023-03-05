@@ -6,7 +6,7 @@
 
 class ExtCmd : public BaseCmd {
 public:
-    virtual int run(const msg&, EnvState) override {
+    virtual int run(const job&, EnvState&, std::istream&, std::ostream&) override {
         return 0;
     }
 };

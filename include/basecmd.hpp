@@ -11,17 +11,12 @@
 
 class BaseCmd {
 public:
-    virtual int run(const msg&, EnvState) = 0;
+    virtual int run(const job&, EnvState&, std::istream&, std::ostream&) = 0;
 };
 
-class PureCmd : public BaseCmd {
+class Cmd : public BaseCmd {
 public:
-    virtual int run(const msg&, EnvState) = 0;
-};
-
-class MutCmd : public BaseCmd {
-public:
-    virtual int run(const msg&, EnvState) = 0;
+    virtual int run(const job&, EnvState&, std::istream&, std::ostream&) = 0;
 };
 
 #endif //BASH_CLI_COMMANDS_HPP
