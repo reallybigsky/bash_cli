@@ -13,7 +13,6 @@ include_directories(src)
 add_executable(bash_cli
         src/main.cpp
         src/application.cpp
-        src/handler.cpp
-        )
+        src/handler.cpp)
 
 TARGET_LINK_LIBRARIES(bash_cli LINK_PUBLIC ${Boost_LIBRARIES})
