@@ -1,9 +1,9 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.16)
 project(bash_cli)
 
 set(CMAKE_CXX_STANDARD 20)
 
-FIND_PACKAGE(Boost 1.76 REQUIRED COMPONENTS system filesystem)
+FIND_PACKAGE(Boost 1.71 REQUIRED COMPONENTS system filesystem)
 INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
 
 include_directories(include)
@@ -14,6 +14,10 @@ add_executable(bash_cli
         src/main.cpp
         src/application.cpp
         src/handler.cpp
+        )
+
+add_executable(test-preprocess
+        src/test/test_preprocess.cpp
         )
 
 TARGET_LINK_LIBRARIES(bash_cli LINK_PUBLIC ${Boost_LIBRARIES})
