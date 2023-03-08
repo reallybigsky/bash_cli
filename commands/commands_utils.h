@@ -3,6 +3,7 @@
 
 #include "../include/basecmd.hpp"
 
+#include <boost/process.hpp>
 #include <filesystem>
 #include <algorithm>
 #include <sstream>
@@ -14,6 +15,7 @@
 namespace commands {
 
     namespace fs = std::filesystem;
+    namespace bp = boost::process;
 
     bool is_file_exist(const fs::path &full_filepath) {
         return fs::exists(full_filepath);

@@ -8,7 +8,7 @@ namespace commands {
 
     class Assignment : public Cmd {
     public:
-        virtual int run(const job &params, EnvState &env, std::istream &in, std::ostream &out) override {
+        virtual int run(const job &params, EnvState &env, bp::ipstream &in, bp::opstream &out) override {
 
             if(params.args.empty())
                 throw std::invalid_argument("No files were transferred");

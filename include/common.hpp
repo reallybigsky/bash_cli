@@ -6,6 +6,7 @@
 #include <iostream>
 #include <filesystem>
 #include <unordered_map>
+#include <boost/process.hpp>
 
 //TODO: documentation
 
@@ -21,12 +22,12 @@ struct EnvState {
 //        , serr(es) {}
 
     EnvState(std::filesystem::path p, std::ostream& es)
-            : path(p)
-            , varEnv()
-            , serr(es) {}
+            : varEnv()
+            , serr(es) {
+        varEnv["PATH"] = p.string();
+    }
 
-    std::filesystem::path path;
-    std::unordered_map<std::string, std::string> varEnv;
+    boost::process::environment varEnv;
     std::ostream& serr;
 };
 

@@ -58,16 +58,27 @@ namespace commands {
         };
 
     public:
-        virtual int run(const job &params, EnvState &env, std::istream &in, std::ostream &out) override {
-            if (params.args.empty())
-                throw std::invalid_argument("No files were transferred");
+        virtual int run(const job &params, EnvState &env, bp::ipstream &in, bp::opstream &out) override {
+            uint64_t total_cnt_lines = 0, total_cnt_words = 0, total_size = 0;
+
+            if (params.args.empty()) {
+                std::string line;
+                while(std::getline(in, line) && !line.empty()){
+                    ++total_cnt_lines;
+                    total_cnt_words += count_of_words_in_string(line);
+                    total_size += line.size();
+                }
+
+                out << total_cnt_lines << "\t" << total_cnt_words << "\t" << total_size << std::endl;
+
+                return 0;
+            }
 
             std::vector<answer_format> result;
             int32_t error_count = 0;
-            uint64_t total_cnt_lines = 0, total_cnt_words = 0, total_size = 0;
 
             for (auto &filename: params.args) {
-                fs::path current_path(env.path);
+                fs::path current_path(env.varEnv["PATH"].to_string());
                 current_path.replace_filename(filename);
 
                 //проверка на то, существует ли файл в текущей директории
@@ -124,6 +135,11 @@ namespace commands {
 
     private:
 
+        static size_t count_of_words_in_string(const std::string& str) {
+            std::stringstream stream(str);
+            return std::distance(std::istream_iterator<std::string>(stream), std::istream_iterator<std::string>());
+        }
+
         static std::string create_output_format(const std::vector<answer_format> &result) {
             size_t max_filead_size = 0;
             for (auto &file_stat: result) {
@@ -133,7 +149,7 @@ namespace commands {
             std::stringstream str_result;
 
             for (auto &file_stat: result) {
-                str_result << file_stat.get_formatted_values(max_filead_size) << "\n";
+                str_result << file_stat.get_formatted_values(max_filead_size) << std::endl;
             }
 
             return str_result.str();

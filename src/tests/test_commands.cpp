@@ -42,7 +42,7 @@ TEST(TestPwd, pwd) {
     Pwd pwd_cmd;
 
     std::stringstream result;
-    std::string expected = "/home/avval/study/sem2/SD/bash_cli/src/tests/cmake-build-debug";
+    std::string expected = "/home/avval/study/sem2/SD/bash_cli/src/tests/cmake-build-debug\n";
     EXPECT_EQ(0, pwd_cmd.run(pwd_job, env, std::cin, result));
     EXPECT_EQ(expected, result.str());
 

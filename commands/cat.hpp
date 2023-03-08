@@ -8,23 +8,31 @@ namespace commands {
     class Cat : public Cmd {
     public:
 
-        virtual int run(const job &params, EnvState &env, std::istream &in, std::ostream &out) override {
-
-            if (params.args.empty())
-                throw std::invalid_argument("No files were transferred");
+        virtual int run(const job &params, EnvState &env, bp::ipstream &in, bp::opstream &out) override {
 
             std::stringstream result;
             int32_t error_count = 0;
 
+            if (params.args.empty())
+            {
+                std::string line;
+                while (getline(in, line) && !line.empty())
+                    result << line << std::endl;
+
+                out << result.str();
+
+                return 0;
+            }
+
             for (auto &filename: params.args) {
-                fs::path current_path(env.path);
+                fs::path current_path(env.varEnv["PATH"].to_string());
                 current_path.replace_filename(filename);
 
                 //проверка на то, существует ли файл в текущей директории
                 if (!is_file_exist(current_path)) {
                     if (!is_file_exist(filename)) {
                         ++error_count;
-                        result << params.name << ": " << filename << ": No such file or directory\n";
+                        result << params.name << ": " << filename << ": No such file or directory" << std::endl;
                         continue;
                     }
 
@@ -34,7 +42,7 @@ namespace commands {
                 //проверка на то, можно ли открыть файл на чтение
                 if (!is_readable(current_path)) {
                     ++error_count;
-                    result << filename << ": Permission denied\n";
+                    result << filename << ": Permission denied" << std::endl;
                     continue;
                 }
 

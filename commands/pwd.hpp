@@ -9,8 +9,8 @@ namespace  commands {
 
     class Pwd: public Cmd {
     public:
-        virtual int run(const job &params, EnvState &env, std::istream &in, std::ostream &out) override {
-            out << env.path.string();
+        virtual int run(const job &params, EnvState &env, bp::ipstream &in, bp::opstream &out) override {
+            out << env.varEnv["PATH"].to_string() << std::endl;
             return 0;
         }
     };

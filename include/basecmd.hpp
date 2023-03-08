@@ -2,6 +2,7 @@
 #define BASH_CLI_COMMANDS_HPP
 
 #include "common.hpp"
+#include <boost/process.hpp>
 
 #include <iostream>
 
@@ -11,12 +12,12 @@
 
 class BaseCmd {
 public:
-    virtual int run(const job&, EnvState&, std::istream&, std::ostream&) = 0;
+    virtual int run(const job&, EnvState&, boost::process::ipstream&,  boost::process::opstream&) = 0;
 };
 
 class Cmd : public BaseCmd {
 public:
-    virtual int run(const job&, EnvState&, std::istream&, std::ostream&) = 0;
+    virtual int run(const job&, EnvState&, boost::process::ipstream&,  boost::process::opstream&) = 0;
 };
 
 #endif //BASH_CLI_COMMANDS_HPP
