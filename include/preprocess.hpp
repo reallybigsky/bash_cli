@@ -13,8 +13,11 @@ namespace preprocess {
   bool is_space(char ch); // details
   bool is_var(char ch); // details
   std::string buffer_extract(std::stringstream & ss); // details
-  struct parsingExeption : std::exception {}; // TODO change to error handl
 
+  struct parsingExeption : std::exception {};
+  struct lexingExeption : std::exception {};
+
+  // without pipe and replace
   std::vector<std::string> runLexer(const std::string& input) {
     std::vector<std::string> output;
     output.push_back(input);
