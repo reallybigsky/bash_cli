@@ -1,12 +1,12 @@
 #include "application.hpp"
+#include "common.hpp"
 
 #include <iostream>
 
 int main(int argc, char* argv[]) {
-    //TODO: ArgParser
 
-//    Application app(std::cin, std::cout, std::cerr);
-//    app.run();
+    Application app(argc, argv);
+    app.run();
 
     return 0;
 };

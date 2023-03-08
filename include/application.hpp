@@ -12,9 +12,9 @@ class Application {
 public:
     //TODO: documentation
 
-    Application(std::istream& is, std::ostream& os, std::ostream& es)
-        : ios(is, os, es)
-        , envState(std::filesystem::current_path(), es)
+    Application(int argc, char* argv[])
+        : ios(argc, argv)
+        , envState(std::filesystem::current_path(), ios.getErr())
         , lastReturnCode(0)
         {}
 
