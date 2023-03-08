@@ -139,8 +139,9 @@ void test_parser_assignment() {
   std::vector<std::string> input;
   std::vector<job> output;
 
-  input.push_back("abc123= 123");
+  input.push_back("abc123=123");
   input.push_back("1a2b3c=");
+  input.push_back("1a2b3c= 12 bc");
   input.push_back("a=abc 123");
   input.push_back("a$=abc");
 
@@ -149,7 +150,7 @@ void test_parser_assignment() {
 
   assert(output[i].name == "=");
   assert(output[i].args[0] == "abc123");
-  assert(output[i].args[1] == " 123");
+  assert(output[i].args[1] == "123");
   ++i;
 
   assert(output[i].name == "=");
@@ -158,8 +159,16 @@ void test_parser_assignment() {
   ++i;
 
   assert(output[i].name == "=");
+  assert(output[i].args[0] == "1a2b3c");
+  assert(output[i].args[1] == "");
+  assert(output[i].args[2] == "12");
+  assert(output[i].args[3] == "bc");
+  ++i;
+
+  assert(output[i].name == "=");
   assert(output[i].args[0] == "a");
-  assert(output[i].args[1] == "abc 123");
+  assert(output[i].args[1] == "abc");
+  assert(output[i].args[2] == "123");
   ++i;
 
   assert(output[i].name == "a$=abc");
@@ -173,6 +182,7 @@ void test_parser_all() {
 
   input.push_back("cmd a=b \"f\"\'s\'");
   input.push_back("a\"bc\"=d f\\\"s");
+  input.push_back("var=so\" d \" f\\\"s");
 
   output = preprocess::runParser(input);
   size_t i = 0;
@@ -186,6 +196,13 @@ void test_parser_all() {
   assert(output[i].name == "abc=d");
   assert(output[i].args.size() == 1);
   assert(output[i].args[0] == "f\"s");
+  ++i;
+
+  assert(output[i].name == "=");
+  assert(output[i].args.size() == 3);
+  assert(output[i].args[0] == "var");
+  assert(output[i].args[1] == "so d ");
+  assert(output[i].args[2] == "f\"s");
   ++i;
 }
 

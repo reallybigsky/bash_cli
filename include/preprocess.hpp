@@ -58,9 +58,7 @@ namespace preprocess {
             if (cur_ch == '=') {
               cur_job.add_word("=");
               cur_job.add_word(buffer_extract(buffer));
-              cur_job.add_word(cur_cmd.substr(i+1));
-              i = cur_cmd.size();
-              state = Empty;
+              state = RW;
             } else if (is_var(cur_ch)) {
               buffer << cur_ch;
             } else {
