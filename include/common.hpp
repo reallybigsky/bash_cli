@@ -13,6 +13,12 @@ struct job {
     std::string name;
     std::vector<std::string> args;
 
+    /**
+     * Add a word to job: if name empty assigne this word to name,
+     *                    else add word to args.
+     *
+     * @param `word` strings - some word: command name or argument.
+     */
     void add_word(const std::string & word) {
         if (name.empty()) {
           name = word;
