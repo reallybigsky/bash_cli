@@ -14,10 +14,19 @@ namespace preprocess {
   bool is_var(char ch); // details
   std::string buffer_extract(std::stringstream & ss); // details
 
+  /**
+   * Exeptions for errors in preprocessing
+   */
   struct parsingExeption : std::exception {};
   struct lexingExeption : std::exception {};
 
-  // without pipe and replace
+  /**
+   * Break command by pipes and replace variables by it`s value.
+   * Currently assumes what were is no pipes and variables in command.
+   *
+   * @param `input` string with user`s input (command or piped commands).
+   * @return `output` vector of strings, each string is separate command.
+   */
   std::vector<std::string> runLexer(const std::string& input) {
     std::vector<std::string> output;
     output.push_back(input);
@@ -25,6 +34,13 @@ namespace preprocess {
     return output;
   } 
 
+  /**
+   * Break commands into it`s name and args.
+   *
+   * @param `input` vector of strings, each string is separate command.
+   * @return `output` vector of job, job.name - name of command,
+   *                                 job.args - arguments of command.
+   */
   std::vector<job> runParser(const std::vector<std::string>& input) {
     std::vector<job> output(input.size());
 
