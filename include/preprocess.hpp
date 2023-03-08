@@ -56,9 +56,9 @@ namespace preprocess {
             break;
           case VW:
             if (cur_ch == '=') {
-              cur_job.name = '=';
-              cur_job.args.push_back(buffer_extract(buffer));
-              cur_job.args.push_back(cur_cmd.substr(i+1));
+              cur_job.add_word("=");
+              cur_job.add_word(buffer_extract(buffer));
+              cur_job.add_word(cur_cmd.substr(i+1));
               i = cur_cmd.size();
               state = Empty;
             } else if (is_var(cur_ch)) {
@@ -71,12 +71,7 @@ namespace preprocess {
             break;
           case RW:
             if (is_space(cur_ch)) {
-              if (cur_job.name.empty()) {
-                cur_job.name = buffer_extract(buffer);
-              } else {
-                cur_job.args.push_back(buffer_extract(buffer));
-              }
-
+              cur_job.add_word(buffer_extract(buffer));
               state = Empty;
             } else if (cur_ch == '\'') {
               state = SQ;
@@ -122,18 +117,12 @@ namespace preprocess {
       }
 
       if (state == RW || state == VW) {
-        // TODO remove code repetition
-        if (cur_job.name.empty()) {
-          cur_job.name = buffer_extract(buffer);
-        } else {
-          cur_job.args.push_back(buffer_extract(buffer));
-        }
-
+        cur_job.add_word(buffer_extract(buffer));
         state = Empty;
       }
 
       if (state != Empty) {
-        throw parsingExeption(); // TODO change to error handle
+        throw parsingExeption();
       }
     }
 

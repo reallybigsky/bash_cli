@@ -12,6 +12,14 @@
 struct job {
     std::string name;
     std::vector<std::string> args;
+
+    void add_word(const std::string & word) {
+        if (name.empty()) {
+          name = word;
+        } else {
+          args.push_back(word);
+        }
+    }
 };
 
 struct EnvState {
