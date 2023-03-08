@@ -1,7 +1,7 @@
 #ifndef BASH_CLI_COMMANDS_UTILS_H
 #define BASH_CLI_COMMANDS_UTILS_H
 
-#include "basecmd.hpp"
+#include "../include/basecmd.hpp"
 
 #include <filesystem>
 #include <algorithm>

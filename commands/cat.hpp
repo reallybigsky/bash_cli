@@ -24,7 +24,7 @@ namespace commands {
                 if (!is_file_exist(current_path)) {
                     if (!is_file_exist(filename)) {
                         ++error_count;
-                        result << filename << ": No such file or directory\n";
+                        result << params.name << ": " << filename << ": No such file or directory\n";
                         continue;
                     }
 
@@ -38,7 +38,7 @@ namespace commands {
                     continue;
                 }
 
-                result << get_file_contents(current_path) << "\n";
+                result << get_file_contents(current_path);
             }
 
             if (error_count == params.args.size())

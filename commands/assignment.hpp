@@ -7,7 +7,6 @@
 namespace commands {
 
     class Assignment : public Cmd {
-    private:
     public:
         virtual int run(const job &params, EnvState &env, std::istream &in, std::ostream &out) override {
 

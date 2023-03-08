@@ -15,6 +15,9 @@ namespace commands {
             std::string error_;
 
             answer_format(std::string err, std::string filename) :
+                    count_of_lines_(0),
+                    count_of_words_(0),
+                    size_(0),
                     error_(std::move(err)),
                     filename_(std::move(filename)) {}
 
@@ -39,9 +42,14 @@ namespace commands {
 
             std::string get_formatted_values(size_t field_size) const {
                 std::stringstream result;
-
-                result << std::right << std::setw(field_size) << count_of_lines_ << count_of_words_ << size_;
-                result << " " << filename_;
+                if(is_error())
+                    result << get_error();
+                else {
+                    result << std::right << std::setw(field_size) << count_of_lines_ << " "
+                           << std::right << std::setw(field_size) << count_of_words_ << " "
+                           << std::right << std::setw(field_size) << size_;
+                    result << " " << filename_;
+                }
 
                 return result.str();
             }
@@ -67,7 +75,7 @@ namespace commands {
                     //существует ли файл, если заданный путь полный
                     if (!is_file_exist(filename)) {
                         ++error_count;
-                        result.emplace_back(": No such file or directory\n", filename);
+                        result.emplace_back(": No such file or directory", filename);
                         continue;
                     }
                     current_path = filename;
@@ -76,7 +84,7 @@ namespace commands {
                 // проверка на возможность чтения из файла
                 if (!is_readable(current_path)) {
                     ++error_count;
-                    result.emplace_back(": Permission denied\n", filename);
+                    result.emplace_back(": Permission denied", filename);
                     continue;
                 }
 
@@ -92,7 +100,7 @@ namespace commands {
             }
 
             // если была подсчитана хоть одна статистика, то добавляется поле total
-            if (error_count < params.args.size())
+            if (params.args.size() > 1 && error_count < params.args.size())
                 result.emplace_back(total_cnt_lines, total_cnt_words,
                                     total_size, "total");
 
@@ -125,7 +133,7 @@ namespace commands {
             std::stringstream str_result;
 
             for (auto &file_stat: result) {
-                str_result << file_stat.get_formatted_values(max_filead_size + 1) << "\n";
+                str_result << file_stat.get_formatted_values(max_filead_size) << "\n";
             }
 
             return str_result.str();

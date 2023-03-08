@@ -6,7 +6,7 @@
 namespace commands {
 
     class Echo : public Cmd {
-
+    public:
         virtual int run(const job &params, EnvState &env, std::istream &in, std::ostream &out) override {
             for (size_t i = 0; i < params.args.size(); ++i) {
                 out << params.args[i];

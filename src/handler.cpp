@@ -1,15 +1,19 @@
 #include "handler.hpp"
 #include "echo.hpp"
+#include "pwd.hpp"
+#include "cat.hpp"
+#include "wc.hpp"
+#include "assignment.hpp"
 
 Handler::Handler() {
     // добавление новой команды
     commands = {
-            {"echo", std::make_shared<Echo>()},
-//            {"pwd", std::make_shared<pwdImpl>()},
-//            {"cat", std::make_shared<catImpl>()},
-//            {"wc", std::make_shared<wcImpl>()},
-//            {"exit", std::make_shared<exitImpl>()},
-//            {"=", std::make_shared<assignImpl>()}
+            {"echo", std::make_shared<commands::Echo>()},
+            {"pwd", std::make_shared<commands::Pwd>()},
+            {"cat", std::make_shared<commands::Cat>()},
+            {"wc", std::make_shared<commands::Wc>()},
+            //{"exit", std::make_shared<exitImpl>()},
+            {"=", std::make_shared<commands::Assignment>()}
     };
 }
 
