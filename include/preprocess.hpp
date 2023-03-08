@@ -142,7 +142,13 @@ namespace preprocess {
 
 
   bool is_space(char ch) {
-    return ch == ' '; // TODO other space symbols
+    if (ch == ' ' || ch == '\t'  || 
+        ch == '\n' || ch == '\f' ||
+        ch == '\r')
+    {
+      return true;
+    }
+    return false;
   }
 
   bool is_var(char ch) {
