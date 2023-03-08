@@ -13,14 +13,12 @@ namespace commands {
             if(params.args.empty())
                 throw std::invalid_argument("No files were transferred");
 
-
             std::stringstream result;
-            std::regex spec_symbols(R"('|"|\\|\$)");
-            for(size_t i = 1; i < params.args.size(); ++i){
-                result << std::regex_replace(params.args[i], spec_symbols, "\\$&");
-
-                if (i < params.args.size() - 1)
-                    result << " ";
+            if (params.args.size() > 1) {
+                std::regex spec_symbols(R"('|"|\\|\$)");
+                result << std::regex_replace(params.args[1], spec_symbols, "\\$&");
+            } else {
+                result << "";
             }
 
             env.varEnv[params.args[0]] = result.str();
