@@ -25,11 +25,14 @@ void Application::run() {
                         handler->exec(after_parse[i], vars, ios->getInput(), o_file);
                     } else if (i == after_parse.size() - 1) {
                         handler->exec(after_parse[i], vars, i_file, ios->getOutput());
+                        fclose(i_file);
                         fclose(o_file);
+                        break;
                     } else {
                         handler->exec(after_parse[i], vars, i_file, o_file);
                     }
                     fclose(i_file);
+                    rewind(o_file);
                     i_file = o_file;
                 }
             }
