@@ -1,29 +1,21 @@
 #ifndef BASH_CLI_COMMON_HPP
 #define BASH_CLI_COMMON_HPP
 
-#include "ioservice.hpp"
-
-#include <boost/process/system.hpp>
 #include <boost/process/environment.hpp>
 
 #include <string>
 #include <vector>
-#include <iostream>
-#include <filesystem>
-#include <unordered_map>
 
 //TODO: documentation
 
 using Environment = boost::process::basic_native_environment<char>;
-using pstream = boost::process::pstream;
 
-enum CmdPos {
-    inner  = 0,
-    first  = 1,
-    last   = 2,
-    single = 3
-};
 
+inline int writeToFile(const std::string& str, FILE* file) {
+    if (str.size() != fwrite(str.c_str(), sizeof(char), str.size(), file))
+        return 1;
+    return 0;
+}
 
 struct job {
     std::string name;
@@ -42,14 +34,6 @@ struct job {
           args.push_back(word);
         }
     }
-};
-
-struct EnvState {
-    std::shared_ptr<Environment> vars;
-    CmdPos cmdPos;
-    std::shared_ptr<IOservice> ios;
-    std::shared_ptr<pstream> ipsCurr;
-    std::shared_ptr<pstream> opsCurr;
 };
 
 #endif //BASH_CLI_COMMON_HPP

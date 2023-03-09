@@ -3,13 +3,11 @@
 
 #include "common.hpp"
 
-#include <boost/process/system.hpp>
-
 //TODO: documentation
 
 class Cmd {
 public:
-    virtual int run(const job&, std::shared_ptr<Environment>, std::istream&, std::ostream&, std::ostream&) = 0;
+    virtual int run(const job&, std::shared_ptr<Environment>, FILE*, FILE*) = 0;
 
     virtual ~Cmd() {}
 };

@@ -4,11 +4,11 @@
 #include "cmd.hpp"
 
 class Echo : public Cmd {
-    virtual int run(const job& j, std::shared_ptr<Environment> e, std::istream& is, std::ostream& os, std::ostream& es) override {
+    virtual int run(const job& j, std::shared_ptr<Environment> e, FILE* input, FILE* output) override {
         for (const auto& arg : j.args) {
-            os << arg << " ";
+            writeToFile(arg + " ", output);
         }
-        os << std::endl;
+        writeToFile("\n", output);
         return 0;
     }
 };

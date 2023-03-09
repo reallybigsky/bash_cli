@@ -15,6 +15,7 @@ public:
     Application(int argc, char* argv[])
         : vars(std::make_shared<Environment>(boost::this_process::environment()))
         , ios(std::make_shared<IOservice>(argc, argv))
+        , handler(std::make_shared<Handler>(ios))
 //        , lastReturnCode(0)
         {
         }
@@ -25,7 +26,7 @@ public:
 private:
     std::shared_ptr<Environment> vars;
     std::shared_ptr<IOservice> ios;
-    Handler handler;
+    std::shared_ptr<Handler> handler;
 //    int lastReturnCode;
 };
 

@@ -5,7 +5,7 @@
 
 class ExtCmd {
 public:
-    int run(const job&, const EnvState&) {
+    int run(const job&, std::shared_ptr<Environment>, FILE*, FILE*) {
         return 0;
     }
 };

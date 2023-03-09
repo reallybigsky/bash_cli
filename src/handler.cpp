@@ -3,7 +3,9 @@
 
 namespace bp = boost::process;
 
-Handler::Handler() {
+Handler::Handler(std::shared_ptr<IOservice> ioserv)
+    : ios(ioserv)
+    {
     // добавление новой команды
     commands = {
             {"echo", std::make_shared<Echo>()},
@@ -16,28 +18,14 @@ Handler::Handler() {
 }
 
 
-int Handler::exec(const job& j, const EnvState& envState) {
+int Handler::exec(const job& j, std::shared_ptr<Environment> env, FILE* i_file, FILE* o_file) {
 //TODO: exceptions and errors
 
     if (commands.contains(j.name)) {
-        std::istream* input = envState.ipsCurr.get();
-        std::ostream* output = envState.opsCurr.get();
-
-        std::ostream& err = envState.ios->getErr();
-
-        if (envState.cmdPos == CmdPos::first) {
-            input = &envState.ios->getInput();
-        }
-        if (envState.cmdPos == CmdPos::last) {
-            output = &envState.ios->getOutput();
-        }
-
-        commands[j.name]->run(j, envState.vars, *input, *output, err);
-        envState.ios->updateFilesPos();
+        commands[j.name]->run(j, env, i_file, o_file);
     }
     else {
-        extCmd.run(j, envState);
-        envState.ios->updateStreamsPos();
+        extCmd.run(j, env, i_file, o_file);
     }
 
     return 0;

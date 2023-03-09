@@ -6,8 +6,6 @@
 #include "common.hpp"
 #include "ioservice.hpp"
 
-#include <boost/process/system.hpp>
-
 #include <unordered_map>
 #include <string>
 #include <memory>
@@ -19,11 +17,12 @@
 
 class Handler {
 public:
-    Handler();
+    Handler(std::shared_ptr<IOservice> ioserv);
 
-    int exec(const job&, const EnvState&);
+    int exec(const job&, std::shared_ptr<Environment>, FILE*, FILE*);
 
 private:
+    std::shared_ptr<IOservice> ios;
     std::unordered_map<std::string, std::shared_ptr<Cmd>> commands;
     ExtCmd extCmd;
 };

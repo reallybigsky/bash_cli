@@ -1,13 +1,6 @@
 #include "application.hpp"
 #include "preprocess.hpp"
 
-#include <boost/process/system.hpp>
-
-#include <string>
-#include <sstream>
-
-namespace bp = boost::process;
-
 void Application::run() {
     //TODO: exceptions and errors
     //TODO: exit?
@@ -19,20 +12,30 @@ void Application::run() {
             std::vector<std::string> after_lex = preprocess::runLexer(user_input);
             std::vector<job> after_parse = preprocess::runParser(after_lex);
 
-            auto ps_in = std::make_shared<pstream>();
-            for (size_t i = 0; i < after_parse.size(); ++i) {
-                auto mask = static_cast<CmdPos>((i == 0 ? CmdPos::first : CmdPos::inner) +
-                                                  (i == after_parse.size() - 1 ? CmdPos::last : CmdPos::inner));
+            if (after_parse.size() == 1) {
+                handler->exec(after_parse.front(), vars, ios->getInput(), ios->getOutput());
+            } else {
+                FILE* i_file = tmpfile();
+                for (size_t i = 0; i < after_parse.size(); ++i) {
+                    FILE* o_file = tmpfile();
 
-                auto ps_out = std::make_shared<pstream>();
+                    assert(i_file);
+                    assert(o_file);
 
-                EnvState envState = {vars, mask, ios, ps_in, ps_out};
-                handler.exec(after_parse[i], envState);
-                ps_in = ps_out;
+                    if (i == 0) {
+                        handler->exec(after_parse[i], vars, ios->getInput(), o_file);
+                    } else if (i == after_parse.size() - 1) {
+                        handler->exec(after_parse[i], vars, i_file, ios->getOutput());
+                        fclose(o_file);
+                    } else {
+                        handler->exec(after_parse[i], vars, i_file, o_file);
+                    }
+                    fclose(i_file);
+                    i_file = o_file;
+                }
             }
         } catch (...) {
-            std::cout << "caught exception, aborting..." << std::endl;
-
+            ios->write("caught exception, aborting...\n");
             break;
         }
     }
