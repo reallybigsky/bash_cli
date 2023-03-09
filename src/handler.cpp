@@ -1,10 +1,12 @@
 #include "handler.hpp"
 #include "echo.hpp"
 
+namespace bp = boost::process;
+
 Handler::Handler() {
     // добавление новой команды
     commands = {
-            {"echo", std::make_shared<Echo>()},
+//            {"echo", std::make_shared<Echo>()},
 //            {"pwd", std::make_shared<pwdImpl>()},
 //            {"cat", std::make_shared<catImpl>()},
 //            {"wc", std::make_shared<wcImpl>()},
@@ -14,13 +16,29 @@ Handler::Handler() {
 }
 
 
-int Handler::handle(const job& j, EnvState& envState, std::istream& is, std::ostream& os) {
+int Handler::exec(const job& j, const EnvState& envState) {
 //TODO: exceptions and errors
+
     if (commands.contains(j.name)) {
-        commands[j.name]->run(j, envState, is, os);
+        std::istream* input = envState.ipsCurr.get();
+        std::ostream* output = envState.opsCurr.get();
+
+        std::ostream& err = envState.ios->getErr();
+
+        if (envState.cmdPos == CmdPos::first) {
+            input = &envState.ios->getInput();
+        }
+        if (envState.cmdPos == CmdPos::last) {
+            output = &envState.ios->getOutput();
+        }
+
+        commands[j.name]->run(j, envState.vars, *input, *output, err);
+        envState.ios->updateFilesPos();
     }
-    // поиск внешней программы
-    // либо ошибка - неизвестная команда
+    else {
+        extCmd.run(j, envState);
+        envState.ios->updateStreamsPos();
+    }
 
     return 0;
 }

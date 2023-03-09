@@ -1,12 +1,11 @@
 #ifndef BASH_CLI_EXTCMD_HPP
 #define BASH_CLI_EXTCMD_HPP
 
-#include "basecmd.hpp"
+#include "cmd.hpp"
 
-
-class ExtCmd : public BaseCmd {
+class ExtCmd {
 public:
-    virtual int run(const job&, EnvState&, std::istream&, std::ostream&) override {
+    int run(const job&, const EnvState&) {
         return 0;
     }
 };

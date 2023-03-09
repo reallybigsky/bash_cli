@@ -1,6 +1,11 @@
 #ifndef BASH_CLI_COMMON_HPP
 #define BASH_CLI_COMMON_HPP
 
+#include "ioservice.hpp"
+
+#include <boost/process/system.hpp>
+#include <boost/process/environment.hpp>
+
 #include <string>
 #include <vector>
 #include <iostream>
@@ -8,6 +13,17 @@
 #include <unordered_map>
 
 //TODO: documentation
+
+using Environment = boost::process::basic_native_environment<char>;
+using pstream = boost::process::pstream;
+
+enum CmdPos {
+    inner  = 0,
+    first  = 1,
+    last   = 2,
+    single = 3
+};
+
 
 struct job {
     std::string name;
@@ -29,19 +45,11 @@ struct job {
 };
 
 struct EnvState {
-//    EnvState(std::filesystem::path p, std::unordered_map<std::string, std::string> v, std::ostream& es)
-//        : path(p)
-//        , varEnv(v)
-//        , serr(es) {}
-
-    EnvState(std::filesystem::path p, std::ostream& es)
-            : path(p)
-            , varEnv()
-            , serr(es) {}
-
-    std::filesystem::path path;
-    std::unordered_map<std::string, std::string> varEnv;
-    std::ostream& serr;
+    std::shared_ptr<Environment> vars;
+    CmdPos cmdPos;
+    std::shared_ptr<IOservice> ios;
+    std::shared_ptr<pstream> ipsCurr;
+    std::shared_ptr<pstream> opsCurr;
 };
 
 #endif //BASH_CLI_COMMON_HPP

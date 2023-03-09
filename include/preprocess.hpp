@@ -6,12 +6,29 @@
 #include <sstream>
 #include <vector>
 #include <string>
-#include <stdexcept>
+#include <exception>
+
+class Parser {
+private:
+    enum class parserStates {
+        Empty = 0,
+        VW,
+        RW,
+        SQ,
+        DQ,
+        BS,
+        BS_DQ
+    };
+
+
+public:
+
+private:
+
+};
 
 namespace preprocess {
   enum parserStates {Empty = 0, VW, RW, SQ, DQ, BS, BS_DQ}; // details
-  bool is_space(char ch); // details
-  bool is_var(char ch); // details
   std::string buffer_extract(std::stringstream & ss); // details
 
   /**
@@ -59,11 +76,11 @@ namespace preprocess {
 
         switch (state) {
           case Empty:
-            if (is_first && is_var(cur_ch)) {
+            if (is_first && (std::isalpha(cur_ch) || std::isdigit(cur_ch))) {
               is_first = false;
               state = VW;
               buffer << cur_ch;
-            } else if (!is_space(cur_ch)) {
+            } else if (!std::isspace(cur_ch)) {
               is_first = false;
               inc = false;
               state = RW;
@@ -75,7 +92,7 @@ namespace preprocess {
               cur_job.add_word("=");
               cur_job.add_word(buffer_extract(buffer));
               state = RW;
-            } else if (is_var(cur_ch)) {
+            } else if (std::isalpha(cur_ch) || std::isdigit(cur_ch)) {
               buffer << cur_ch;
             } else {
               inc = false;
@@ -84,7 +101,7 @@ namespace preprocess {
 
             break;
           case RW:
-            if (is_space(cur_ch)) {
+            if (std::isspace(cur_ch)) {
               cur_job.add_word(buffer_extract(buffer));
               state = Empty;
             } else if (cur_ch == '\'') {
@@ -141,28 +158,6 @@ namespace preprocess {
     }
 
     return output;
-  }
-
-
-  bool is_space(char ch) {
-    if (ch == ' ' || ch == '\t'  || 
-        ch == '\n' || ch == '\f' ||
-        ch == '\r')
-    {
-      return true;
-    }
-    return false;
-  }
-
-  bool is_var(char ch) {
-    if (ch >= 'a' && ch <= 'z' ||
-        ch >= 'A' && ch <= 'Z' ||
-        ch >= '1' && ch <= '9') 
-    {
-      return true;
-    }
-
-    return false;
   }
 
   // TODO maby otimized

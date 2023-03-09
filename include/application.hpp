@@ -13,19 +13,20 @@ public:
     //TODO: documentation
 
     Application(int argc, char* argv[])
-        : ios(argc, argv)
-        , envState(std::filesystem::current_path(), ios.getErr())
-        , lastReturnCode(0)
-        {}
+        : vars(std::make_shared<Environment>(boost::this_process::environment()))
+        , ios(std::make_shared<IOservice>(argc, argv))
+//        , lastReturnCode(0)
+        {
+        }
 
     // Main loop of the program
     void run();
 
 private:
-    IOservice ios;
+    std::shared_ptr<Environment> vars;
+    std::shared_ptr<IOservice> ios;
     Handler handler;
-    EnvState envState;
-    int lastReturnCode;
+//    int lastReturnCode;
 };
 
 #endif //BASH_CLI_APPLICATION_HPP
