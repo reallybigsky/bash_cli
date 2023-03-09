@@ -19,7 +19,7 @@ class Handler {
 public:
     Handler(std::shared_ptr<IOservice> ioserv);
 
-    int exec(const job&, std::shared_ptr<Environment>, FILE*, FILE*);
+    int exec(const token&, std::shared_ptr<Environment>, FILE*, FILE*);
 
 private:
     std::shared_ptr<IOservice> ios;

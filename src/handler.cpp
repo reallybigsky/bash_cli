@@ -18,7 +18,7 @@ Handler::Handler(std::shared_ptr<IOservice> ioserv)
 }
 
 
-int Handler::exec(const job& j, std::shared_ptr<Environment> env, FILE* i_file, FILE* o_file) {
+int Handler::exec(const token& j, std::shared_ptr<Environment> env, FILE* i_file, FILE* o_file) {
 //TODO: exceptions and errors
 
     if (commands.contains(j.name)) {

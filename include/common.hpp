@@ -8,8 +8,10 @@
 
 //TODO: documentation
 
-using Environment = boost::process::basic_native_environment<char>;
+struct token;
 
+using Environment = boost::process::basic_native_environment<char>;
+using PipeLine = std::vector<token>;
 
 inline int writeToFile(const std::string& str, FILE* file) {
     if (str.size() != fwrite(str.c_str(), sizeof(char), str.size(), file))
@@ -17,12 +19,12 @@ inline int writeToFile(const std::string& str, FILE* file) {
     return 0;
 }
 
-struct job {
+struct token {
     std::string name;
     std::vector<std::string> args;
 
     /**
-     * Add a word to job: if name empty assigne this word to name,
+     * Add a word to token: if name empty assigne this word to name,
      *                    else add word to args.
      *
      * @param `word` strings - some word: command name or argument.

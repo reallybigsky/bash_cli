@@ -9,8 +9,7 @@ void Application::run() {
             ios->greet();
             std::string user_input = ios->readLine();
 
-            std::vector<std::string> after_lex = preprocess::runLexer(user_input);
-            std::vector<job> after_parse = preprocess::runParser(after_lex);
+            PipeLine after_parse = Parser::process(user_input);
 
             if (after_parse.size() == 1) {
                 handler->exec(after_parse.front(), vars, ios->getInput(), ios->getOutput());

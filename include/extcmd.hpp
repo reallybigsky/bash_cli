@@ -5,7 +5,7 @@
 
 class ExtCmd {
 public:
-    int run(const job&, std::shared_ptr<Environment>, FILE*, FILE*) {
+    int run(const token&, std::shared_ptr<Environment>, FILE*, FILE*) {
         return 0;
     }
 };

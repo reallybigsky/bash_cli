@@ -18,8 +18,4 @@ add_executable(bash_cli
         src/handler.cpp
         )
 
-add_executable(test-preprocess
-        src/test/test_preprocess.cpp
-        )
-
 TARGET_LINK_LIBRARIES(bash_cli LINK_PUBLIC ${Boost_LIBRARIES})
