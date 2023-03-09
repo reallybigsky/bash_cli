@@ -93,10 +93,17 @@ public:
 
     void greet() {
         getOutput() << "> ";
+        getOutput().flush();
     }
 
     std::string readLine() {
         std::string res;
+        char* line = nullptr;
+        if (!f_input) {
+            size_t cnt = 0;
+            getline(&line, &cnt, stdin);
+        }
+        free(line);
         getline(input, res);
         if (f_input) {
             fseek(f_input, res.size(), SEEK_CUR);

@@ -6,7 +6,7 @@ namespace bp = boost::process;
 Handler::Handler() {
     // добавление новой команды
     commands = {
-//            {"echo", std::make_shared<Echo>()},
+            {"echo", std::make_shared<Echo>()},
 //            {"pwd", std::make_shared<pwdImpl>()},
 //            {"cat", std::make_shared<catImpl>()},
 //            {"wc", std::make_shared<wcImpl>()},
