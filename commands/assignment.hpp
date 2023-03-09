@@ -1,7 +1,7 @@
 #ifndef BASH_CLI_ASSIGNMENT_HPP
 #define BASH_CLI_ASSIGNMENT_HPP
 
-#include "commands_utils.h"
+#include "commands_utils.hpp"
 #include <regex>
 
 namespace commands {

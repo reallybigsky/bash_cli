@@ -2,15 +2,13 @@
 #define BASH_CLI_EXTCMD_HPP
 
 #include <numeric>
-#include "basecmd.hpp"
-#include "../commands/commands_utils.h"
+#include "commands_utils.hpp"
 
 namespace commands {
 
-    class ExtCmd : public BaseCmd {
+    class ExtCmd {
     public:
-        virtual int
-        run(const job &params, EnvState &env, boost::process::ipstream &in, boost::process::opstream &out) override {
+        int run(const job &params, EnvState &env, bp::pstream &in, bp::pstream &out) {
 
             fs::path current_path(env.varEnv["PATH"].to_string());
             if (current_path.replace_filename(env.varEnv["PATH"].to_string()); !is_file_exist(current_path)) {

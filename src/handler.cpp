@@ -18,10 +18,10 @@ Handler::Handler() {
 }
 
 
-int Handler::handle(const job& j, EnvState& envState, std::istream& is, std::ostream& os) {
+int Handler::handle(const job& j, EnvState& envState, boost::process::pstream& is, boost::process::pstream& os) {
 //TODO: exceptions and errors
     if (commands.contains(j.name)) {
-        commands[j.name]->run(j, envState, is, os);
+        //commands[j.name]->run(j, envState, is, os);
     }
     // поиск внешней программы
     // либо ошибка - неизвестная команда

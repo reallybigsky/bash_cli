@@ -1,7 +1,7 @@
 #ifndef BASH_CLI_PWD_HPP
 #define BASH_CLI_PWD_HPP
 
-#include "commands_utils.h"
+#include "commands_utils.hpp"
 #include <regex>
 #include <iostream>
 

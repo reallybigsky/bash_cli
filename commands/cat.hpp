@@ -1,7 +1,7 @@
 #ifndef BASH_CLI_CAT_HPP
 #define BASH_CLI_CAT_HPP
 
-#include "commands_utils.h"
+#include "commands_utils.hpp"
 
 namespace commands {
 

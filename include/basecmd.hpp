@@ -2,8 +2,6 @@
 #define BASH_CLI_COMMANDS_HPP
 
 #include "common.hpp"
-#include <boost/process.hpp>
-
 #include <iostream>
 
 //TODO: documentation

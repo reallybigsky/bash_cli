@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
-#include "../../commands/commands_utils.h"
-#include "../../commands/echo.hpp"
-#include "../../commands/pwd.hpp"
-#include "../../commands/cat.hpp"
-#include "../../commands/wc.hpp"
+#include "commands_utils.hpp"
+#include "echo.hpp"
+#include "pwd.hpp"
+#include "cat.hpp"
+#include "wc.hpp"
 
 
 using namespace commands;

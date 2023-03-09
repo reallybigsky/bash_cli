@@ -1,7 +1,7 @@
 #ifndef BASH_CLI_WC_HPP
 #define BASH_CLI_WC_HPP
 
-#include "commands_utils.h"
+#include "commands_utils.hpp"
 
 namespace commands {
 

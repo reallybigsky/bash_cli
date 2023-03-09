@@ -1,15 +1,11 @@
-#ifndef BASH_CLI_COMMANDS_UTILS_H
-#define BASH_CLI_COMMANDS_UTILS_H
-
-#include "../include/basecmd.hpp"
-
-#include <boost/process.hpp>
+#pragma once
 #include <filesystem>
 #include <algorithm>
 #include <sstream>
 #include <string>
 #include <utility>
 #include <fstream>
+#include "common.hpp"
 
 
 namespace commands {
@@ -30,6 +26,3 @@ namespace commands {
     }
 
 }
-
-
-#endif //BASH_CLI_COMMANDS_UTILS_H
