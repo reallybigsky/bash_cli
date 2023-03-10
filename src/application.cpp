@@ -1,40 +1,43 @@
 #include "application.hpp"
 #include "preprocess.hpp"
 
-#include <string>
-#include <sstream>
-
 void Application::run() {
     //TODO: exceptions and errors
     //TODO: exit?
     while (true) {
         try {
-//            ios.greet();
-//            std::string user_input = ios.readLine();
-//
-//            std::vector<std::string> after_lex = preprocess::runLexer(user_input);
-//            std::vector<msg> after_parse = preprocess::runParser(after_lex);
-//
-//            if (after_parse.size() > 1) {
-//                std::stringstream ss;
-//                handler.handleMsg(after_parse.front(), {path, varEnv, ios.getInput(), ss});
-//
-//                for (size_t i = 1; i < after_parse.size() - 1; ++i) {
-//                    std::stringstream out;
-//                    handler.handleMsg(after_parse[i], {path, varEnv, ss, out});
-//                    ss = std::move(out);
-//                }
-//
-//                handler.handleMsg(after_parse.back(), {path, varEnv, ss, ios.getOutput()});
-//            } else if (after_parse.size() == 1) {
-//                handler.handleMsg(after_parse.front(), {path, varEnv, ios.getInput(), ios.getOutput()});
-//            } else {
-//                // WTF!?
-//            }
+            ios->greet();
+            std::string user_input = ios->readLine();
 
+            PipeLine after_parse = Parser::process(user_input);
+
+            if (after_parse.size() == 1) {
+                handler->exec(after_parse.front(), vars, ios->getInput(), ios->getOutput());
+            } else {
+                FILE* i_file = tmpfile();
+                for (size_t i = 0; i < after_parse.size(); ++i) {
+                    FILE* o_file = tmpfile();
+
+                    assert(i_file);
+                    assert(o_file);
+
+                    if (i == 0) {
+                        handler->exec(after_parse[i], vars, ios->getInput(), o_file);
+                    } else if (i == after_parse.size() - 1) {
+                        handler->exec(after_parse[i], vars, i_file, ios->getOutput());
+                        fclose(i_file);
+                        fclose(o_file);
+                        break;
+                    } else {
+                        handler->exec(after_parse[i], vars, i_file, o_file);
+                    }
+                    fclose(i_file);
+                    rewind(o_file);
+                    i_file = o_file;
+                }
+            }
         } catch (...) {
-            std::cout << "caught exception, aborting..." << std::endl;
-
+            ios->write("caught exception, aborting...\n");
             break;
         }
     }

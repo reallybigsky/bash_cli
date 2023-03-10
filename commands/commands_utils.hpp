@@ -5,7 +5,7 @@
 #include <string>
 #include <utility>
 #include <fstream>
-#include "common.hpp"
+#include "cmd.hpp"
 
 
 namespace commands {

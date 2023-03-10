@@ -1,34 +1,41 @@
 #ifndef BASH_CLI_COMMON_HPP
 #define BASH_CLI_COMMON_HPP
 
+#include <boost/process/environment.hpp>
+
 #include <string>
 #include <vector>
-#include <iostream>
-#include <filesystem>
-#include <unordered_map>
-#include <boost/process.hpp>
 
 //TODO: documentation
 
-struct job {
+struct token;
+
+using Environment = boost::process::basic_native_environment<char>;
+using PipeLine = std::vector<token>;
+
+inline int writeToFile(const std::string& str, FILE* file) {
+    if (str.size() != fwrite(str.c_str(), sizeof(char), str.size(), file))
+        return 1;
+    return 0;
+}
+
+struct token {
     std::string name;
     std::vector<std::string> args;
-};
 
-struct EnvState {
-//    EnvState(std::filesystem::path p, std::unordered_map<std::string, std::string> v, std::ostream& es)
-//        : path(p)
-//        , varEnv(v)
-//        , serr(es) {}
-
-    EnvState(std::filesystem::path p, std::ostream& es)
-            : varEnv()
-            , serr(es) {
-        varEnv["PATH"] = p.string();
+    /**
+     * Add a word to token: if name empty assigne this word to name,
+     *                    else add word to args.
+     *
+     * @param `word` strings - some word: command name or argument.
+     */
+    void add_word(const std::string & word) {
+        if (name.empty()) {
+          name = word;
+        } else {
+          args.push_back(word);
+        }
     }
-
-    boost::process::environment varEnv;
-    std::ostream& serr;
 };
 
 #endif //BASH_CLI_COMMON_HPP

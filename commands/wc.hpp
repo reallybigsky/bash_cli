@@ -18,8 +18,8 @@ namespace commands {
                     count_of_lines_(0),
                     count_of_words_(0),
                     size_(0),
-                    error_(std::move(err)),
-                    filename_(std::move(filename)) {}
+                    filename_(std::move(filename)),
+                    error_(std::move(err)) {}
 
             answer_format(size_t count_of_lines, size_t count_of_words,
                           size_t size, std::string filename) :
@@ -58,19 +58,20 @@ namespace commands {
         };
 
     public:
-        virtual int run(const job &params, EnvState &env, bp::ipstream &in, bp::opstream &out) override {
+        virtual int run(const token& params, std::shared_ptr<Environment> env, FILE* input, FILE* output) override {
             uint64_t total_cnt_lines = 0, total_cnt_words = 0, total_size = 0;
 
             if (params.args.empty()) {
                 std::string line;
-                while(std::getline(in, line) && !line.empty()){
+                while(std::getline(input, line) && !line.empty()){
                     ++total_cnt_lines;
                     total_cnt_words += count_of_words_in_string(line);
                     total_size += line.size();
                 }
 
-                out << total_cnt_lines << "\t" << total_cnt_words << "\t" << total_size << std::endl;
-
+                std::stringstream result;
+                result << total_cnt_lines << "\t" << total_cnt_words << "\t" << total_size << std::endl;
+                writeToFile(result.str(), output);
                 return 0;
             }
 
@@ -78,7 +79,7 @@ namespace commands {
             int32_t error_count = 0;
 
             for (auto &filename: params.args) {
-                fs::path current_path(env.varEnv["PATH"].to_string());
+                fs::path current_path((*env)["PATH"].to_string());
                 current_path.replace_filename(filename);
 
                 //проверка на то, существует ли файл в текущей директории
@@ -125,7 +126,7 @@ namespace commands {
                 throw std::invalid_argument(output_str);
 
 
-            out << output_str;
+            writeToFile(output_str, output);
 
             if (error_count > 0)
                 return 1;

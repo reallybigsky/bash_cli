@@ -8,7 +8,7 @@ namespace commands {
     class Cat : public Cmd {
     public:
 
-        virtual int run(const job &params, EnvState &env, bp::ipstream &in, bp::opstream &out) override {
+        virtual int run(const token& params, std::shared_ptr<Environment> env, FILE* input, FILE* output) override {
 
             std::stringstream result;
             int32_t error_count = 0;
@@ -16,16 +16,16 @@ namespace commands {
             if (params.args.empty())
             {
                 std::string line;
-                while (getline(in, line) && !line.empty())
+                while (getline(input, line) && !line.empty())
                     result << line << std::endl;
 
-                out << result.str();
+                writeToFile(result.str(), output);
 
                 return 0;
             }
 
             for (auto &filename: params.args) {
-                fs::path current_path(env.varEnv["PATH"].to_string());
+                fs::path current_path((*env)["PATH"].to_string());
                 current_path.replace_filename(filename);
 
                 //проверка на то, существует ли файл в текущей директории
@@ -52,7 +52,7 @@ namespace commands {
             if (error_count == params.args.size())
                 throw std::invalid_argument(result.str());
 
-            out << result.str();
+            writeToFile(result.str(), output);
 
             if (error_count > 0)
                 return 1;

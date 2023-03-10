@@ -8,7 +8,7 @@ namespace commands {
 
     class Assignment : public Cmd {
     public:
-        virtual int run(const job &params, EnvState &env, bp::ipstream &in, bp::opstream &out) override {
+        virtual int run(const token& params, std::shared_ptr<Environment> env, FILE* input, FILE* output) {
 
             if(params.args.empty())
                 throw std::invalid_argument("No files were transferred");
@@ -21,7 +21,7 @@ namespace commands {
                 result << "";
             }
 
-            env.varEnv[params.args[0]] = result.str();
+            (*env)[params.args[0]] = result.str();
 
             return 0;
         }

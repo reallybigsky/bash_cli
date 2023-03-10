@@ -12,20 +12,22 @@ class Application {
 public:
     //TODO: documentation
 
-    Application(std::istream& is, std::ostream& os, std::ostream& es)
-        : ios(is, os, es)
-        , envState(std::filesystem::current_path(), es)
-        , lastReturnCode(0)
-        {}
+    Application(int argc, char* argv[])
+        : vars(std::make_shared<Environment>(boost::this_process::environment()))
+        , ios(std::make_shared<IOservice>(argc, argv))
+        , handler(std::make_shared<Handler>(ios))
+//        , lastReturnCode(0)
+        {
+        }
 
     // Main loop of the program
     void run();
 
 private:
-    IOservice ios;
-    Handler handler;
-    EnvState envState;
-    int lastReturnCode;
+    std::shared_ptr<Environment> vars;
+    std::shared_ptr<IOservice> ios;
+    std::shared_ptr<Handler> handler;
+//    int lastReturnCode;
 };
 
 #endif //BASH_CLI_APPLICATION_HPP

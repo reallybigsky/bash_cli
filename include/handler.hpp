@@ -1,8 +1,10 @@
 #ifndef BASH_CLI_HANDLER_HPP
 #define BASH_CLI_HANDLER_HPP
 
-#include "basecmd.hpp"
+#include "cmd.hpp"
+#include "extcmd.hpp"
 #include "common.hpp"
+#include "ioservice.hpp"
 
 #include <unordered_map>
 #include <string>
@@ -15,12 +17,14 @@
 
 class Handler {
 public:
-    Handler();
+    Handler(std::shared_ptr<IOservice> ioserv);
 
-    int handle(const job& j, EnvState& envState, boost::process::pstream& is, boost::process::pstream& os);
+    int exec(const token&, std::shared_ptr<Environment>, FILE*, FILE*);
 
 private:
-    std::unordered_map<std::string, std::shared_ptr<BaseCmd>> commands;
+    std::shared_ptr<IOservice> ios;
+    std::unordered_map<std::string, std::shared_ptr<Cmd>> commands;
+    commands::ExtCmd extCmd;
 };
 
 
