@@ -4,6 +4,9 @@
 void Application::run() {
     //TODO: exceptions and errors
     //TODO: exit?
+
+    FILE* i_file = nullptr;
+    FILE* o_file = nullptr;
     while (true) {
         try {
             ios->greet();
@@ -14,9 +17,11 @@ void Application::run() {
             if (after_parse.size() == 1) {
                 handler->exec(after_parse.front(), vars, ios->getInput(), ios->getOutput());
             } else {
-                FILE* i_file = tmpfile();
+//                FILE* i_file = tmpfile();
+                i_file = tmpfile();
                 for (size_t i = 0; i < after_parse.size(); ++i) {
-                    FILE* o_file = tmpfile();
+//                    FILE* o_file = tmpfile();
+                    o_file = tmpfile();
 
                     assert(i_file);
                     assert(o_file);
@@ -37,6 +42,8 @@ void Application::run() {
                 }
             }
         } catch (...) {
+            fclose(i_file);
+            fclose(o_file);
             ios->write("caught exception, aborting...\n");
             break;
         }
