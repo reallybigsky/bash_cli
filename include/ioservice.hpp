@@ -90,10 +90,14 @@ public:
     std::string readLine() const {
         char* line = nullptr;
         size_t cnt = 0;
-        getline(&line, &cnt, getInput());
+        if (feof(f_input)) {
+            this->~IOservice();
+            std::exit(0);
+        }
+        size_t read = getline(&line, &cnt, getInput());
         if (!line)
             return "";
-        std::string res(line);
+        std::string res(line, read);
         free(line);
         return res;
     }
