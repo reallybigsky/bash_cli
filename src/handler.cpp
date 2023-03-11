@@ -22,22 +22,15 @@ Handler::Handler(std::shared_ptr<IOservice> ioserv)
 }
 
 
-<<<<<<< HEAD
-int Handler::handle(const job& j, EnvState& envState, boost::process::pstream& is, boost::process::pstream& os) {
-=======
 int Handler::exec(const token& j, std::shared_ptr<Environment> env, FILE* i_file, FILE* o_file) {
->>>>>>> test
+
 //TODO: exceptions and errors
 
     if (commands.contains(j.name)) {
-<<<<<<< HEAD
-        //commands[j.name]->run(j, envState, is, os);
-=======
         commands[j.name]->run(j, env, i_file, o_file);
     }
     else {
         extCmd.run(j, env, i_file, o_file);
->>>>>>> test
     }
 
     return 0;
