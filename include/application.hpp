@@ -8,26 +8,25 @@
 #include <unordered_map>
 #include <filesystem>
 
+
 class Application {
 public:
-    //TODO: documentation
-
     Application(int argc, char* argv[])
-        : vars(std::make_shared<Environment>(boost::this_process::environment()))
+        : vars(std::make_shared<Environment>())
         , ios(std::make_shared<IOservice>(argc, argv))
         , handler(std::make_shared<Handler>(ios))
-//        , lastReturnCode(0)
-        {
-        }
+        , lastReturnCode(0)
+    {
+        vars->emplace("PWD", std::filesystem::current_path().string());
+    }
 
-    // Main loop of the program
     void run();
 
 private:
     std::shared_ptr<Environment> vars;
     std::shared_ptr<IOservice> ios;
     std::shared_ptr<Handler> handler;
-//    int lastReturnCode;
+    int lastReturnCode;
 };
 
 #endif //BASH_CLI_APPLICATION_HPP

@@ -8,11 +8,16 @@
 #include <string>
 #include <exception>
 
-/**
- * Exceptions while syntax analysis
- */
-struct LexerError : std::exception {};
-struct ParserError : std::exception {};
+
+struct SyntaxExc : public std::runtime_error {
+    SyntaxExc(const std::string& str) : std::runtime_error(str) {}
+};
+struct LexerExc : public SyntaxExc {
+    LexerExc(const std::string& str) : SyntaxExc(str) {}
+};
+struct ParserExc : public SyntaxExc {
+    ParserExc(const std::string& str) : SyntaxExc(str) {}
+};
 
 class Parser {
 private:
@@ -154,7 +159,7 @@ public:
             }
 
             if (state != ParserState::Empty) {
-                throw ParserError();
+                throw ParserExc("Exception: wrong syntax!");
             }
         }
 

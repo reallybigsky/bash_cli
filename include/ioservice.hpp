@@ -7,7 +7,6 @@
 #include <exception>
 #include <stdexcept>
 
-//TODO: documentation
 
 class IOservice {
 public:
@@ -72,15 +71,23 @@ public:
     }
 
     void write(const std::string& str) const {
-        if (writeToFile(str, getOutput())) {
+        if (FileUtils::writeToFile(str, getOutput())) {
             throw std::runtime_error("Cannot write to out!");
         }
     }
 
+    void writeLine(const std::string& str) const {
+        write(str + '\n');
+    }
+
     void writeErr(const std::string& str) const {
-        if (writeToFile(str, getErr())) {
+        if (FileUtils::writeToFile(str, getErr())) {
             throw std::runtime_error("Cannot write to err!");
         }
+    }
+
+    void writeErrLine(const std::string& str) const {
+        writeErr(str + '\n');
     }
 
     void greet() const {
@@ -88,18 +95,11 @@ public:
     }
 
     std::string readLine() const {
-        char* line = nullptr;
-        size_t cnt = 0;
-        if (feof(f_input)) {
-            this->~IOservice();
-            std::exit(0);
+        auto str = FileUtils::readLine(getInput());
+        if (!str) {
+            throw std::runtime_error("Cannot read from input!");
         }
-        size_t read = getline(&line, &cnt, getInput());
-        if (!line)
-            return "";
-        std::string res(line, read);
-        free(line);
-        return res;
+        return str.value();
     }
 
 private:

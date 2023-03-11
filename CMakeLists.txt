@@ -3,9 +3,9 @@ project(bash_cli)
 
 set(CMAKE_CXX_STANDARD 20)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall  -g -fsanitize=address -fno-omit-frame-pointer -v")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -fsanitize=address -fno-omit-frame-pointer -v")
 
-#FIND_PACKAGE(Boost 1.71 REQUIRED COMPONENTS system filesystem)
+#FIND_PACKAGE(Boost 1.76 REQUIRED COMPONENTS system filesystem)
 #INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
 
 set(BOOST_INCLUDE_LIBRARIES process)
@@ -19,8 +19,6 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(Boost)
 
-
-
 include_directories(include)
 include_directories(commands)
 include_directories(src)
@@ -29,8 +27,6 @@ add_executable(bash_cli
         src/main.cpp
         src/application.cpp
         src/handler.cpp)
-
-
 
 target_link_libraries(bash_cli PRIVATE Boost::process)
 #TARGET_LINK_LIBRARIES(bash_cli LINK_PUBLIC ${Boost_LIBRARIES})

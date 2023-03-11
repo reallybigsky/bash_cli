@@ -5,32 +5,33 @@
 #include "wc.hpp"
 #include "assignment.hpp"
 
-namespace bp = boost::process;
-
-Handler::Handler(std::shared_ptr<IOservice> ioserv)
-    : ios(ioserv)
-    {
-    // добавление новой команды
+Handler::Handler(std::shared_ptr<IOservice> io)
+    : exit(false)
+    , ios(io)
+{
     commands = {
-            {"echo", std::make_shared<commands::Echo>()},
-            {"pwd", std::make_shared<commands::Pwd>()},
-            {"cat", std::make_shared<commands::Cat>()},
-            {"wc", std::make_shared<commands::Wc>()},
-            //{"exit", std::make_shared<exitImpl>()},
-            {"=", std::make_shared<commands::Assignment>()}
-    };
+        {"echo", std::make_shared<commands::Echo>()},
+        {"pwd", std::make_shared<commands::Pwd>()},
+        {"cat", std::make_shared<commands::Cat>()},
+        {"wc", std::make_shared<commands::Wc>()},
+//      {"=", std::make_shared<commands::Assignment>()}
+};
 }
 
-
-int Handler::exec(const token& j, std::shared_ptr<Environment> env, FILE* i_file, FILE* o_file) {
-
-//TODO: exceptions and errors
-
-    if (commands.contains(j.name)) {
-        commands[j.name]->run(j, env, i_file, o_file);
-    }
-    else {
-        extCmd.run(j, env, i_file, o_file);
+int Handler::exec(const token& tok, std::shared_ptr<Environment> env, FILE* i_file, FILE* o_file) {
+    try {
+        if (tok.name.empty()) {
+            return 0;
+        } else if (tok.name == "exit") {
+            exit = true;
+        } else if (commands.contains(tok.name)) {
+            return commands.at(tok.name)->run(tok, env, i_file, o_file, ios->getErr());
+        } else {
+            return extCmd.run(tok, env, i_file, o_file, ios->getErr());
+        }
+    } catch (const std::invalid_argument& ia) {
+        ios->writeLine(ia.what());
+        return 1;
     }
 
     return 0;

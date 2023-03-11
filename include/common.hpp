@@ -5,19 +5,36 @@
 
 #include <string>
 #include <vector>
-
-//TODO: documentation
+#include <cstdio>
+#include <optional>
 
 struct token;
-
 using Environment = boost::process::basic_native_environment<char>;
 using PipeLine = std::vector<token>;
+
+namespace FileUtils {
 
 inline int writeToFile(const std::string& str, FILE* file) {
     if (str.size() != fwrite(str.c_str(), sizeof(char), str.size(), file))
         return 1;
     return 0;
 }
+
+inline std::optional<std::string> readLine(FILE* file) {
+    char* line = nullptr;
+    size_t cnt = 0;
+    size_t read = getline(&line, &cnt, file);
+    std::optional<std::string> res;
+    if (read == -1) {
+        res = std::nullopt;
+    } else {
+        res = std::string(line, read);
+    }
+    free(line);
+    return res;
+}
+
+} // namespace FileUtils
 
 struct token {
     std::string name;

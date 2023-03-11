@@ -10,18 +10,16 @@
 #include <string>
 #include <memory>
 
-//TODO: documentation
-
-//TODO: ref or not ref EnvState
-
-
 class Handler {
 public:
     Handler(std::shared_ptr<IOservice> ioserv);
 
+    bool isExit() const { return exit; }
+
     int exec(const token&, std::shared_ptr<Environment>, FILE*, FILE*);
 
 private:
+    bool exit;
     std::shared_ptr<IOservice> ios;
     std::unordered_map<std::string, std::shared_ptr<Cmd>> commands;
     commands::ExtCmd extCmd;
