@@ -38,7 +38,11 @@ private:
         return res;
     }
 
+    std::shared_ptr<Environment> env;
+
 public:
+    Parser(std::shared_ptr<Environment> e) : env(e) {}
+
     static PipeLine process(const std::string& input) {
         return runParser(runLexer(input));
     }

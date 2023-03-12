@@ -3,6 +3,7 @@
 
 #include "ioservice.hpp"
 #include "handler.hpp"
+#include "preprocess.hpp"
 #include "common.hpp"
 
 #include <unordered_map>
@@ -12,20 +13,22 @@
 class Application {
 public:
     Application(int argc, char* argv[])
-        : vars(std::make_shared<Environment>())
+        : env(std::make_shared<Environment>())
         , ios(std::make_shared<IOservice>(argc, argv))
         , handler(std::make_shared<Handler>(ios))
+        , parser(std::make_shared<Parser>(env))
         , lastReturnCode(0)
     {
-        vars->emplace("PWD", std::filesystem::current_path().string());
+        env->emplace("PWD", std::filesystem::current_path().string());
     }
 
     void run();
 
 private:
-    std::shared_ptr<Environment> vars;
+    std::shared_ptr<Environment> env;
     std::shared_ptr<IOservice> ios;
     std::shared_ptr<Handler> handler;
+    std::shared_ptr<Parser> parser;
     int lastReturnCode;
 };
 
