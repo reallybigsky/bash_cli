@@ -19,6 +19,7 @@ struct ParserExc : public SyntaxExc {
     ParserExc(const std::string& str) : SyntaxExc(str) {}
 };
 
+
 class Parser {
 private:
     enum class ParserState {
@@ -46,8 +47,6 @@ private:
         ss.str(std::string());
         return res;
     }
-
-    std::shared_ptr<Environment> env;
 
     std::string replace_var(const std::string & var) {
         if (var.empty()) {
@@ -107,14 +106,13 @@ public:
                             write_in_buff = false;
                             state = LexerState::Dollar;
                             break;
+                        default: {}
                     }
-
                     break;
                 case LexerState::SQ:
                     if (cur_ch == '\'') {
                         state = LexerState::Start;
                     }
-
                     break;
                 case LexerState::DQ:
                     if (cur_ch == '"') {
@@ -125,14 +123,12 @@ public:
                     } else if (cur_ch == '\\') {
                         state = LexerState::BS_DQ;
                     }
-
                     break;
                 case LexerState::BS:
                     state = LexerState::Start;
                     break;
                 case LexerState::Dollar:
                     write_in_buff = false;
-
                     if (std::isalpha(cur_ch) || std::isdigit(cur_ch)) {
                         var << cur_ch;
                     } else {
@@ -140,11 +136,9 @@ public:
                         inc = false;
                         state = LexerState::Start;
                     }
-
                     break;
                 case LexerState::Dollar_DQ:
                     write_in_buff = false;
-
                     if (std::isalpha(cur_ch) || std::isdigit(cur_ch)) {
                         var << cur_ch;
                     } else {
@@ -152,11 +146,11 @@ public:
                         inc = false;
                         state = LexerState::DQ;
                     }
-
                     break;
                 case LexerState::BS_DQ:
                     state = LexerState::DQ;
                     break;
+                default: {}
             }
 
             if (write_in_buff) {
@@ -213,7 +207,6 @@ public:
                             inc = false;
                             state = ParserState::RW;
                         }
-
                         break;
                     case ParserState::VW:
                         if (cur_ch == '=') {
@@ -226,7 +219,6 @@ public:
                             inc = false;
                             state = ParserState::RW;
                         }
-
                         break;
                     case ParserState::RW:
                         if (std::isspace(cur_ch)) {
@@ -241,7 +233,6 @@ public:
                         } else {
                             buffer << cur_ch;
                         }
-
                         break;
                     case ParserState::SQ:
                         if (cur_ch == '\'') {
@@ -249,7 +240,6 @@ public:
                         } else {
                             buffer << cur_ch;
                         }
-
                         break;
                     case ParserState::DQ:
                         if (cur_ch == '"') {
@@ -260,18 +250,16 @@ public:
                         else {
                             buffer << cur_ch;
                         }
-
                         break;
                     case ParserState::BS:
                         buffer << cur_ch;
                         state = ParserState::RW;
-
                         break;
                     case ParserState::BS_DQ:
                         buffer << cur_ch;
                         state = ParserState::DQ;
-
                         break;
+                    default: {}
                 }
             }
 
@@ -287,6 +275,9 @@ public:
 
         return output;
     }
+
+private:
+    std::shared_ptr<Environment> env;
 };
 
 #endif //BASH_CLI_PREPROCESS_HPP

@@ -14,7 +14,7 @@ Handler::Handler(std::shared_ptr<IOservice> io)
         {"pwd", std::make_shared<commands::Pwd>()},
         {"cat", std::make_shared<commands::Cat>()},
         {"wc", std::make_shared<commands::Wc>()},
-      {"=", std::make_shared<commands::Assignment>()}
+        {"=", std::make_shared<commands::Assignment>()}
 };
 }
 

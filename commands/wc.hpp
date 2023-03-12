@@ -2,7 +2,8 @@
 #define BASH_CLI_WC_HPP
 
 #include "cmd.hpp"
-#include "commands_utils.hpp"
+#include "file_utils.hpp"
+
 
 namespace commands {
 
@@ -79,13 +80,13 @@ public:
         int32_t error_count = 0;
 
         for (auto &filename: params.args) {
-            fs::path current_path(env->at("PWD").to_string());
+            std::filesystem::path current_path(env->at("PWD").to_string());
             current_path /= filename;
 
             //проверка на то, существует ли файл в текущей директории
-            if (!is_file_exist(current_path)) {
+            if (!FileUtils::is_file_exist(current_path)) {
                 //существует ли файл, если заданный путь полный
-                if (!is_file_exist(filename)) {
+                if (!FileUtils::is_file_exist(filename)) {
                     ++error_count;
                     result.emplace_back(": No such file or directory", filename);
                     continue;
@@ -94,7 +95,7 @@ public:
             }
 
             // проверка на возможность чтения из файла
-            if (!is_readable(current_path)) {
+            if (!FileUtils::is_readable(current_path)) {
                 ++error_count;
                 result.emplace_back(": Permission denied", filename);
                 continue;
@@ -152,17 +153,17 @@ private:
         return str_result.str();
     }
 
-    static uint64_t get_count_of_lines(const fs::path &filepath) {
+    static uint64_t get_count_of_lines(const std::filesystem::path &filepath) {
         std::ifstream file(filepath);
         return std::count(std::istreambuf_iterator<char>(file),
                           std::istreambuf_iterator<char>(), '\n');
     }
 
-    static uint64_t get_size(const fs::path &filepath) {
-        return fs::file_size(filepath);
+    static uint64_t get_size(const std::filesystem::path &filepath) {
+        return std::filesystem::file_size(filepath);
     }
 
-    static uint64_t get_count_of_words(const fs::path &filepath) {
+    static uint64_t get_count_of_words(const std::filesystem::path &filepath) {
         std::ifstream file(filepath);
         return std::distance(std::istream_iterator<std::string>(file),
                              std::istream_iterator<std::string>());

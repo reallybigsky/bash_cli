@@ -2,7 +2,6 @@
 #define BASH_CLI_ASSIGNMENT_HPP
 
 #include "cmd.hpp"
-#include "commands_utils.hpp"
 
 #include <regex>
 
@@ -32,19 +31,19 @@ public:
      *
      * @throws std::invalid_argument Thrown if tok.args is empty, in other words if there is no left operand of '='
      */
-    virtual int run(const token& tok, std::shared_ptr<Environment> env, FILE* input, FILE* output, FILE* err) override {
-        if (tok.args.empty())
+    virtual int run(const token& params, std::shared_ptr<Environment> env, FILE* input, FILE* output, FILE* err) override {
+        if (params.args.empty())
             throw std::invalid_argument("Assignment with no arguments!");
 
         std::stringstream result;
-        if (tok.args.size() > 1) {
+        if (params.args.size() > 1) {
             std::regex spec_symbols(R"('|"|\\|\$)");
-            result << std::regex_replace(tok.args[1], spec_symbols, "\\$&");
+            result << std::regex_replace(params.args[1], spec_symbols, "\\$&");
         } else {
             result << "";
         }
 
-        (*env)[tok.args[0]] = result.str();
+        (*env)[params.args[0]] = result.str();
         return 0;
     }
 };

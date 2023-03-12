@@ -1,7 +1,7 @@
 #ifndef BASH_CLI_EXTCMD_HPP
 #define BASH_CLI_EXTCMD_HPP
 
-#include "commands_utils.hpp"
+#include "file_utils.hpp"
 
 #include <boost/process.hpp>
 
@@ -14,9 +14,9 @@ namespace bp = boost::process;
 class ExtCmd {
 public:
     int run(const token& params, std::shared_ptr<Environment> env, FILE* input, FILE* output, FILE* err) {
-        fs::path current_path(env->at("PWD").to_string());
-        if (current_path /= params.name; !is_file_exist(current_path)) {
-            if (current_path = params.name; !is_file_exist(current_path)) {
+        std::filesystem::path current_path(env->at("PWD").to_string());
+        if (current_path /= params.name; !FileUtils::is_file_exist(current_path)) {
+            if (current_path = params.name; !FileUtils::is_file_exist(current_path)) {
                 if (current_path = bp::search_path(params.name).string(); current_path == "") {
                     throw std::invalid_argument(params.name + std::string(": command not found"));
                 }
@@ -29,8 +29,7 @@ public:
                                        [](std::string s0, std::string const &s1) { return s0 += " " + s1; });
         }
 
-        // добавить std_err
-        int result = bp::system(current_path.string(), seq_args, *env, bp::std_out = input, bp::std_err = err, bp::std_in = output);
+        int result = bp::system(current_path.string(), seq_args, *env, bp::std_out = output, bp::std_err = err, bp::std_in = input);
         return result;
     }
 };

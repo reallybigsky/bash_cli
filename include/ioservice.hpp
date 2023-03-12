@@ -2,6 +2,7 @@
 #define BASH_CLI_IOSERVICE_HPP
 
 #include "common.hpp"
+#include "file_utils.hpp"
 
 #include <string>
 #include <exception>

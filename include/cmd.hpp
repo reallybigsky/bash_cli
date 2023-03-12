@@ -8,7 +8,7 @@ class Cmd {
 public:
     virtual int run(const token&, std::shared_ptr<Environment>, FILE*, FILE*, FILE*) = 0;
 
-    virtual ~Cmd() {}
+    virtual ~Cmd() = default;
 };
 
 #endif //BASH_CLI_CMD_HPP

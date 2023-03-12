@@ -1,8 +1,8 @@
 #ifndef BASH_CLI_CAT_HPP
 #define BASH_CLI_CAT_HPP
 
+#include "file_utils.hpp"
 #include "cmd.hpp"
-#include "commands_utils.hpp"
 
 
 namespace commands {
@@ -23,12 +23,12 @@ public:
         }
 
         for (auto &filename: params.args) {
-            fs::path current_path(env->at("PWD").to_string());
+            std::filesystem::path current_path(env->at("PWD").to_string());
             current_path /= filename;
 
             //проверка на то, существует ли файл в текущей директории
-            if (!is_file_exist(current_path)) {
-                if (!is_file_exist(filename)) {
+            if (!FileUtils::is_file_exist(current_path)) {
+                if (!FileUtils::is_file_exist(filename)) {
                     ++error_count;
                     result << params.name << ": " << filename << ": No such file or directory" << std::endl;
                     continue;
@@ -36,8 +36,8 @@ public:
                 current_path = filename;
             }
 
-            //проверка на то, можно ли открыть файл на чтение
-            if (!is_readable(current_path)) {
+            // проверка на то, можно ли открыть файл на чтение
+            if (!FileUtils::is_readable(current_path)) {
                 ++error_count;
                 result << filename << ": Permission denied" << std::endl;
                 continue;
@@ -56,7 +56,7 @@ public:
 
 private:
 
-    static std::string get_file_contents(const fs::path &filename) {
+    static std::string get_file_contents(const std::filesystem::path &filename) {
         std::ifstream t(filename);
         std::string result;
 
@@ -64,9 +64,7 @@ private:
         result.reserve(t.tellg());
         t.seekg(0, std::ios::beg);
 
-        result.assign((std::istreambuf_iterator<char>(t)),
-                      std::istreambuf_iterator<char>());
-
+        result.assign((std::istreambuf_iterator<char>(t)),std::istreambuf_iterator<char>());
         return result;
     }
 };

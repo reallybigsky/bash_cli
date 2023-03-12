@@ -29,5 +29,4 @@ public:
 
 }
 
-
 #endif //BASH_CLI_ECHO_HPP
