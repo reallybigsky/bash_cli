@@ -44,7 +44,7 @@ public:
             result << "";
         }
 
-        env->emplace(tok.args[0], result.str());
+        (*env)[tok.args[0]] = result.str();
         return 0;
     }
 };
