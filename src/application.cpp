@@ -7,7 +7,8 @@ void Application::run() {
         try {
             ios->greet();
             std::string user_input = ios->readLine();
-            PipeLine after_parse = Parser::process(user_input);
+            Parser parser(env);
+            PipeLine after_parse = parser.process(user_input);
 
             if (after_parse.size() == 1) {
                 lastReturnCode = handler->exec(after_parse.front(), env, ios->getInput(), ios->getOutput());

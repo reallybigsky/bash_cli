@@ -31,7 +31,16 @@ private:
         BS_DQ
     };
 
-    // TODO maby otimized
+    enum class LexerState {
+        Start = 0,
+        SQ,
+        DQ,
+        BS,
+        Dollar,
+        Dollar_DQ,
+        BS_DQ
+    };
+
     static std::string buffer_extract(std::stringstream & ss) {
         std::string res = ss.str();
         ss.str(std::string());
@@ -40,26 +49,135 @@ private:
 
     std::shared_ptr<Environment> env;
 
+    std::string replace_var(const std::string & var) {
+        if (var.empty()) {
+            return "$";
+        } else {
+            if (env->find(var) != env->end()) {
+                return env->get(var);
+            }
+        }
+
+        return "";
+    }
+
 public:
     Parser(std::shared_ptr<Environment> e) : env(e) {}
 
-    static PipeLine process(const std::string& input) {
+    PipeLine process(const std::string& input) {
         return runParser(runLexer(input));
     }
 
     /**
      * Split input by pipes and replace variables by its` values.
-     * Currently assumes that there is no pipes and variables in command.
      *
      * @param `input` string with user`s input (command or piped commands).
      * @return `output` vector of strings, each string is a separate command with it`s arguments.
      */
-    static std::vector<std::string> runLexer(const std::string& input) {
+    std::vector<std::string> runLexer(const std::string& input) {
         std::vector<std::string> output;
-        output.push_back(input);
+        std::stringstream buffer;
+        std::stringstream var;
+        LexerState state = LexerState::Start;
+        bool write_in_buff = true;
+        bool inc = true;
+
+        for (size_t i = 0; i < input.size(); inc ? ++i : i) {
+            char cur_ch = input[i];
+            write_in_buff = true;
+            inc = true;
+
+            switch (state) {
+                case LexerState::Start:
+                    switch (cur_ch) {
+                        case '|':
+                            output.push_back(buffer_extract(buffer));
+                            write_in_buff = false;
+                            break;
+                        case '\'':
+                            state = LexerState::SQ;
+                            break;
+                        case '"':
+                            state = LexerState::DQ;
+                            break;
+                        case '\\':
+                            state = LexerState::BS;
+                            break;
+                        case '$':
+                            write_in_buff = false;
+                            state = LexerState::Dollar;
+                            break;
+                    }
+
+                    break;
+                case LexerState::SQ:
+                    if (cur_ch == '\'') {
+                        state = LexerState::Start;
+                    }
+
+                    break;
+                case LexerState::DQ:
+                    if (cur_ch == '"') {
+                        state = LexerState::Start;
+                    } else if (cur_ch == '$') {
+                        write_in_buff = false;
+                        state = LexerState::Dollar_DQ;
+                    } else if (cur_ch == '\\') {
+                        state = LexerState::BS_DQ;
+                    }
+
+                    break;
+                case LexerState::BS:
+                    state = LexerState::Start;
+                    break;
+                case LexerState::Dollar:
+                    write_in_buff = false;
+
+                    if (std::isalpha(cur_ch) || std::isdigit(cur_ch)) {
+                        var << cur_ch;
+                    } else {
+                        buffer << replace_var(buffer_extract(var));
+                        inc = false;
+                        state = LexerState::Start;
+                    }
+
+                    break;
+                case LexerState::Dollar_DQ:
+                    write_in_buff = false;
+
+                    if (std::isalpha(cur_ch) || std::isdigit(cur_ch)) {
+                        var << cur_ch;
+                    } else {
+                        buffer << replace_var(buffer_extract(var));
+                        inc = false;
+                        state = LexerState::DQ;
+                    }
+
+                    break;
+                case LexerState::BS_DQ:
+                    state = LexerState::DQ;
+                    break;
+            }
+
+            if (write_in_buff) {
+                buffer << cur_ch;
+            }
+        }
+
+        if (state == LexerState::Dollar) {
+            buffer << replace_var(buffer_extract(var));
+            state = LexerState::Start;
+        }
+
+        if (state == LexerState::Start) {
+            output.push_back(buffer_extract(buffer));
+        } else {
+            throw LexerExc("Exception: wrong syntax!");
+        }
 
         return output;
     }
+
 
     /**
     * Split commands into its` names and args.
@@ -68,7 +186,7 @@ public:
     * @return `output` vector of token, token.name - name of command,
     *                                 token.args - arguments of command.
     */
-    static PipeLine runParser(const std::vector<std::string>& input) {
+    PipeLine runParser(const std::vector<std::string>& input) {
         PipeLine output(input.size());
 
         for (size_t cmd_ind = 0; cmd_ind < input.size(); ++cmd_ind) {
