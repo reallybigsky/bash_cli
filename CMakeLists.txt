@@ -10,12 +10,15 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -fsanitize=address -fno-omit-fr
 
 set(BOOST_INCLUDE_LIBRARIES process)
 set(BOOST_ENABLE_CMAKE ON)
+set(FETCHCONTENT_QUIET FALSE)
 
 include(FetchContent)
 FetchContent_Declare(
         Boost
         GIT_REPOSITORY https://github.com/boostorg/boost.git
         GIT_TAG boost-1.81.0
+        GIT_SHALLOW TRUE
+        GIT_PROGRESS TRUE
 )
 FetchContent_MakeAvailable(Boost)
 
