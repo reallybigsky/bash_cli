@@ -1,4 +1,4 @@
-#include "preprocess.hpp"
+#include "analyzer.hpp"
 
 #include <iostream>
 #include <string>
@@ -6,7 +6,7 @@
 #include <cassert>
 
 std::shared_ptr<Environment> env(std::make_shared<Environment>());
-Parser parser(env);
+Analyzer parser(env);
 
 void test_lexer_basic() {
   std::string input;

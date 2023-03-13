@@ -31,10 +31,10 @@ add_executable(bash_cli
         src/application.cpp
         src/handler.cpp)
 
-add_executable(test_preprocess
-        tests/test_preprocess.cpp)
+add_executable(test_analyzer
+        tests/test_analyzer.cpp)
 
 target_link_libraries(bash_cli PRIVATE Boost::process)
-target_link_libraries(test_preprocess PRIVATE Boost::process)
+target_link_libraries(test_analyzer PRIVATE Boost::process)
 #TARGET_LINK_LIBRARIES(bash_cli LINK_PUBLIC ${Boost_LIBRARIES})
 
