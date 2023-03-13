@@ -51,7 +51,8 @@ public:
                     throw std::invalid_argument("Cannot open error_output: file \"" + name + '"');
                 }
             } else {
-                throw std::invalid_argument("Unknown argument: \"" + argument + '"');
+                writeErrLine("Unknown argument: \"" + argument + '"');
+//                throw std::invalid_argument("Unknown argument: \"" + argument + '"');
             }
         }
     }
