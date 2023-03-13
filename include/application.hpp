@@ -3,32 +3,39 @@
 
 #include "ioservice.hpp"
 #include "handler.hpp"
-#include "preprocess.hpp"
+#include "analyzer.hpp"
 #include "common.hpp"
 
 #include <unordered_map>
 #include <filesystem>
 
-
+/**
+ * Main class of the interpreter
+ */
 class Application {
 public:
     Application(int argc, char* argv[])
         : env(std::make_shared<Environment>())
         , ios(std::make_shared<IOservice>(argc, argv))
         , handler(std::make_shared<Handler>(ios))
-        , parser(std::make_shared<Parser>(env))
+        , analyzer(std::make_shared<Analyzer>(env))
         , lastReturnCode(0)
     {
         env->emplace("PWD", std::filesystem::current_path().string());
     }
 
+    /**
+     * Main loop of the interpreter
+     *
+     * Loop ends if 'exit' command was executed, end of input file was reached or unknown exception was caught
+     */
     void run();
 
 private:
     std::shared_ptr<Environment> env;
     std::shared_ptr<IOservice> ios;
     std::shared_ptr<Handler> handler;
-    std::shared_ptr<Parser> parser;
+    std::shared_ptr<Analyzer> analyzer;
     int lastReturnCode;
 };
 

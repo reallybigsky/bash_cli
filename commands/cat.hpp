@@ -7,9 +7,11 @@
 
 namespace commands {
 
+/**
+ * Implementation of cat command
+ */
 class Cat : public Cmd {
 public:
-
     virtual int run(const token& params, std::shared_ptr<Environment> env, FILE* input, FILE* output, FILE* err) override {
         std::stringstream result;
         int32_t error_count = 0;

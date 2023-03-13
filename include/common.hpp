@@ -12,18 +12,20 @@ struct token;
 using Environment = boost::process::basic_native_environment<char>;
 using PipeLine = std::vector<token>;
 
-
+/**
+ * Represents command name with its arguments after syntax analysis
+ */
 struct token {
-    std::string name;
-    std::vector<std::string> args;
+    std::string name; /// name of the command
+    std::vector<std::string> args; /// command arguments
 
     /**
-     * Add a word to token: if name empty assigne this word to name,
-     *                    else add word to args.
+     * Add a word to token: if name is empty then assigns this word to token.name,
+     *                    else add word to token.args.
      *
-     * @param `word` strings - some word: command name or argument.
+     * @param word: command name or argument.
      */
-    void add_word(const std::string & word) {
+    void add_word(const std::string& word) {
         if (name.empty()) {
           name = word;
         } else {

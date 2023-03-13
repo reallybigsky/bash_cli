@@ -9,18 +9,29 @@
 #include <exception>
 
 
+/**
+ * Base class exception for syntax analysis errors
+ */
 struct SyntaxExc : public std::runtime_error {
     SyntaxExc(const std::string& str) : std::runtime_error(str) {}
 };
+
+/**
+ * Lexer analysis exception
+ */
 struct LexerExc : public SyntaxExc {
     LexerExc(const std::string& str) : SyntaxExc(str) {}
 };
+
+/**
+ * Parser analysis exceptions
+ */
 struct ParserExc : public SyntaxExc {
     ParserExc(const std::string& str) : SyntaxExc(str) {}
 };
 
 
-class Parser {
+class Analyzer {
 private:
     enum class ParserState {
         Empty = 0,
@@ -61,8 +72,14 @@ private:
     }
 
 public:
-    Parser(std::shared_ptr<Environment> e) : env(e) {}
+    Analyzer(std::shared_ptr<Environment> e) : env(e) {}
 
+    /**
+     * Start analysis
+     *
+     * @param input: string which will be analysed
+     * @return vector of tokens
+     */
     PipeLine process(const std::string& input) {
         return runParser(runLexer(input));
     }
@@ -70,8 +87,8 @@ public:
     /**
      * Split input by pipes and replace variables by its` values.
      *
-     * @param `input` string with user`s input (command or piped commands).
-     * @return `output` vector of strings, each string is a separate command with it`s arguments.
+     * @param input: string with user`s input (command or piped commands).
+     * @return vector of strings, each string is a separate command with it`s arguments.
      */
     std::vector<std::string> runLexer(const std::string& input) {
         std::vector<std::string> output;
@@ -176,8 +193,8 @@ public:
     /**
     * Split commands into its` names and args.
     *
-    * @param `input` vector of strings, each string is a separate command.
-    * @return `output` vector of token, token.name - name of command,
+    * @param input: vector of strings, each string is a separate command.
+    * @return vector of tokens, token.name - name of command,
     *                                 token.args - arguments of command.
     */
     PipeLine runParser(const std::vector<std::string>& input) {

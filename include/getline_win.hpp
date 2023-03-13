@@ -7,6 +7,17 @@
 
 #define restrict __restrict
 
+/**
+ * Implementations of getdelim and getline for non POSIX systems
+ *
+ * Actually, not tested :(
+ *
+ * It will be a miracle, if it really compiles on WIN
+ *
+ * Copy-Pasted from here:
+ * https://codereview.stackexchange.com/questions/276370/a-posix-getdelim-and-getline-implementation-for-msvc
+ */
+
 static void fseterr(FILE *fp)
 {
     struct file { // Undocumented implementation detail

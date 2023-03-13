@@ -8,12 +8,12 @@
 namespace commands {
 
 /**
- * Assignment command '=' in REPL interpreter
+ * Implementation of assignment command '='
  */
 class Assignment : public Cmd {
 public:
     /**
-     * Assigns tok.args[1] to tok.args[0]
+     * Assign tok.args[1] to tok.args[0]
      * How it is written in interpreter syntax:  <tok.args[0]>=<tok.args[1]>
      *
      * Absence of <tok.args[1]> is valid:
@@ -22,14 +22,14 @@ public:
      *
      * All arguments after tok.args[1] are ignored
      *
-     * @param tok token with command name in tok.name and command arguments in tok.args
-     * @param env current environment variables of REPL interpreter
-     * @param input input FILE stream (unused)
-     * @param output output FILE stream (unused)
-     * @param err error FILE stream
+     * @param tok: token with command name in tok.name and command arguments in tok.args
+     * @param env: current environment variables of the interpreter
+     * @param input: input FILE stream (unused)
+     * @param output: output FILE stream (unused)
+     * @param err: error FILE stream
      * @return 0 if there were no errors, 1 otherwise
      *
-     * @throws std::invalid_argument Thrown if tok.args is empty, in other words if there is no left operand of '='
+     * @throws std::invalid_argument: Thrown if tok.args is empty, in other words if there is no left operand of '='
      */
     virtual int run(const token& params, std::shared_ptr<Environment> env, FILE* input, FILE* output, FILE* err) override {
         if (params.args.empty())

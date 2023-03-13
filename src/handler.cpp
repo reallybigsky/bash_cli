@@ -9,6 +9,7 @@ Handler::Handler(std::shared_ptr<IOservice> io)
     : exit(false)
     , ios(io)
 {
+    /// make cmd executable
     commands = {
         {"echo", std::make_shared<commands::Echo>()},
         {"pwd", std::make_shared<commands::Pwd>()},
