@@ -13,7 +13,7 @@ namespace commands {
 class Cat : public Cmd {
 public:
     /**
-     * Сoncatenates tok.args[0], tok.args[1], ..., tok.args[n] and outputs to the output stream
+     * Concatenates tok.args[0], tok.args[1], ..., tok.args[n] and outputs to the output stream
      * How it is written in interpreter syntax:  <cat file1 file2 ...>
      *
      * Absence of tok.args is valid, however the read is from the incoming stream:
@@ -45,7 +45,7 @@ public:
             std::filesystem::path current_path(env->at("PWD").to_string());
             current_path /= filename;
 
-            //проверка на то, существует ли файл в текущей директории
+            // проверка на то, существует ли файл в текущей директории
             if (!FileUtils::is_file_exist(current_path)) {
                 if (!FileUtils::is_file_exist(filename)) {
                     ++error_count;

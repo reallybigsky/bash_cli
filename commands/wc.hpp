@@ -63,7 +63,7 @@ private:
 
 public:
     /**
-     * Сalculates the number of words, lines, and bytes in the input and outputs to the output stream.
+     * Calculates the number of words, lines, and bytes in the input and outputs to the output stream.
      * How it is written in interpreter syntax:  <wc file*>
      *
      * If token.args is empty, then the reading is from the input stream
@@ -100,9 +100,9 @@ public:
             std::filesystem::path current_path(env->at("PWD").to_string());
             current_path /= filename;
 
-            //проверка на то, существует ли файл в текущей директории
+            // проверка на то, существует ли файл в текущей директории
             if (!FileUtils::is_file_exist(current_path)) {
-                //существует ли файл, если заданный путь полный
+                // существует ли файл, если заданный путь полный
                 if (!FileUtils::is_file_exist(filename)) {
                     ++error_count;
                     result.emplace_back(": No such file or directory", filename);

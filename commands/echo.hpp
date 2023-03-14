@@ -15,9 +15,9 @@ public:
     /**
      * Echo tok.args to output stream
      * How it is written in interpreter syntax:  <echo some text ...>
-     * Absence of tok.args is valid, outputs an empty string
-     * echo
-     *
+     * Absence of tok.args is valid, outputs an empty string:
+     * > echo
+     * <empty line>
      *
      * @param params: token with command name in tok.name and command arguments in tok.args
      * @param env: current environment variables of the interpreter
