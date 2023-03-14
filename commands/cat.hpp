@@ -12,6 +12,23 @@ namespace commands {
  */
 class Cat : public Cmd {
 public:
+    /**
+     * Сoncatenates tok.args[0], tok.args[1], ..., tok.args[n] and outputs to the output stream
+     * How it is written in interpreter syntax:  <cat file1 file2 ...>
+     *
+     * Absence of tok.args is valid, however the read is from the incoming stream:
+     * cat some text in console
+     * some text in console
+     *
+     * @param params: token with command name in tok.name and command arguments in tok.args
+     * @param env: current environment variables of the interpreter
+     * @param input: input FILE stream
+     * @param output: output FILE stream
+     * @param err: error FILE stream (unused)
+     * @return 0 if there were no errors, 1 otherwise
+     *
+     * @throws std::invalid_arguments: Thrown if all files in tok.args not exists or cannot be open
+     */
     virtual int run(const token& params, std::shared_ptr<Environment> env, FILE* input, FILE* output, FILE* err) override {
         std::stringstream result;
         int32_t error_count = 0;

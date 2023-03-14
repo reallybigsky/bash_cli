@@ -6,7 +6,9 @@
 
 
 namespace commands {
-
+/**
+ * Implementation of wc command
+ */
 class Wc : public Cmd {
 
 private:
@@ -60,6 +62,21 @@ private:
     };
 
 public:
+    /**
+     * Сalculates the number of words, lines, and bytes in the input and outputs to the output stream.
+     * How it is written in interpreter syntax:  <wc file*>
+     *
+     * If token.args is empty, then the reading is from the input stream
+     *
+     * @param params: token with command name in tok.name and command arguments in tok.args
+     * @param env: current environment variables of the interpreter
+     * @param input: input FILE stream
+     * @param output: output FILE stream
+     * @param err: error FILE stream (unused)
+     * @return 0 if there were no errors, 1 otherwise
+     *
+     * @throws std::invalid_arguments: Thrown if all files in tok.args not exists or cannot be open
+     */
     virtual int run(const token& params, std::shared_ptr<Environment> env, FILE* input, FILE* output, FILE* err) override {
         uint64_t total_cnt_lines = 0, total_cnt_words = 0, total_size = 0;
 
