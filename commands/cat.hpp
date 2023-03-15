@@ -35,7 +35,7 @@ public:
 
         if (params.args.empty()) {
             while (auto line = FileUtils::readLine(input))
-                result << line.value() << std::endl;
+                result << line.value();
 
             FileUtils::writeToFile(result.str(), output);
             return 0;
