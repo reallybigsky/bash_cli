@@ -12,7 +12,7 @@
 
 #include <boost/process.hpp>
 
-#ifdef _WIN32
+#ifdef _WIN64
 #include "getline_win.hpp"
 #endif
 
