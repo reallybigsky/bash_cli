@@ -55,7 +55,7 @@ private:
 
     static std::string buffer_extract(std::stringstream & ss) {
         std::string res = ss.str();
-        ss.str(std::string());
+        ss = std::stringstream();
         return res;
     }
 
@@ -149,7 +149,8 @@ public:
                     if (std::isalpha(cur_ch) || std::isdigit(cur_ch)) {
                         var << cur_ch;
                     } else {
-                        buffer << replace_var(buffer_extract(var));
+                        // c_str() only for windows :)
+                        buffer << replace_var(buffer_extract(var)).c_str();
                         inc = false;
                         state = LexerState::Start;
                     }
@@ -159,7 +160,7 @@ public:
                     if (std::isalpha(cur_ch) || std::isdigit(cur_ch)) {
                         var << cur_ch;
                     } else {
-                        buffer << replace_var(buffer_extract(var));
+                        buffer << replace_var(buffer_extract(var)).c_str();
                         inc = false;
                         state = LexerState::DQ;
                     }
@@ -176,7 +177,7 @@ public:
         }
 
         if (state == LexerState::Dollar) {
-            buffer << replace_var(buffer_extract(var));
+            buffer << replace_var(buffer_extract(var)).c_str();
             state = LexerState::Start;
         }
 
