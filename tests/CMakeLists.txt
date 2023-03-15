@@ -20,6 +20,9 @@ ENDIF()
 
 FetchContent_MakeAvailable(googletest)
 
+include_directories(../include)
+include_directories(../commands)
+include_directories(../src)
 
 enable_testing()
 
