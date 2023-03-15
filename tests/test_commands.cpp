@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "commands_utils.hpp"
+#include "file_utils.hpp"
 #include "echo.hpp"
 #include "pwd.hpp"
 #include "cat.hpp"
@@ -14,8 +14,9 @@ void clear_stringstream(std::stringstream& ss) {
 }
 
 TEST(TestEcho, echo) {
-    job echo_job = {"echo", {"abc", "testtt", "someone"}};
-    EnvState env(fs::current_path(), std::cout);
+    token echo_job = {"echo", {"abc", "testtt", "someone"}};
+    auto env = std::make_shared<Environment>();
+    env->emplace("PWD", std::filesystem::current_path().string());
     Echo echo_cmd;
 
 

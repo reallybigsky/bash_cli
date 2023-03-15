@@ -1,45 +1,54 @@
 #include "application.hpp"
-#include "preprocess.hpp"
 
 void Application::run() {
-    //TODO: exceptions and errors
-    //TODO: exit?
-    while (true) {
+    FILE* i_file = nullptr;
+    FILE* o_file = nullptr;
+    while (!handler->isExit()) {
         try {
             ios->greet();
             std::string user_input = ios->readLine();
+            PipeLine pipeLine = analyzer->process(user_input);
 
-            PipeLine after_parse = Parser::process(user_input);
-
-            if (after_parse.size() == 1) {
-                handler->exec(after_parse.front(), vars, ios->getInput(), ios->getOutput());
+            if (pipeLine.size() == 1) {
+                lastReturnCode = handler->exec(pipeLine.front(), env, ios->getInput(), ios->getOutput());
             } else {
-                FILE* i_file = tmpfile();
-                for (size_t i = 0; i < after_parse.size(); ++i) {
-                    FILE* o_file = tmpfile();
-
-                    assert(i_file);
-                    assert(o_file);
-
+                i_file = tmpfile();
+                for (size_t i = 0; i < pipeLine.size(); ++i) {
+                    o_file = tmpfile();
                     if (i == 0) {
-                        handler->exec(after_parse[i], vars, ios->getInput(), o_file);
-                    } else if (i == after_parse.size() - 1) {
-                        handler->exec(after_parse[i], vars, i_file, ios->getOutput());
-                        fclose(i_file);
-                        fclose(o_file);
-                        break;
+                        lastReturnCode = handler->exec(pipeLine[i], env, ios->getInput(), o_file);
+                    } else if (i == pipeLine.size() - 1) {
+                        lastReturnCode = handler->exec(pipeLine[i], env, i_file, ios->getOutput());
                     } else {
-                        handler->exec(after_parse[i], vars, i_file, o_file);
+                        lastReturnCode = handler->exec(pipeLine[i], env, i_file, o_file);
                     }
+
+                    if (lastReturnCode) {
+                        fclose(o_file);
+                        o_file = tmpfile();
+                    }
+
                     fclose(i_file);
                     rewind(o_file);
                     i_file = o_file;
                 }
+                fclose(i_file);
             }
+        } catch (const SyntaxExc& e) {
+            ios->writeLine(e.what());
+        } catch (const EndOfInputStream& eof) {
+            if (i_file)
+                fclose(i_file);
+            if (o_file)
+                fclose(o_file);
+            break;
         } catch (...) {
-            ios->write("caught exception, aborting...\n");
+            if (i_file)
+                fclose(i_file);
+            if (o_file)
+                fclose(o_file);
+            ios->writeLine("Caught unknown exception, abort... \n");
             break;
         }
     }
-
 }

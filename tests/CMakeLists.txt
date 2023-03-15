@@ -17,6 +17,7 @@ FetchContent_Declare(
 IF (WIN32)
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 ENDIF()
+
 FetchContent_MakeAvailable(googletest)
 
 

@@ -2,13 +2,25 @@
 #define BASH_CLI_IOSERVICE_HPP
 
 #include "common.hpp"
+#include "file_utils.hpp"
 
 #include <string>
 #include <exception>
 #include <stdexcept>
 
-//TODO: documentation
+/**
+ * EndOfInputStream exception
+ */
+struct EndOfInputStream : public std::ios_base::failure {
+    EndOfInputStream(const std::string& str) : std::ios_base::failure(str) {}
+};
 
+
+/**
+ * Class that provides access to global IO streams of the interpreter
+ *
+ * IO streams are represented as C FILE* streams
+ */
 class IOservice {
 public:
     IOservice(int argc, char* argv[])
@@ -39,7 +51,8 @@ public:
                     throw std::invalid_argument("Cannot open error_output: file \"" + name + '"');
                 }
             } else {
-                throw std::invalid_argument("Unknown argument: \"" + argument + '"');
+                writeErrLine("Unknown argument: \"" + argument + '"');
+//                throw std::invalid_argument("Unknown argument: \"" + argument + '"');
             }
         }
     }
@@ -53,52 +66,106 @@ public:
             fclose(f_err);
     }
 
+    /**
+     * @return global Input FILE stream
+     */
     FILE* getInput() const {
         if (f_input)
             return f_input;
         return stdin;
     }
 
+    /**
+     * @return global Output FILE stream
+     */
     FILE* getOutput() const {
         if (f_output)
             return f_output;
         return stdout;
     }
 
+    /**
+     * @return global Error FILE stream
+     */
     FILE* getErr() const {
         if (f_err)
             return f_err;
         return stderr;
     }
 
+    /**
+     * Write string in global Output stream
+     *
+     * @param str: string to be written
+     *
+     * @throws std::runtime_error: if there was an error while writing
+     */
     void write(const std::string& str) const {
-        if (writeToFile(str, getOutput())) {
+        if (FileUtils::writeToFile(str, getOutput())) {
             throw std::runtime_error("Cannot write to out!");
         }
     }
 
+    /**
+     * Append newline symbol to string and write it in global Output stream
+     *
+     * @param str: string to be appended with newline and then written
+     *
+     * @throws std::runtime_error: if there was an error while writing
+     */
+    void writeLine(const std::string& str) const {
+        write(str + '\n');
+    }
+
+    /**
+     * Write string in global Error stream
+     *
+     * @param str: string to be written
+     *
+     * @throws std::runtime_error: if there was an error while writing
+     */
     void writeErr(const std::string& str) const {
-        if (writeToFile(str, getErr())) {
+        if (FileUtils::writeToFile(str, getErr())) {
             throw std::runtime_error("Cannot write to err!");
         }
     }
 
-    void greet() const {
-        write("> ");
+    /**
+     * Append newline symbol to string and write it in global Error stream
+     *
+     * @param str: string to be appended with newline and then written
+     *
+     * @throws std::runtime_error: if there was an error while writing
+     */
+    void writeErrLine(const std::string& str) const {
+        writeErr(str + '\n');
     }
 
+    /**
+     * Write greeting to the global Output stream
+     */
+    void greet() const {
+        write(greeting);
+    }
+
+    /**
+     * read entire line from global Input stream
+     *
+     * @return string line from global Input stream
+     *
+     * @throws EndOfInputStream: if end of Input stream was reached
+     */
     std::string readLine() const {
-        char* line = nullptr;
-        size_t cnt = 0;
-        getline(&line, &cnt, getInput());
-        if (!line)
-            return "";
-        std::string res(line);
-        free(line);
-        return res;
+        auto str = FileUtils::readLine(getInput());
+        if (!str) {
+            throw EndOfInputStream("");
+        }
+        return str.value();
     }
 
 private:
+    const std::string greeting = "> ";
+
     const std::string inArg  = "in=" ;
     const std::string outArg = "out=";
     const std::string errArg = "err=";
