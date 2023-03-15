@@ -32,9 +32,9 @@ static void fseterr(FILE *fp)
 #define _IOERR 0x10
 
     ((struct file *)fp)->_flag |= _IOERR;
-}
+};
 
-ssize_t getdelim(char **restrict lineptr, size_t *restrict n, int delim, FILE *restrict stream)
+inline size_t getdelim(char **restrict lineptr, size_t *restrict n, int delim, FILE *restrict stream)
 {
     if (lineptr == NULL || n == NULL || stream == NULL || (*lineptr == NULL && *n != 0)) {
         errno = EINVAL;
@@ -53,7 +53,7 @@ ssize_t getdelim(char **restrict lineptr, size_t *restrict n, int delim, FILE *r
             return -1;
         }
     }
-    ssize_t nread = 0;
+    size_t nread = 0;
     int c = EOF;
     while (c != delim) {
         c = fgetc(stream);
@@ -80,7 +80,7 @@ ssize_t getdelim(char **restrict lineptr, size_t *restrict n, int delim, FILE *r
     return nread;
 }
 
-ssize_t getline(char **restrict lineptr, size_t *restrict n, FILE *restrict stream)
+inline size_t getline(char **restrict lineptr, size_t *restrict n, FILE *restrict stream)
 {
     return getdelim(lineptr, n, '\n', stream);
 }

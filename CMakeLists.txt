@@ -3,7 +3,11 @@ project(bash_cli)
 
 set(CMAKE_CXX_STANDARD 20)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -fsanitize=address -fno-omit-frame-pointer -v")
+if(MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX")
+else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -fsanitize=address -fno-omit-frame-pointer -v")
+endif()
 
 #FIND_PACKAGE(Boost 1.76 REQUIRED COMPONENTS system filesystem)
 #INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
