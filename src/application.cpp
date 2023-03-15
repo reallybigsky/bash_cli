@@ -1,5 +1,7 @@
 #include "application.hpp"
 
+#include <iostream>
+
 void Application::run() {
     FILE* i_file = nullptr;
     FILE* o_file = nullptr;
@@ -37,10 +39,6 @@ void Application::run() {
         } catch (const SyntaxExc& e) {
             ios->writeLine(e.what());
         } catch (const EndOfInputStream& eof) {
-            if (i_file)
-                fclose(i_file);
-            if (o_file)
-                fclose(o_file);
             break;
         } catch (...) {
             if (i_file)
