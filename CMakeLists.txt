@@ -3,28 +3,40 @@ project(bash_cli)
 
 set(CMAKE_CXX_STANDARD 20)
 
+
 if(MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX")
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX")
+    else()
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX -O3")
+    endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -fsanitize=address -fno-omit-frame-pointer -v")
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -fsanitize=address -fno-omit-frame-pointer -v")
+    else()
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O3")
+    endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif()
 
-#FIND_PACKAGE(Boost 1.76 REQUIRED COMPONENTS system filesystem)
-#INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
 
-set(BOOST_INCLUDE_LIBRARIES process)
-set(BOOST_ENABLE_CMAKE ON)
-set(FETCHCONTENT_QUIET FALSE)
+find_package(Boost 1.74 REQUIRED COMPONENTS system filesystem)
+if (Boost_FOUND)
+    include_directories( ${Boost_INCLUDE_DIR} )
+else()
+    set(BOOST_INCLUDE_LIBRARIES process)
+    set(BOOST_ENABLE_CMAKE ON)
+    set(FETCHCONTENT_QUIET FALSE)
 
-include(FetchContent)
-FetchContent_Declare(
-        Boost
-        GIT_REPOSITORY https://github.com/boostorg/boost.git
-        GIT_TAG boost-1.81.0
-        GIT_SHALLOW TRUE
-        GIT_PROGRESS TRUE
-)
-FetchContent_MakeAvailable(Boost)
+    include(FetchContent)
+    FetchContent_Declare(
+            Boost
+            GIT_REPOSITORY https://github.com/boostorg/boost.git
+            GIT_TAG boost-1.81.0
+            GIT_SHALLOW TRUE
+            GIT_PROGRESS TRUE
+    )
+    FetchContent_MakeAvailable(Boost)
+endif()
 
 include_directories(include)
 include_directories(commands)
@@ -38,7 +50,10 @@ add_executable(bash_cli
 add_executable(test_analyzer
         tests/test_analyzer.cpp)
 
-target_link_libraries(bash_cli PRIVATE Boost::process)
-target_link_libraries(test_analyzer PRIVATE Boost::process)
-#TARGET_LINK_LIBRARIES(bash_cli LINK_PUBLIC ${Boost_LIBRARIES})
 
+if (Boost_FOUND)
+    target_link_libraries(bash_cli LINK_PUBLIC ${Boost_LIBRARIES})
+else()
+    target_link_libraries(bash_cli PRIVATE Boost::process)
+    target_link_libraries(test_analyzer PRIVATE Boost::process)
+endif()
