@@ -19,16 +19,20 @@ void Application::run() {
                         lastReturnCode = handler->exec(pipeLine[i], env, ios->getInput(), o_file);
                     } else if (i == pipeLine.size() - 1) {
                         lastReturnCode = handler->exec(pipeLine[i], env, i_file, ios->getOutput());
-                        fclose(i_file);
-                        fclose(o_file);
-                        break;
                     } else {
                         lastReturnCode = handler->exec(pipeLine[i], env, i_file, o_file);
                     }
+
+                    if (lastReturnCode) {
+                        fclose(o_file);
+                        o_file = tmpfile();
+                    }
+
                     fclose(i_file);
                     rewind(o_file);
                     i_file = o_file;
                 }
+                fclose(i_file);
             }
         } catch (const SyntaxExc& e) {
             ios->writeLine(e.what());
