@@ -3,12 +3,15 @@ project(bash_cli)
 
 set(CMAKE_CXX_STANDARD 20)
 
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release)
+endif()
 
 if(MSVC)
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX")
     else()
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX -O3")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX /O3")
     endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 else()
     find_package(Boost 1.74 REQUIRED COMPONENTS system filesystem)
