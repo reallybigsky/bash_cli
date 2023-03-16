@@ -1,5 +1,0 @@
-some text
-cat cat cat cat
-dog dog dog
-
-or cat?
