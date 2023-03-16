@@ -16,7 +16,6 @@ if(MSVC)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX /O3")
     endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 else()
-    find_package(Boost 1.74 REQUIRED COMPONENTS system filesystem)
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -fsanitize=address -fno-omit-frame-pointer -v")
     else()
@@ -25,25 +24,19 @@ else()
 endif()
 
 
-if (Boost_FOUND)
-    message("Boost found!")
-    include_directories( ${Boost_INCLUDE_DIR} )
-else()
-    message("Boost not found, downloading...")
-    set(BOOST_INCLUDE_LIBRARIES process)
-    set(BOOST_ENABLE_CMAKE ON)
-    set(FETCHCONTENT_QUIET FALSE)
+set(BOOST_INCLUDE_LIBRARIES process)
+set(BOOST_ENABLE_CMAKE ON)
+set(FETCHCONTENT_QUIET FALSE)
 
-    include(FetchContent)
-    FetchContent_Declare(
-            Boost
-            GIT_REPOSITORY https://github.com/boostorg/boost.git
-            GIT_TAG boost-1.81.0
-            GIT_SHALLOW TRUE
-            GIT_PROGRESS TRUE
-    )
-    FetchContent_MakeAvailable(Boost)
-endif()
+include(FetchContent)
+FetchContent_Declare(
+        Boost
+        GIT_REPOSITORY https://github.com/boostorg/boost.git
+        GIT_TAG boost-1.81.0
+        GIT_SHALLOW TRUE
+        GIT_PROGRESS TRUE
+)
+FetchContent_MakeAvailable(Boost)
 
 include(FetchContent)
 FetchContent_Declare(
