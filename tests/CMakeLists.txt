@@ -1,10 +1,8 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.16)
 project(test)
 
-# Avoid warning about DOWNLOAD_EXTRACT_TIMESTAMP in CMake 3.24:
-if (CMAKE_VERSION VERSION_GREATER_EQUAL "3.24.0")
-    cmake_policy(SET CMP0135 NEW)
-endif()
+set(CMAKE_CXX_STANDARD 20)
+
 
 
 if(NOT CMAKE_BUILD_TYPE)
@@ -47,9 +45,6 @@ else()
     FetchContent_MakeAvailable(Boost)
 endif()
 
-
-
-set(CMAKE_CXX_STANDARD 20)
 include(FetchContent)
 FetchContent_Declare(
         googletest
@@ -78,5 +73,20 @@ target_link_libraries(
         GTest::gtest_main
 )
 
+if (Boost_FOUND)
+    target_link_libraries(test LINK_PUBLIC ${Boost_LIBRARIES})
+else()
+    target_link_libraries(test PRIVATE Boost::process)
+    target_link_libraries(test_analyzer PRIVATE Boost::process)
+endif()
+
+
 include(GoogleTest)
 gtest_discover_tests(test_commands)
+
+cmake_minimum_required(VERSION 3.17)
+project(test)
+
+
+
+
