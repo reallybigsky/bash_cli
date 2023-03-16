@@ -47,13 +47,13 @@ void Application::run() {
         } catch (const EndOfGlobalInputStream& eof) {
             ios->resetInput();
             prevEOF = true;
-        } catch (...) {
-            if (i_file)
-                fclose(i_file);
-            if (o_file)
-                fclose(o_file);
-            ios->writeLine("Caught unknown exception, abort... \n");
-            break;
+        } catch (const std::exception& e) {
+            ios->writeErrLine("Cannot execute command!");
+//            if (i_file)
+//                fclose(i_file);
+//            if (o_file)
+//                fclose(o_file);
+//            break;
         }
     }
 }
