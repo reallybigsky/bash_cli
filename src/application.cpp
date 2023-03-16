@@ -5,9 +5,15 @@
 void Application::run() {
     FILE* i_file = nullptr;
     FILE* o_file = nullptr;
+    bool prevEOF = false;
     while (!handler->isExit()) {
         try {
-            ios->greet();
+            if (!prevEOF) {
+                ios->greet();
+            } else {
+                prevEOF = false;
+            }
+
             std::string user_input = ios->readLine();
             PipeLine pipeLine = analyzer->process(user_input);
 
@@ -38,8 +44,9 @@ void Application::run() {
             }
         } catch (const SyntaxExc& e) {
             ios->writeLine(e.what());
-        } catch (const EndOfInputStream& eof) {
-            break;
+        } catch (const EndOfGlobalInputStream& eof) {
+            ios->resetInput();
+            prevEOF = true;
         } catch (...) {
             if (i_file)
                 fclose(i_file);

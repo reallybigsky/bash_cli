@@ -11,8 +11,8 @@
 /**
  * EndOfInputStream exception
  */
-struct EndOfInputStream : public std::ios_base::failure {
-    EndOfInputStream(const std::string& str) : std::ios_base::failure(str) {}
+struct EndOfGlobalInputStream : public std::ios_base::failure {
+    EndOfGlobalInputStream(const std::string& str) : std::ios_base::failure(str) {}
 };
 
 
@@ -158,9 +158,19 @@ public:
     std::string readLine() const {
         auto str = FileUtils::readLine(getInput());
         if (!str) {
-            throw EndOfInputStream("");
+            throw EndOfGlobalInputStream("");
         }
         return str.value();
+    }
+
+    /**
+     * clear error from global input stream for next user input
+     */
+    void resetInput() {
+        if (f_input)
+            clearerr(f_input);
+        else
+            clearerr(stdin);
     }
 
 private:
