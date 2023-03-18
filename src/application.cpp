@@ -5,9 +5,15 @@
 void Application::run() {
     FILE* i_file = nullptr;
     FILE* o_file = nullptr;
+    bool prevEOF = false;
     while (!handler->isExit()) {
         try {
-            ios->greet();
+            if (!prevEOF) {
+                ios->greet();
+            } else {
+                prevEOF = false;
+            }
+
             std::string user_input = ios->readLine();
             PipeLine pipeLine = analyzer->process(user_input);
 
@@ -38,15 +44,16 @@ void Application::run() {
             }
         } catch (const SyntaxExc& e) {
             ios->writeLine(e.what());
-        } catch (const EndOfInputStream& eof) {
-            break;
-        } catch (...) {
-            if (i_file)
-                fclose(i_file);
-            if (o_file)
-                fclose(o_file);
-            ios->writeLine("Caught unknown exception, abort... \n");
-            break;
+        } catch (const EndOfGlobalInputStream& eof) {
+            ios->resetInput();
+            prevEOF = true;
+        } catch (const std::exception& e) {
+            ios->writeErrLine("Cannot execute command!");
+//            if (i_file)
+//                fclose(i_file);
+//            if (o_file)
+//                fclose(o_file);
+//            break;
         }
     }
 }
