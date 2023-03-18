@@ -18,6 +18,7 @@ jobs:
           libraries: system filesystem
           platform: x64
           configuration: Debug
+          static-runtime: 1
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
