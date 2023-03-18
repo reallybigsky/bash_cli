@@ -1,0 +1,28 @@
+name: Test
+run-name: test cli-bash
+on: [push]
+jobs:
+  test-cli-bash-ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Boost
+        uses: actions/cache@v2
+        with:
+          path: '${{ runner.workspace }}/boost_*.tar.gz'
+          key: 'boost-1.72.0'
+
+      - name: Build Boost
+        uses: egor-tensin/build-boost@v1
+        with:
+          version: 1.74.0
+          libraries: system filesystem
+          platform: x64
+          configuration: Release
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+
+      - run: cd tests && cmake CMakeLists.txt && make
+      - run: ./test_commands
+      - run: ./test_analyzer

@@ -8,11 +8,6 @@
 
 using namespace commands;
 
-void clear_stringstream(std::stringstream& ss) {
-    ss.str("");
-    ss.clear();
-}
-
 std::string read_file_to_string(FILE* out){
     rewind(out);
     std::stringstream result;
@@ -70,7 +65,7 @@ TEST(TestPwd, pwd) {
 
 TEST(TestCat, cat) {
     FILE* i_file = nullptr, *o_file = nullptr, *e_file = tmpfile();
-    token cat_job = {"cat", {"test1.txt"}};
+    token cat_job = {"cat", {"../test1.txt"}};
     auto env = std::make_shared<Environment>();
     env->emplace("PWD", std::filesystem::current_path().string());
     Cat cat_cmd;
@@ -87,7 +82,7 @@ TEST(TestCat, cat) {
 
     fclose(o_file);
     o_file = tmpfile();
-    cat_job = {"cat", {"test1.txt", "test2.txt"}};
+    cat_job = {"cat", {"../test1.txt", "../test2.txt"}};
     expected = "some text\n"
                "cat cat cat cat\n"
                "dog dog dog\n"
@@ -101,7 +96,7 @@ TEST(TestCat, cat) {
 
     fclose(o_file);
     o_file = tmpfile();
-    cat_job = {"cat", {"test1.txt", "error"}};
+    cat_job = {"cat", {"../test1.txt", "error"}};
     expected = "some text\n"
                "cat cat cat cat\n"
                "dog dog dog\n"
@@ -129,20 +124,20 @@ TEST(TestCat, cat) {
 
 TEST(TestWc, wc) {
     FILE* i_file = nullptr, *o_file = nullptr, *e_file = tmpfile();
-    token wc_job = {"wc", {"test1.txt"}};
+    token wc_job = {"wc", {"../test1.txt"}};
     auto env = std::make_shared<Environment>();
     env->emplace("PWD", std::filesystem::current_path().string());
     Wc wc_cmd;
     o_file = tmpfile();
 
-    std::string expected = " 5 11 47 test1.txt\n";
+    std::string expected = " 5 11 47 ../test1.txt\n";
 
     EXPECT_EQ(0, wc_cmd.run(wc_job, env, i_file, o_file, e_file));
     EXPECT_EQ(expected,  read_file_to_string(o_file));
 
-    wc_job = {"wc", {"test1.txt", "test2.txt"}};
-    expected = "  5  11  47 test1.txt\n"
-               "  2  18  87 test2.txt\n"
+    wc_job = {"wc", {"../test1.txt", "../test2.txt"}};
+    expected = "  5  11  47 ../test1.txt\n"
+               "  2  18  87 ../test2.txt\n"
                "  7  29 134 total\n";
 
     fclose(o_file);
@@ -150,9 +145,9 @@ TEST(TestWc, wc) {
     EXPECT_EQ(0, wc_cmd.run(wc_job, env, i_file, o_file, e_file));
     EXPECT_EQ(expected,  read_file_to_string(o_file));
 
-    wc_job = {"wc", {"test1.txt", "error"}};
+    wc_job = {"wc", {"../test1.txt", "error"}};
 
-    expected = " 5 11 47 test1.txt\n"
+    expected = " 5 11 47 ../test1.txt\n"
                "error: No such file or directory\n"
                " 5 11 47 total\n";
 
