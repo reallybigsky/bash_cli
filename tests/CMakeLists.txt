@@ -8,6 +8,7 @@ if (CMAKE_VERSION VERSION_GREATER_EQUAL "3.24.0")
 endif()
 
 set(Boost_INCLUDE_DIR /home/runner/work/bash_cli/boost)
+set(BOOST_LIBRARY_DIRS /home/runner/work/bash_cli/boost/stage/x64/Debug/lib)
 
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug)
