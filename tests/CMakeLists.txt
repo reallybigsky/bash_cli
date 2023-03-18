@@ -7,8 +7,6 @@ if (CMAKE_VERSION VERSION_GREATER_EQUAL "3.24.0")
     cmake_policy(SET CMP0135 NEW)
 endif()
 
-set(Boost_INCLUDE_DIR /home/runner/work/bash_cli/boost)
-set(BOOST_LIBRARY_DIRS /home/runner/work/bash_cli/boost/stage/x64/Debug/lib)
 
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug)
@@ -23,7 +21,6 @@ if(MSVC)
         #        add_compile_options(/WX /02)
     endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 else()
-    find_package(Boost 1.74.0 REQUIRED COMPONENTS system filesystem)
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -fsanitize=address -fno-omit-frame-pointer -v")
         #        add_compile_options(-Wall -g -fsanitize=address -fno-omit-frame-pointer -v)
@@ -34,25 +31,19 @@ else()
 endif()
 
 
-#if (Boost_FOUND)
-#    message("Boost found!")
-    include_directories( ${Boost_INCLUDE_DIR} )
-#else()
-#    message("Boost not found, downloading...")
-#    set(BOOST_INCLUDE_LIBRARIES process)
-#    set(BOOST_ENABLE_CMAKE ON)
-#    set(FETCHCONTENT_QUIET FALSE)
-#
-#    include(FetchContent)
-#    FetchContent_Declare(
-#            Boost
-#            GIT_REPOSITORY https://github.com/boostorg/boost.git
-#            GIT_TAG boost-1.81.0
-#            GIT_SHALLOW TRUE
-#            GIT_PROGRESS TRUE
-#    )
-#    FetchContent_MakeAvailable(Boost)
-#endif()
+set(BOOST_INCLUDE_LIBRARIES process)
+set(BOOST_ENABLE_CMAKE ON)
+set(FETCHCONTENT_QUIET FALSE)
+
+include(FetchContent)
+FetchContent_Declare(
+        Boost
+        GIT_REPOSITORY https://github.com/boostorg/boost.git
+        GIT_TAG boost-1.81.0
+        GIT_SHALLOW TRUE
+        GIT_PROGRESS TRUE
+)
+FetchContent_MakeAvailable(Boost)
 
 include(FetchContent)
 FetchContent_Declare(
