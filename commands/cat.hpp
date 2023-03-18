@@ -30,17 +30,14 @@ public:
      * @throws std::invalid_arguments: Thrown if all files in tok.args not exists or cannot be open
      */
     virtual int run(const token& params, std::shared_ptr<Environment> env, FILE* input, FILE* output, FILE* err) override {
-        std::stringstream result, errors;
-        int32_t error_count = 0;
-
         if (params.args.empty()) {
             while (auto line = FileUtils::readLine(input))
-                result << line.value();
-
-            FileUtils::writeToFile(result.str(), output);
+                FileUtils::writeToFile(line.value(), output);
             return 0;
         }
 
+        std::stringstream result, errors;
+        int32_t error_count = 0;
         for (auto &filename: params.args) {
             std::filesystem::path current_path(env->at("PWD").to_string());
             current_path /= filename;
