@@ -53,8 +53,8 @@ FetchContent_Declare(
 IF (WIN32)
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 ENDIF()
-FetchContent_MakeAvailable(googletest)
 
+FetchContent_MakeAvailable(googletest)
 include_directories(../include)
 include_directories(../commands)
 include_directories(../src)

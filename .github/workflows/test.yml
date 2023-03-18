@@ -9,8 +9,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '14'
-      - run: cd tests
-      - run: cmake CMakeLists.txt
+      - run: cd tests && cmake CMakeLists.txt
       - run: make
       - run: make test_commands
       - run: make test_analyzer
