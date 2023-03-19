@@ -10,7 +10,7 @@ jobs:
         with:
           node-version: '14'
       - name: build tests
-        working-directory: tests
+      - working-directory: /tests
       - run: cmake CMakeLists.txt && make && make test_commands && make test_analyzer
       - name: run tests commands
       - run: ./test_commands
