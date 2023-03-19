@@ -14,6 +14,8 @@ jobs:
         working-directory: ./tests
         run: cmake CMakeLists.txt && make && make test_commands && make test_analyzer
       - name: run tests commands
+        working-directory: ./tests
         run: ./test_commands
       - name: run tests analyzer
+        working-directory: ./tests
         run: ./test_analyzer
