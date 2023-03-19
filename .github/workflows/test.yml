@@ -9,6 +9,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '14'
+      - uses: actions/checkout@v1
       - name: build tests
         working-directory: tests
       - run: cmake CMakeLists.txt && make && make test_commands && make test_analyzer
