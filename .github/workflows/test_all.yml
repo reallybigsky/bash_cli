@@ -19,8 +19,8 @@ jobs:
       matrix:
         config: 
         - {
-            name: "Windows Latest MSVC",
-            os: windows-latest,
+            name: "Windows 2019 MSVC",
+            os: windows-2019,
             build_type: "Debug",
             cc: "cl",
             cxx: "cl",
@@ -50,7 +50,7 @@ jobs:
           choco install ninja cmake
           ninja --version
           cmake --version
-          cmd "${{ matrix.config.environment_script }}"
+          #cmd "${{ matrix.config.environment_script }}"
 
       - name: Install dependencies on ubuntu
         if: startsWith(matrix.config.name, 'Ubuntu_Latest_GCC')
