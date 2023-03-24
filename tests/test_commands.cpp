@@ -51,7 +51,7 @@ TEST(TestPwd, pwd) {
     Pwd pwd_cmd;
     o_file = tmpfile();
 
-    std::string expected = "/home/runner/work/bash_cli/bash_cli/tests\n";
+    std::string expected = std::filesystem::current_path().string();
     EXPECT_EQ(0, pwd_cmd.run(pwd_job, env, i_file, o_file, e_file));
     EXPECT_EQ(expected, read_file_to_string(o_file));
 
