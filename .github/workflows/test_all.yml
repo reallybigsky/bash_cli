@@ -50,7 +50,7 @@ jobs:
           choco install ninja cmake
           ninja --version
           cmake --version
-        # cmd "${{ matrix.config.environment_script }}"
+          cmd "${{ matrix.config.environment_script }}"
 
       - name: Install dependencies on ubuntu
         if: startsWith(matrix.config.name, 'Ubuntu_Latest_GCC')
