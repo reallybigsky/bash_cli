@@ -93,11 +93,11 @@ jobs:
       - name: Test analyzer on ubuntu
         if: startsWith(matrix.config.name, 'Ubuntu_Latest_GCC')
         shell: bash
-        run: tests/test_analyzer
+        run: test_analyzer
         working-directory: ./tests
 
       - name: Test commands on ubuntu
         if: startsWith(matrix.config.name, 'Ubuntu_Latest_GCC')
         shell: bash
-        run: tests/test_commands
+        run: test_commands
         working-directory: ./tests
