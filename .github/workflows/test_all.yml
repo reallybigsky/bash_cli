@@ -77,19 +77,23 @@ jobs:
       - name: Test analyzer on windows
         if: startsWith(matrix.config.os, 'windows')
         shell: bash
-        run: tests/Debug/test_analyzer.exe
+        run: cd tests
+          test_analyzer.exe
 
       - name: Test commands on windows
         if: startsWith(matrix.config.os, 'windows')
         shell: bash
-        run: tests/Debug/test_commands.exe
+        run: cd tests 
+          test_commands.exe
 
       - name: Test analyzer on ubuntu
         if: startsWith(matrix.config.name, 'Ubuntu_Latest_GCC')
         shell: bash
-        run: tests/test_analyzer
+        run: cd tests 
+	  test_analyzer
 
       - name: Test commands on ubuntu
         if: startsWith(matrix.config.name, 'Ubuntu_Latest_GCC')
         shell: bash
-        run: tests/test_commands
+        run: cd tests 
+          test_commands
