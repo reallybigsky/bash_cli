@@ -75,25 +75,25 @@ jobs:
         run: cmake --build build --config ${{ matrix.config.build_type }}
 
       - name: Test analyzer on windows
-        working-directory: ./tests
         if: startsWith(matrix.config.os, 'windows')
         shell: bash
         run: test_analyzer.exe
+        working-directory: tests
 
       - name: Test commands on windows
-        working-directory: ./tests
         if: startsWith(matrix.config.os, 'windows')
         shell: bash
         run: test_commands.exe
+        working-directory: tests
 
       - name: Test analyzer on ubuntu
-        working-directory: ./tests
         if: startsWith(matrix.config.name, 'Ubuntu_Latest_GCC')
         shell: bash
         run: test_analyzer
+        working-directory: tests
 
       - name: Test commands on ubuntu
-        working-directory: ./tests
         if: startsWith(matrix.config.name, 'Ubuntu_Latest_GCC')
         shell: bash
         run: test_commands
+        working-directory: tests
