@@ -5,6 +5,7 @@
 # Как собрать?
 
 В проекте используются Boost и Google Tests. Если на машине не установлен Boost, то cmake скачает его в папку в `build/_deps`. 
+
 Так как Boost весит около 2 ГБ, то скачивание может занять некоторое время.
 
 ## Windows MSVC 2022
@@ -16,7 +17,7 @@ cmake -DCMAKE_BUILD_TYPE=Release -S . -B build/
 cmake --build build --config Release
 ```
 
-## Windows MinGw
+## Windows MinGW
 
 Для сборки необходимо поставить cmake, mingw и ninja через пакетный менеджер [choco](https://chocolatey.org/install):
 
