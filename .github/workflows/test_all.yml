@@ -82,7 +82,7 @@ jobs:
       - name: Test commands on windows
         if: startsWith(matrix.config.os, 'windows')
         shell: bash
-        run: build/Debug/test_commands.exe
+        run: copy tests/test1.txt build/Debug/ && copy tests/test2.txt build/Debug/ && build/Debug/test_commands.exe
 
       - name: Test analyzer on ubuntu
         if: startsWith(matrix.config.name, 'Ubuntu_Latest_GCC')
@@ -92,4 +92,4 @@ jobs:
       - name: Test commands on ubuntu
         if: startsWith(matrix.config.name, 'Ubuntu_Latest_GCC')
         shell: bash
-        run: build/test_commands
+        run: cp tests/test1.txt build/ && cp tests/test2.txt build/ && build/test_commands

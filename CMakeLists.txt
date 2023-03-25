@@ -9,8 +9,6 @@ project(bash_cli)
 
 set(CMAKE_CXX_STANDARD 20)
 
-
-
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
@@ -18,31 +16,20 @@ endif()
 if(MSVC)
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX")
-#        add_compile_options(/WX)
     else()
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX /O2")
-#        add_compile_options(/WX /02)
     endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 else()
-    find_package(Boost 1.74 COMPONENTS system filesystem program_options)
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -fsanitize=address -fno-omit-frame-pointer -v -pthread")
-#        add_compile_options(-Wall -g -fsanitize=address -fno-omit-frame-pointer -v)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -fsanitize=address -fno-omit-frame-pointer -v")
     else()
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O2 -pthread")
-#        add_compile_options(-Wall -O2)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O2")
     endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif()
 
-
-if (Boost_FOUND)
-    message("Boost found!")
-    include_directories( ${Boost_INCLUDE_DIR} )
-else()
-    message("Boost not found, downloading...")
-    set(BOOST_INCLUDE_LIBRARIES process)
-    set(BOOST_ENABLE_CMAKE ON)
-    set(FETCHCONTENT_QUIET FALSE)
+set(BOOST_INCLUDE_LIBRARIES process program_options)
+set(BOOST_ENABLE_CMAKE ON)
+set(FETCHCONTENT_QUIET FALSE)
 
 include(FetchContent)
 FetchContent_Declare(
@@ -53,7 +40,6 @@ FetchContent_Declare(
         GIT_PROGRESS TRUE
 )
 FetchContent_MakeAvailable(Boost)
-endif()
 
 include(FetchContent)
 FetchContent_Declare(
@@ -79,17 +65,10 @@ add_executable(bash_cli
 add_executable(test_analyzer
         tests/test_analyzer.cpp)
 
-add_executable(test_commands
-        tests/test_commands.cpp)
-
-gtest_discover_tests(test_commands)
-
-if (Boost_FOUND)
-    target_link_libraries(bash_cli LINK_PUBLIC ${Boost_LIBRARIES})
-    target_link_libraries(test_analyzer LINK_PUBLIC ${Boost_LIBRARIES})
-    target_link_libraries(test_commands LINK_PUBLIC GTest::gtest_main ${Boost_LIBRARIES} )
+if(MINGW)
+    target_link_libraries(bash_cli PRIVATE Boost::process ws2_32)
+    target_link_libraries(test_analyzer PRIVATE Boost::process ws2_32)
 else()
-    target_link_libraries(bash_cli PRIVATE Boost::process)
+    target_link_libraries(bash_cli PRIVATE Boost::process Boost::program_options)
     target_link_libraries(test_analyzer PRIVATE Boost::process)
-    target_link_libraries(test_commands PRIVATE GTest::gtest_main Boost::process)
 endif()
