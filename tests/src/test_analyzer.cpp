@@ -481,73 +481,73 @@ void test_parser_error() {
 
     input = std::vector<std::string>();
     input.push_back("cmd\' a=b");
-    bool is_exeption = false;
+    bool is_exception = false;
     try {
         output = parser.runParser(input);
     } catch (const ParserExc & e) {
-        is_exeption = true;
+        is_exception = true;
     }
-    assert(is_exeption);
+    assert(is_exception);
 
     input = std::vector<std::string>();
     input.push_back("cmd \' a=b\'");
-    is_exeption = false;
+    is_exception = false;
     try {
         output = parser.runParser(input);
     } catch (const ParserExc & e) {
-        is_exeption = true;
+        is_exception = true;
     }
-    assert(!is_exeption);
+    assert(!is_exception);
 
     input = std::vector<std::string>();
     input.push_back("cmd \" a=b\'");
-    is_exeption = false;
+    is_exception = false;
     try {
         output = parser.runParser(input);
     } catch (const ParserExc & e) {
-        is_exeption = true;
+        is_exception = true;
     }
-    assert(is_exeption);
+    assert(is_exception);
 
     input = std::vector<std::string>();
     input.push_back("cmd \" a=b\"");
-    is_exeption = false;
+    is_exception = false;
     try {
         output = parser.runParser(input);
     } catch (const ParserExc & e) {
-        is_exeption = true;
+        is_exception = true;
     }
-    assert(!is_exeption);
+    assert(!is_exception);
 
     input = std::vector<std::string>();
     input.push_back("cmd adf d\\");
-    is_exeption = false;
+    is_exception = false;
     try {
         output = parser.runParser(input);
     } catch (const ParserExc & e) {
-        is_exeption = true;
+        is_exception = true;
     }
-    assert(is_exeption);
+    assert(is_exception);
 
     input = std::vector<std::string>();
     input.push_back("cmd \\ ");
-    is_exeption = false;
+    is_exception = false;
     try {
         output = parser.runParser(input);
     } catch (const ParserExc & e) {
-        is_exeption = true;
+        is_exception = true;
     }
-    assert(!is_exeption);
+    assert(!is_exception);
 
     input = std::vector<std::string>();
     input.push_back("cm\"\\");
-    is_exeption = false;
+    is_exception = false;
     try {
         output = parser.runParser(input);
     } catch (const ParserExc & e) {
-        is_exeption = true;
+        is_exception = true;
     }
-    assert(is_exeption);
+    assert(is_exception);
 }
 
 void test_all() {
