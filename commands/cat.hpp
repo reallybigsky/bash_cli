@@ -31,8 +31,9 @@ public:
      */
     virtual int run(const token& params, std::shared_ptr<Environment> env, FILE* input, FILE* output, FILE* err) override {
         if (params.args.empty()) {
-            while (auto line = FileUtils::readLine(input))
+            while (auto line = FileUtils::readLine(input)) {
                 FileUtils::writeToFile(line.value(), output);
+            }
             return 0;
         }
 
@@ -48,12 +49,10 @@ public:
                     ++error_count;
                     errors << params.name << ": " << filename << ": No such file or directory" << std::endl;
                     result << params.name << ": " << filename << ": No such file or directory" << std::endl;
-
                     continue;
                 }
                 current_path = filename;
             }
-
             // проверка на то, можно ли открыть файл на чтение
             if (!FileUtils::is_readable(current_path)) {
                 ++error_count;
@@ -64,16 +63,19 @@ public:
             result << get_file_contents(current_path);
         }
 
-        if (error_count == params.args.size())
+        if (error_count == params.args.size()) {
             throw std::invalid_argument(result.str());
+        }
 
         FileUtils::writeToFile(result.str(), output);
 
-        if(!errors.str().empty())
-        FileUtils::writeToFile(errors.str(), err);
+        if(!errors.str().empty()) {
+            FileUtils::writeToFile(errors.str(), err);
+        }
 
-        if (error_count > 0)
+        if (error_count > 0) {
             return 1;
+        }
         return 0;
     }
 

@@ -7,6 +7,7 @@
 #include <numeric>
 
 namespace commands {
+
 /**
  * Implementation of echo command
  */

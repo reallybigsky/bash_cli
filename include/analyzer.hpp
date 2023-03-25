@@ -146,10 +146,10 @@ public:
                     break;
                 case LexerState::Dollar:
                     write_in_buff = false;
-                    if (std::isalpha(cur_ch) || std::isdigit(cur_ch)) {
+                    if (std::isalpha(cur_ch) || std::isdigit(cur_ch) || cur_ch == '?') {
                         var << cur_ch;
                     } else {
-                        // c_str() only for windows :)
+                        // c_str() just only for windows :)
                         buffer << replace_var(buffer_extract(var)).c_str();
                         inc = false;
                         state = LexerState::Start;
@@ -157,7 +157,7 @@ public:
                     break;
                 case LexerState::Dollar_DQ:
                     write_in_buff = false;
-                    if (std::isalpha(cur_ch) || std::isdigit(cur_ch)) {
+                    if (std::isalpha(cur_ch) || std::isdigit(cur_ch) || cur_ch == '?') {
                         var << cur_ch;
                     } else {
                         buffer << replace_var(buffer_extract(var)).c_str();
@@ -203,7 +203,7 @@ public:
 
         for (size_t cmd_ind = 0; cmd_ind < input.size(); ++cmd_ind) {
             const std::string & cur_cmd = input[cmd_ind];
-            token& cur_job = output[cmd_ind];
+            token& cur_tok = output[cmd_ind];
 
             std::stringstream buffer;
             ParserState state = ParserState::Empty;
@@ -228,8 +228,8 @@ public:
                         break;
                     case ParserState::VW:
                         if (cur_ch == '=') {
-                            cur_job.add_word("=");
-                            cur_job.add_word(buffer_extract(buffer));
+                            cur_tok.add_word("=");
+                            cur_tok.add_word(buffer_extract(buffer));
                             state = ParserState::RW;
                         } else if (std::isalpha(cur_ch) || std::isdigit(cur_ch)) {
                             buffer << cur_ch;
@@ -240,7 +240,7 @@ public:
                         break;
                     case ParserState::RW:
                         if (std::isspace(cur_ch)) {
-                            cur_job.add_word(buffer_extract(buffer));
+                            cur_tok.add_word(buffer_extract(buffer));
                             state = ParserState::Empty;
                         } else if (cur_ch == '\'') {
                             state = ParserState::SQ;
@@ -282,7 +282,7 @@ public:
             }
 
             if (state == ParserState::RW || state == ParserState::VW) {
-                cur_job.add_word(buffer_extract(buffer));
+                cur_tok.add_word(buffer_extract(buffer));
                 state = ParserState::Empty;
             }
 

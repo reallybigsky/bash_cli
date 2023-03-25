@@ -10,9 +10,8 @@
 #include <utility>
 #include <fstream>
 
-//#include <boost/process.hpp>
 
-#ifdef _WIN64
+#if defined(_WIN64) || defined(_WIN32)
 #include "getline_win.hpp"
 #endif
 

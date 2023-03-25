@@ -14,7 +14,7 @@ class Assignment : public Cmd {
 public:
     /**
      * Assign tok.args[1] to tok.args[0]
-     * How it is written in interpreter syntax:  <tok.args[0]>=<tok.args[1]>
+     * How it is written in the interpreter syntax:  <tok.args[0]>=<tok.args[1]>
      *
      * Absence of <tok.args[1]> is valid:
      * <tok.args[0]>=
@@ -32,8 +32,10 @@ public:
      * @throws std::invalid_argument: Thrown if tok.args is empty, in other words if there is no left operand of '='
      */
     virtual int run(const token& params, std::shared_ptr<Environment> env, FILE* input, FILE* output, FILE* err) override {
-        if (params.args.empty())
+        if (params.args.empty()) {
+            FileUtils::writeToFile("Assignment with no arguments!\n", err);
             throw std::invalid_argument("Assignment with no arguments!");
+        }
 
         std::stringstream result;
         if (params.args.size() > 1) {

@@ -24,11 +24,11 @@ void Application::run() {
                 for (size_t i = 0; i < pipeLine.size(); ++i) {
                     o_file = tmpfile();
                     if (i == 0) {
-                        lastReturnCode = handler->exec(pipeLine[i], env, ios->getInput(), o_file);
+                        lastReturnCode |= handler->exec(pipeLine[i], env, ios->getInput(), o_file);
                     } else if (i == pipeLine.size() - 1) {
-                        lastReturnCode = handler->exec(pipeLine[i], env, i_file, ios->getOutput());
+                        lastReturnCode |= handler->exec(pipeLine[i], env, i_file, ios->getOutput());
                     } else {
-                        lastReturnCode = handler->exec(pipeLine[i], env, i_file, o_file);
+                        lastReturnCode |= handler->exec(pipeLine[i], env, i_file, o_file);
                     }
 
                     if (lastReturnCode) {
@@ -44,16 +44,14 @@ void Application::run() {
             }
         } catch (const SyntaxExc& e) {
             ios->writeLine(e.what());
+            lastReturnCode = 1;
         } catch (const EndOfGlobalInputStream& eof) {
             ios->resetInput();
             prevEOF = true;
         } catch (const std::exception& e) {
             ios->writeErrLine("Cannot execute command!");
-//            if (i_file)
-//                fclose(i_file);
-//            if (o_file)
-//                fclose(o_file);
-//            break;
+            lastReturnCode = 1;
         }
+        (*env)["?"] = std::to_string(lastReturnCode);
     }
 }

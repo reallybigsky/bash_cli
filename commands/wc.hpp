@@ -6,6 +6,7 @@
 
 
 namespace commands {
+
 /**
  * Implementation of wc command
  */
@@ -112,7 +113,6 @@ public:
                 }
                 current_path = filename;
             }
-
             // проверка на возможность чтения из файла
             if (!FileUtils::is_readable(current_path)) {
                 ++error_count;
@@ -134,8 +134,7 @@ public:
 
         // если была подсчитана хоть одна статистика, то добавляется поле total
         if (params.args.size() > 1 && error_count < params.args.size()) {
-            result.emplace_back(total_cnt_lines, total_cnt_words,
-                                total_size, "total");
+            result.emplace_back(total_cnt_lines, total_cnt_words, total_size, "total");
         }
 
         // создание форматированной результирующей строки
@@ -146,8 +145,14 @@ public:
             throw std::invalid_argument(output_str);
 
         FileUtils::writeToFile(output_str, output);
-        if (error_count > 0)
+
+        if(!errors.str().empty()) {
+            FileUtils::writeToFile(errors.str(), err);
+        }
+
+        if (error_count > 0) {
             return 1;
+        }
 
         return 0;
     }

@@ -26,19 +26,25 @@ else()
     endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif()
 
-set(BOOST_INCLUDE_LIBRARIES process program_options)
-set(BOOST_ENABLE_CMAKE ON)
-set(FETCHCONTENT_QUIET FALSE)
+find_package(Boost 1.74 COMPONENTS system filesystem program_options)
+if (Boost_FOUND)
+    message("Boost found!")
+    include_directories( ${Boost_INCLUDE_DIR} )
+else()
+    set(BOOST_INCLUDE_LIBRARIES process program_options)
+    set(BOOST_ENABLE_CMAKE ON)
+    set(FETCHCONTENT_QUIET FALSE)
 
-include(FetchContent)
-FetchContent_Declare(
-        Boost
-        GIT_REPOSITORY https://github.com/boostorg/boost.git
-        GIT_TAG boost-1.81.0
-        GIT_SHALLOW TRUE
-        GIT_PROGRESS TRUE
-)
-FetchContent_MakeAvailable(Boost)
+    include(FetchContent)
+    FetchContent_Declare(
+            Boost
+            GIT_REPOSITORY https://github.com/boostorg/boost.git
+            GIT_TAG boost-1.81.0
+            GIT_SHALLOW TRUE
+            GIT_PROGRESS TRUE
+    )
+    FetchContent_MakeAvailable(Boost)
+endif()
 
 include(FetchContent)
 FetchContent_Declare(
@@ -54,23 +60,33 @@ include_directories(include)
 include_directories(commands)
 include_directories(src)
 
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 add_executable(bash_cli
         src/main.cpp
         src/application.cpp
         src/handler.cpp)
 
+# tests output dir!
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ../tests)
+
 add_executable(test_analyzer
-        tests/test_analyzer.cpp)
+        tests/src/test_analyzer.cpp)
 
 add_executable(test_commands
-        tests/test_commands.cpp)
+        tests/src/test_commands.cpp)
 
 if(MINGW)
     target_link_libraries(bash_cli PRIVATE Boost::process Boost::program_options ws2_32)
     target_link_libraries(test_analyzer PRIVATE Boost::process Boost::program_options ws2_32)
     target_link_libraries(test_commands PRIVATE GTest::gtest_main Boost::process Boost::program_options ws2_32)
 else()
-    target_link_libraries(bash_cli PRIVATE Boost::process Boost::program_options)
-    target_link_libraries(test_analyzer PRIVATE Boost::process Boost::program_options)
-    target_link_libraries(test_commands PRIVATE GTest::gtest_main Boost::process Boost::program_options)
+    if (Boost_FOUND)
+        target_link_libraries(bash_cli PRIVATE ${Boost_LIBRARIES})
+        target_link_libraries(test_analyzer PRIVATE ${Boost_LIBRARIES})
+        target_link_libraries(test_commands PRIVATE ${Boost_LIBRARIES} GTest::gtest_main)
+    else()
+        target_link_libraries(bash_cli PRIVATE Boost::process Boost::program_options)
+        target_link_libraries(test_analyzer PRIVATE Boost::process Boost::program_options)
+        target_link_libraries(test_commands PRIVATE GTest::gtest_main Boost::process Boost::program_options)
+    endif()
 endif()

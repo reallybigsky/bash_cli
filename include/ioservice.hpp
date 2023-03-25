@@ -52,7 +52,6 @@ public:
                 }
             } else {
                 writeErrLine("Unknown argument: \"" + argument + '"');
-//                throw std::invalid_argument("Unknown argument: \"" + argument + '"');
             }
         }
     }
