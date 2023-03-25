@@ -128,14 +128,14 @@ TEST(TestWc, wc) {
     Wc wc_cmd;
     o_file = tmpfile();
 
-    std::string expected = " 5 11 47 ./data/test_wc_1.txt\n";
+    std::string expected = " 5 11 47 test_wc_1.txt\n";
 
     EXPECT_EQ(0, wc_cmd.run(wc_job, env, i_file, o_file, e_file));
     EXPECT_EQ(expected,  read_file_to_string(o_file));
 
     wc_job = {"wc", {"./data/test_wc_1.txt", "./data/test_wc_2.txt"}};
-    expected = "  5  11  47 ./data/test_wc_1.txt\n"
-               "  2  18  87 ./data/test_wc_2.txt\n"
+    expected = "  5  11  47 test_wc_1.txt\n"
+               "  2  18  87 test_wc_2.txt\n"
                "  7  29 134 total\n";
 
     fclose(o_file);
@@ -145,7 +145,7 @@ TEST(TestWc, wc) {
 
     wc_job = {"wc", {"./data/test_wc_1.txt", "error"}};
 
-    expected = " 5 11 47 ./data/test_wc_1.txt\n"
+    expected = " 5 11 47 test_wc_1.txt\n"
                "error: No such file or directory\n"
                " 5 11 47 total\n";
 
