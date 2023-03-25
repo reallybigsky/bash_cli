@@ -60,16 +60,20 @@ include_directories(include)
 include_directories(commands)
 include_directories(src)
 
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 add_executable(bash_cli
         src/main.cpp
         src/application.cpp
         src/handler.cpp)
 
+# tests output dir!
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ../tests)
+
 add_executable(test_analyzer
-        tests/test_analyzer.cpp)
+        tests/src/test_analyzer.cpp)
 
 add_executable(test_commands
-        tests/test_commands.cpp)
+        tests/src/test_commands.cpp)
 
 if(MINGW)
     target_link_libraries(bash_cli PRIVATE Boost::process Boost::program_options ws2_32)
