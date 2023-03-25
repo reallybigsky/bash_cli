@@ -10,7 +10,7 @@
 #include <utility>
 #include <fstream>
 
-#include <boost/process.hpp>
+//#include <boost/process.hpp>
 
 #ifdef _WIN64
 #include "getline_win.hpp"
@@ -19,7 +19,7 @@
 namespace FileUtils {
 
 namespace fs = std::filesystem;
-namespace bp = boost::process;
+//namespace bp = boost::process;
 
 /**
  * Check if file exists in given path
@@ -82,9 +82,8 @@ inline std::optional<std::string> readLine(FILE *file) {
     }
     free(line);
     return res;
+}
 
 } //namespace FIleUtils
-
-}
 
 #endif //BASH_CLI_FILE_UTILS_HPP

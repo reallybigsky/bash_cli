@@ -32,7 +32,7 @@ public:
         if (current_path /= params.name; !FileUtils::is_file_exist(current_path)) {
             if (current_path = params.name; !FileUtils::is_file_exist(current_path)) {
                 if (current_path = bp::search_path(params.name).string(); current_path == "") {
-                    throw std::invalid_argument(params.name + std::string(": command not found"));
+                    throw std::invalid_argument(params.name + ": command not found");
                 }
             }
         }
