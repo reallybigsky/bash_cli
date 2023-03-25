@@ -93,7 +93,7 @@ jobs:
         shell: bash
         run: |
           cd tests 
-	  test_analyzer
+          test_analyzer
 
       - name: Test commands on ubuntu
         if: startsWith(matrix.config.name, 'Ubuntu_Latest_GCC')
