@@ -3,6 +3,7 @@
 #include "pwd.hpp"
 #include "cat.hpp"
 #include "wc.hpp"
+#include "grep.hpp"
 #include "assignment.hpp"
 
 Handler::Handler(std::shared_ptr<IOservice> io)
@@ -15,8 +16,9 @@ Handler::Handler(std::shared_ptr<IOservice> io)
         {"pwd", std::make_shared<commands::Pwd>()},
         {"cat", std::make_shared<commands::Cat>()},
         {"wc", std::make_shared<commands::Wc>()},
+        {"grep", std::make_shared<commands::Grep>()},
         {"=", std::make_shared<commands::Assignment>()}
-};
+    };
 }
 
 int Handler::exec(const token& tok, std::shared_ptr<Environment> env, FILE* i_file, FILE* o_file) {
