@@ -47,9 +47,6 @@ add_executable(bash_cli
 add_executable(test_analyzer
         tests/test_analyzer.cpp)
 
-add_executable(test_commands
-        tests/test_commands.cpp)
-
 if(MINGW)
     target_link_libraries(bash_cli PRIVATE Boost::process ws2_32)
     target_link_libraries(test_analyzer PRIVATE Boost::process ws2_32)
