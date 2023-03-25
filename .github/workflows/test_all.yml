@@ -92,10 +92,10 @@ jobs:
         if: startsWith(matrix.config.name, 'Ubuntu_Latest_GCC')
         shell: bash
         run: test_analyzer
-        working-directory: ./bash_cli/tests
+        working-directory: bash_cli/tests
 
       - name: Test commands on ubuntu
         if: startsWith(matrix.config.name, 'Ubuntu_Latest_GCC')
         shell: bash
         run: test_commands
-        working-directory: ./bash_cli/tests
+        working-directory: bash_cli/tests
