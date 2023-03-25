@@ -24,11 +24,11 @@ void Application::run() {
                 for (size_t i = 0; i < pipeLine.size(); ++i) {
                     o_file = tmpfile();
                     if (i == 0) {
-                        lastReturnCode = handler->exec(pipeLine[i], env, ios->getInput(), o_file);
+                        lastReturnCode |= handler->exec(pipeLine[i], env, ios->getInput(), o_file);
                     } else if (i == pipeLine.size() - 1) {
-                        lastReturnCode = handler->exec(pipeLine[i], env, i_file, ios->getOutput());
+                        lastReturnCode |= handler->exec(pipeLine[i], env, i_file, ios->getOutput());
                     } else {
-                        lastReturnCode = handler->exec(pipeLine[i], env, i_file, o_file);
+                        lastReturnCode |= handler->exec(pipeLine[i], env, i_file, o_file);
                     }
 
                     if (lastReturnCode) {

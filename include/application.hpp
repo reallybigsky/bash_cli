@@ -22,7 +22,7 @@ public:
         , lastReturnCode(0)
     {
         env->emplace("PWD", std::filesystem::current_path().string());
-        env->emplace("?", "0");
+        env->emplace("?", "-1");
     }
 
     /**
@@ -37,7 +37,7 @@ private:
     std::shared_ptr<IOservice> ios;
     std::shared_ptr<Handler> handler;
     std::shared_ptr<Analyzer> analyzer;
-    int lastReturnCode;
+    int8_t lastReturnCode;
 };
 
 #endif //BASH_CLI_APPLICATION_HPP
