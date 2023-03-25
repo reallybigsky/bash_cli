@@ -146,7 +146,7 @@ public:
                     break;
                 case LexerState::Dollar:
                     write_in_buff = false;
-                    if (std::isalpha(cur_ch) || std::isdigit(cur_ch)) {
+                    if (std::isalpha(cur_ch) || std::isdigit(cur_ch) || cur_ch == '?') {
                         var << cur_ch;
                     } else {
                         // c_str() only for windows :)
@@ -157,7 +157,7 @@ public:
                     break;
                 case LexerState::Dollar_DQ:
                     write_in_buff = false;
-                    if (std::isalpha(cur_ch) || std::isdigit(cur_ch)) {
+                    if (std::isalpha(cur_ch) || std::isdigit(cur_ch) || cur_ch == '?') {
                         var << cur_ch;
                     } else {
                         buffer << replace_var(buffer_extract(var)).c_str();
@@ -216,7 +216,7 @@ public:
 
                 switch (state) {
                     case ParserState::Empty:
-                        if (is_first && (std::isalpha(cur_ch) || std::isdigit(cur_ch))) {
+                        if (is_first && (std::isalpha(cur_ch) || std::isdigit(cur_ch) || cur_ch == '?')) {
                             is_first = false;
                             state = ParserState::VW;
                             buffer << cur_ch;
@@ -231,7 +231,7 @@ public:
                             cur_job.add_word("=");
                             cur_job.add_word(buffer_extract(buffer));
                             state = ParserState::RW;
-                        } else if (std::isalpha(cur_ch) || std::isdigit(cur_ch)) {
+                        } else if (std::isalpha(cur_ch) || std::isdigit(cur_ch)  || cur_ch == '?') {
                             buffer << cur_ch;
                         } else {
                             inc = false;

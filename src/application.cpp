@@ -44,16 +44,14 @@ void Application::run() {
             }
         } catch (const SyntaxExc& e) {
             ios->writeLine(e.what());
+            lastReturnCode = 1;
         } catch (const EndOfGlobalInputStream& eof) {
             ios->resetInput();
             prevEOF = true;
         } catch (const std::exception& e) {
             ios->writeErrLine("Cannot execute command!");
-//            if (i_file)
-//                fclose(i_file);
-//            if (o_file)
-//                fclose(o_file);
-//            break;
+            lastReturnCode = 1;
         }
+        (*env)["?"] = std::to_string(lastReturnCode);
     }
 }

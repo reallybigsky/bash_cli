@@ -9,6 +9,7 @@
 
 
 namespace  commands {
+
 /**
  * Implementation of echo command
  */

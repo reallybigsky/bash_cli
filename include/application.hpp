@@ -22,6 +22,7 @@ public:
         , lastReturnCode(0)
     {
         env->emplace("PWD", std::filesystem::current_path().string());
+        env->emplace("?", "0");
     }
 
     /**
