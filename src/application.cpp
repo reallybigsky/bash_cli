@@ -43,7 +43,7 @@ void Application::run() {
                 fclose(i_file);
             }
         } catch (const SyntaxExc& e) {
-            ios->writeLine(e.what());
+            ios->writeErrLine(e.what());
             lastReturnCode = 1;
         } catch (const EndOfGlobalInputStream& eof) {
             ios->resetInput();

@@ -21,19 +21,34 @@ std::string read_file_to_string(FILE* out){
     return result.str();
 }
 
-const std::string file_content1 = "some text\n"
-                                  "cat cat cat cat\n"
-                                  "dog dog dog\n"
-                                  "\n"
-                                  "or cat?\n";
-const std::string file_content2 =  "Somebody once told me the world is gonna roll me\n"
-                                   "I ain't the sharpest tool in the shed\n";
+//const std::string file_content1 = "some text\n"
+//                                  "cat cat cat cat\n"
+//                                  "dog dog dog\n"
+//                                  "\n"
+//                                  "or cat?\n";
+//const std::string file_content2 =  "Somebody once told me the world is gonna roll me\n"
+//                                   "I ain't the sharpest tool in the shed\n";
+
+const std::vector<std::string> file_content1 = {
+    "some text",
+    "cat cat cat cat",
+    "dog dog dog",
+    "",
+    "or cat?",
+};
+
+const std::vector<std::string> file_content2 = {
+        "Somebody once told me the world is gonna roll me",
+        "I ain't the sharpest tool in the shed",
+};
 
 
-void create_testfile(const std::string& filename, const std::string& file_content) {
+void create_testfile(const std::string& filename, const std::vector<std::string>& file_content) {
     std::fstream f1(filename, std::fstream::in | std::fstream::out | std::fstream::trunc);
     if (f1.is_open()) {
-        f1 << file_content;
+        for (const auto& s : file_content) {
+            f1 << s << std::endl;
+        }
         f1.close();
     } else
         std::cout << filename << "NOT OPENED" << std::endl;
@@ -165,15 +180,19 @@ TEST(TestWc, wc) {
     Wc wc_cmd;
     o_file = tmpfile();
 
-    std::string expected = " 5 11 47 test1.txt\n";
+    std::filesystem::path t1 = std::filesystem::current_path() / filepath1;
+    std::filesystem::path t2 = std::filesystem::current_path() / filepath2;
+
+    std::string expected = " 5 11 " + std::to_string(std::filesystem::file_size(t1)) + " test1.txt\n";
 
     EXPECT_EQ(0, wc_cmd.run(wc_job, env, i_file, o_file, e_file));
     EXPECT_EQ(expected,  read_file_to_string(o_file));
 
     wc_job = {"wc", {filepath1, filepath2}};
-    expected = "  5  11  47 test1.txt\n"
-               "  2  18  87 test2.txt\n"
-               "  7  29 134 total\n";
+    expected = "  5  11  " + std::to_string(std::filesystem::file_size(t1)) + " test1.txt\n"
+               "  2  18  " + std::to_string(std::filesystem::file_size(t2)) + " test2.txt\n"
+               "  7  29 " + std::to_string(std::filesystem::file_size(t1))
+                          + std::to_string(std::filesystem::file_size(t2)) + " total\n";
 
     fclose(o_file);
     o_file = tmpfile();
@@ -182,9 +201,9 @@ TEST(TestWc, wc) {
 
     wc_job = {"wc", {filepath1, "error"}};
 
-    expected = " 5 11 47 test1.txt\n"
+    expected = " 5 11 " + std::to_string(std::filesystem::file_size(t1)) + " test1.txt\n"
                "error: No such file or directory\n"
-               " 5 11 47 total\n";
+               " 5 11 " + std::to_string(std::filesystem::file_size(t1)) + " total\n";
 
     fclose(o_file);
     o_file = tmpfile();

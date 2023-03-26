@@ -37,7 +37,7 @@ private:
     std::shared_ptr<IOservice> ios;
     std::shared_ptr<Handler> handler;
     std::shared_ptr<Analyzer> analyzer;
-    int8_t lastReturnCode;
+    int lastReturnCode;
 };
 
 #endif //BASH_CLI_APPLICATION_HPP

@@ -33,7 +33,6 @@ int Handler::exec(const token& tok, std::shared_ptr<Environment> env, FILE* i_fi
             return extCmd.run(tok, env, i_file, o_file, ios->getErr());
         }
     } catch (const std::invalid_argument& ia) {
-        //ios->writeLine(ia.what());
         return 1;
     }
 
