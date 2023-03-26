@@ -63,6 +63,16 @@ inline int writeToFile(const std::string &str, FILE *file) {
     return 0;
 }
 
+inline int writeLineToFile(const std::string &str, FILE *file) {
+    writeToFile(str, file);
+#if defined(_WIN64) || defined(_WIN32)
+    writeToFile("\r\n", file);
+#else
+    writeToFile("\n", file);
+#endif
+    return 0;
+}
+
 /**
  * Read one line from file
  *
