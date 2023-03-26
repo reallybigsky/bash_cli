@@ -60,6 +60,7 @@ TEST(TestEcho, echo) {
     EXPECT_EQ(0, echo_cmd.run(echo_job, env, i_file, o_file, e_file));
     EXPECT_EQ(expected, read_file_to_string(o_file));
     fclose(o_file);
+    fclose(e_file);
 }
 
 
@@ -81,6 +82,7 @@ TEST(TestPwd, pwd) {
     EXPECT_EQ(0, pwd_cmd.run(pwd_job, env, i_file, o_file, e_file));
     EXPECT_EQ(expected, read_file_to_string(o_file));
     fclose(o_file);
+    fclose(e_file);
 }
 
 
@@ -133,6 +135,7 @@ TEST(TestCat, cat) {
     EXPECT_EQ(1, cat_cmd.run(cat_job,  env, i_file, o_file, e_file));
     EXPECT_EQ(expected, read_file_to_string(o_file));
     fclose(o_file);
+    fclose(e_file);
 
     remove(filepath1.c_str());
     remove(filepath2.c_str());
@@ -188,6 +191,7 @@ TEST(TestWc, wc) {
     EXPECT_EQ(1, wc_cmd.run(wc_job, env, i_file, o_file, e_file));
     EXPECT_EQ(expected,  read_file_to_string(o_file));
     fclose(o_file);
+    fclose(e_file);
 
     remove(filepath1.c_str());
     remove(filepath2.c_str());

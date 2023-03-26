@@ -31,7 +31,7 @@ line that matches a pattern.
                                                            "PATTERNS can contain multiple patterns separated by newlines.\n"
                                                            "\n"
                                                            "Pattern selection and interpretation");
-
+    po::positional_options_description p;
 public:
     Grep() {
         desc.add_options()
@@ -42,6 +42,9 @@ public:
                 ("no-ignore-case", "do not ignore case distinctions (default)")
                 ("word-regexp,w", "match only whole words")
                 ("after-context,A", po::value<int>(), "print NUM lines of output context");
+
+        p.add("regexp", 1);
+        p.add("file", -1);
     }
 
 
@@ -51,10 +54,6 @@ public:
         for (auto &arg: params.args) {
             args_with_options.push_back(arg.c_str());
         }
-
-        po::positional_options_description p;
-        p.add("regexp", 1);
-        p.add("file", -1);
 
         po::variables_map vm;
         po::store(po::command_line_parser((int32_t) args_with_options.size(), args_with_options.data()).
@@ -71,8 +70,9 @@ public:
 
 
         if (!vm.count("regexp")) {
-            throw std::invalid_argument("Usage: grep [OPTION]... PATTERNS [FILE]...\n"
-                                        "Try 'grep --help' for more information.");
+            FileUtils::writeToFile("Usage: grep [OPTION]... PATTERNS [FILE]...\n"
+                                        "Try 'grep --help' for more information.", err);
+            return 1;
         }
 
 
