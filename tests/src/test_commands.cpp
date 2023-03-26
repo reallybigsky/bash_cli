@@ -30,13 +30,13 @@ const std::string file_content2 =  "Somebody once told me the world is gonna rol
                                    "I ain't the sharpest tool in the shed\n";
 
 
-std::string create_testfile(const std::string& file_content) {
-    char* name = std::tmpnam(nullptr);
-    mkstemp(name);
-    std::fstream f(name);
-    f << file_content;
-
-    return name;
+void create_testfile(const std::string& filename, const std::string& file_content) {
+    std::fstream f1(filename, std::fstream::in | std::fstream::out | std::fstream::trunc);
+    if (f1.is_open()) {
+        f1 << file_content;
+        f1.close();
+    } else
+        std::cout << filename << "NOT OPENED" << std::endl;
 }
 
 TEST(TestEcho, echo) {
@@ -86,15 +86,9 @@ TEST(TestPwd, pwd) {
 
 TEST(TestCat, cat) {
     FILE* i_file = nullptr, *o_file = nullptr, *e_file = tmpfile();
-    boost::filesystem::path temp = boost::filesystem::unique_path();
-    auto filepath1 = temp.native(), filepath2 = temp.native();
-    std::fstream f1(filepath1 + ".txt", std::fstream::in | std::fstream::out | std::fstream::trunc), f2(filepath2 + ".txt", std::fstream::in | std::fstream::out | std::fstream::trunc);
-    if (f1.is_open())
-        f1 << file_content1;
-    else
-        std::cout << filepath1 << "NOT OPENED" << std::endl;
-    f2 << file_content2;
-
+    std::string filepath1 = "test1.txt", filepath2 = "test2.txt";
+    create_testfile(filepath1, file_content1);
+    create_testfile(filepath2, file_content2);
 
 
     token cat_job = {"cat", {filepath1}};
@@ -139,6 +133,9 @@ TEST(TestCat, cat) {
     EXPECT_EQ(1, cat_cmd.run(cat_job,  env, i_file, o_file, e_file));
     EXPECT_EQ(expected, read_file_to_string(o_file));
     fclose(o_file);
+
+    remove(filepath1.c_str());
+    remove(filepath2.c_str());
 //    fclose(o_file);
 //    o_file = tmpfile();
 //    cat_job = {"cat", {}};
@@ -155,20 +152,24 @@ TEST(TestCat, cat) {
 
 TEST(TestWc, wc) {
     FILE* i_file = nullptr, *o_file = nullptr, *e_file = tmpfile();
-    token wc_job = {"wc", {"./tests/data/test_wc_1.txt"}};
+    std::string filepath1 = "test1.txt", filepath2 = "test2.txt";
+    create_testfile(filepath1, file_content1);
+    create_testfile(filepath2, file_content2);
+
+    token wc_job = {"wc", {filepath1}};
     auto env = std::make_shared<Environment>();
     env->emplace("PWD", std::filesystem::current_path().string());
     Wc wc_cmd;
     o_file = tmpfile();
 
-    std::string expected = " 5 11 47 ./tests/data/test_wc_1.txt\n";
+    std::string expected = " 5 11 47 test1.txt\n";
 
     EXPECT_EQ(0, wc_cmd.run(wc_job, env, i_file, o_file, e_file));
     EXPECT_EQ(expected,  read_file_to_string(o_file));
 
-    wc_job = {"wc", {"./tests/data/test_wc_1.txt", "./tests/data/test_wc_2.txt"}};
-    expected = "  5  11  47 ./tests/data/test_wc_1.txt\n"
-               "  2  18  87 ./tests/data/test_wc_2.txt\n"
+    wc_job = {"wc", {filepath1, filepath2}};
+    expected = "  5  11  47 test1.txt\n"
+               "  2  18  87 test2.txt\n"
                "  7  29 134 total\n";
 
     fclose(o_file);
@@ -176,9 +177,9 @@ TEST(TestWc, wc) {
     EXPECT_EQ(0, wc_cmd.run(wc_job, env, i_file, o_file, e_file));
     EXPECT_EQ(expected,  read_file_to_string(o_file));
 
-    wc_job = {"wc", {"./tests/data/test_wc_1.txt", "error"}};
+    wc_job = {"wc", {filepath1, "error"}};
 
-    expected = " 5 11 47 ./tests/data/test_wc_1.txt\n"
+    expected = " 5 11 47 test1.txt\n"
                "error: No such file or directory\n"
                " 5 11 47 total\n";
 
@@ -187,6 +188,9 @@ TEST(TestWc, wc) {
     EXPECT_EQ(1, wc_cmd.run(wc_job, env, i_file, o_file, e_file));
     EXPECT_EQ(expected,  read_file_to_string(o_file));
     fclose(o_file);
+
+    remove(filepath1.c_str());
+    remove(filepath2.c_str());
 
 //    fclose(o_file);
 //    o_file = tmpfile();
