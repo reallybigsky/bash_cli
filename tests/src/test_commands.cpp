@@ -21,19 +21,34 @@ std::string read_file_to_string(FILE* out){
     return result.str();
 }
 
-const std::string file_content1 = "some text\n"
-                                  "cat cat cat cat\n"
-                                  "dog dog dog\n"
-                                  "\n"
-                                  "or cat?\n";
-const std::string file_content2 =  "Somebody once told me the world is gonna roll me\n"
-                                   "I ain't the sharpest tool in the shed\n";
+//const std::string file_content1 = "some text\n"
+//                                  "cat cat cat cat\n"
+//                                  "dog dog dog\n"
+//                                  "\n"
+//                                  "or cat?\n";
+//const std::string file_content2 =  "Somebody once told me the world is gonna roll me\n"
+//                                   "I ain't the sharpest tool in the shed\n";
+
+const std::vector<std::string> file_content1 = {
+    "some text",
+    "cat cat cat cat",
+    "dog dog dog",
+    "",
+    "or cat?",
+};
+
+const std::vector<std::string> file_content2 = {
+        "Somebody once told me the world is gonna roll me",
+        "I ain't the sharpest tool in the shed",
+};
 
 
-void create_testfile(const std::string& filename, const std::string& file_content) {
+void create_testfile(const std::string& filename, const std::vector<std::string>& file_content) {
     std::fstream f1(filename, std::fstream::in | std::fstream::out | std::fstream::trunc);
     if (f1.is_open()) {
-        f1 << file_content;
+        for (const auto& s : file_content) {
+            f1 << s << std::endl;
+        }
         f1.close();
     } else
         std::cout << filename << "NOT OPENED" << std::endl;
