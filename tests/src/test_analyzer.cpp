@@ -1,52 +1,50 @@
 #include "analyzer.hpp"
-
+#include <gtest/gtest.h>
 #include <string>
 #include <vector>
-#include <cassert>
 #include <iostream>
 
 std::shared_ptr<Environment> env(std::make_shared<Environment>());
 Analyzer parser(env);
 
-void test_lexer_basic() {
+TEST(TestLexerBasic, lexer_basic) {
     std::string input;
     std::vector<std::string> output;
 
     env->clear();
     input = "pwd";
     output = parser.runLexer(input);
-    assert(output.size() == 1);
-    assert(output[0] == input);
+    EXPECT_EQ(output.size(), 1);
+    EXPECT_EQ(output[0], input);
 
     env->clear();
     input = "echo a";
     output = parser.runLexer(input);
-    assert(output.size() == 1);
-    assert(output[0] == input);
+    EXPECT_EQ(output.size(), 1);
+    EXPECT_EQ(output[0], input);
 }
-
-void test_lexer_pipe() {
+TEST(TestLexerPipe, lexer_pipe) {
     std::string input;
     std::vector<std::string> output;
 
     env->clear();
     input = "pwd | echo a";
     output = parser.runLexer(input);
-    assert(output.size() == 2);
-    assert(output[0] == "pwd ");
-    assert(output[1] == " echo a");
+    EXPECT_EQ(output.size(), 2);
+    EXPECT_EQ(output[0], "pwd ");
+    EXPECT_EQ(output[1], " echo a");
 
     env->clear();
     input = "abc a b c | echo | pwd | wc";
     output = parser.runLexer(input);
-    assert(output.size() == 4);
-    assert(output[0] == "abc a b c ");
-    assert(output[1] == " echo ");
-    assert(output[2] == " pwd ");
-    assert(output[3] == " wc");
+    EXPECT_EQ(output.size(), 4);
+    EXPECT_EQ(output[0], "abc a b c ");
+    EXPECT_EQ(output[1], " echo ");
+    EXPECT_EQ(output[2], " pwd ");
+    EXPECT_EQ(output[3], " wc");
 }
 
-void test_lexer_replace() {
+TEST(TestLexerReplace, lexer_replace) {
     std::string input;
     std::vector<std::string> output;
 
@@ -54,40 +52,39 @@ void test_lexer_replace() {
     (*env)["a"] = "123";
     input = "$";
     output = parser.runLexer(input);
-    assert(output.size() == 1);
-    assert(output[0] == "$");
+    EXPECT_EQ(output.size(), 1);
+    EXPECT_EQ(output[0], "$");
 
     env->clear();
     (*env)["a"] = "123";
     input = "$a";
     output = parser.runLexer(input);
-    assert(output.size() == 1);
-    assert(output[0] == "123");
+    EXPECT_EQ(output.size(), 1);
+    EXPECT_EQ(output[0], "123");
 
     env->clear();
     input = "$a";
     output = parser.runLexer(input);
-    assert(output.size() == 1);
-    assert(output[0] == "");
+    EXPECT_EQ(output.size(), 1);
+    EXPECT_EQ(output[0], "");
 
     env->clear();
     (*env)["a"] = "ec";
     (*env)["b"] = "ho";
     input = "$a$b";
     output = parser.runLexer(input);
-    assert(output.size() == 1);
-    assert(output[0] == "echo");
+    EXPECT_EQ(output.size(), 1);
+    EXPECT_EQ(output[0], "echo");
 
     env->clear();
     (*env)["a"] = "|";
     (*env)["b"] = "echo";
     input = "$b $a $b $a $b";
     output = parser.runLexer(input);
-    assert(output.size() == 1);
-    assert(output[0] == "echo | echo | echo");
+    EXPECT_EQ(output.size(), 1);
+    EXPECT_EQ(output[0], "echo | echo | echo");
 }
-
-void test_lexer_single_quotes() {
+TEST(TestLexerSingleQuotes, lexer_single_quotes) {
     std::string input;
     std::vector<std::string> output;
 
@@ -95,22 +92,22 @@ void test_lexer_single_quotes() {
     (*env)["a"] = "123";
     input = "\'\"\'";
     output = parser.runLexer(input);
-    assert(output.size() == 1);
-    assert(output[0] == input);
+    EXPECT_EQ(output.size(), 1);
+    EXPECT_EQ(output[0], input);
 
     env->clear();
     (*env)["a"] = "123";
     input = "\'a\'";
     output = parser.runLexer(input);
-    assert(output.size() == 1);
-    assert(output[0] == input);
+    EXPECT_EQ(output.size(), 1);
+    EXPECT_EQ(output[0], input);
 
     env->clear();
     (*env)["a"] = "123";
     input = "\'$a\'";
     output = parser.runLexer(input);
-    assert(output.size() == 1);
-    assert(output[0] == input);
+    EXPECT_EQ(output.size(), 1);
+    EXPECT_EQ(output[0], input);
 
     env->clear();
     (*env)["a"] = "123";
@@ -118,41 +115,41 @@ void test_lexer_single_quotes() {
     (*env)["a"] = "123";
     input = "\'$a | $b | $var\'";
     output = parser.runLexer(input);
-    assert(output.size() == 1);
-    assert(output[0] == input);
+    EXPECT_EQ(output.size(), 1);
+    EXPECT_EQ(output[0], input);
 
     env->clear();
     (*env)["a"] = "123";
     input = "\'|\'|\'$a\'";
     output = parser.runLexer(input);
-    assert(output.size() == 2);
-    assert(output[0] == "\'|\'");
-    assert(output[1] == "\'$a\'");
+    EXPECT_EQ(output.size() ,2);
+    EXPECT_EQ(output[0], "\'|\'");
+    EXPECT_EQ(output[1], "\'$a\'");
 }
 
-void test_lexer_double_quotes() {
+TEST(TestLexerDoubleQuotes, lexer_double_quotes) {
     std::string input;
     std::vector<std::string> output;
 
     env->clear();
     input = "\"\'\"";
     output = parser.runLexer(input);
-    assert(output.size() == 1);
-    assert(output[0] == input);
+    EXPECT_EQ(output.size(), 1);
+    EXPECT_EQ(output[0], input);
 
     env->clear();
     (*env)["a"] = "123";
     input = "\"a\"";
     output = parser.runLexer(input);
-    assert(output.size() == 1);
-    assert(output[0] == input);
+    EXPECT_EQ(output.size(), 1);
+    EXPECT_EQ(output[0], input);
 
     env->clear();
     (*env)["a"] = "123";
     input = "\"$a\"";
     output = parser.runLexer(input);
-    assert(output.size() == 1);
-    assert(output[0] == "\"123\"");
+    EXPECT_EQ(output.size(), 1);
+    EXPECT_EQ(output[0], "\"123\"");
 
     env->clear();
     (*env)["a"] = "123";
@@ -160,19 +157,19 @@ void test_lexer_double_quotes() {
     (*env)["var"] = "abc dba";
     input = "\"$a | $b | $var\"";
     output = parser.runLexer(input);
-    assert(output.size() == 1);
-    assert(output[0] == "\"123 | cde | abc dba\"");
+    EXPECT_EQ(output.size(), 1);
+    EXPECT_EQ(output[0], "\"123 | cde | abc dba\"");
 
     env->clear();
     (*env)["a"] = "123";
     input = "\"|\"|\"$a\"";
     output = parser.runLexer(input);
-    assert(output.size() == 2);
-    assert(output[0] == "\"|\"");
-    assert(output[1] == "\"123\"");
+    EXPECT_EQ(output.size() ,2);
+    EXPECT_EQ(output[0], "\"|\"");
+    EXPECT_EQ(output[1], "\"123\"");
 }
 
-void test_lexer_bs() {
+TEST(TestLexerBS, lexer_bs) {
     std::string input;
     std::vector<std::string> output;
 
@@ -180,39 +177,38 @@ void test_lexer_bs() {
     (*env)["a"] = "123";
     input = "\\$a";
     output = parser.runLexer(input);
-    assert(output.size() == 1);
-    assert(output[0] == input);
+    EXPECT_EQ(output.size(), 1);
+    EXPECT_EQ(output[0], input);
 
     env->clear();
     (*env)["a"] = "123";
     input = "\"\\$a\"";
     output = parser.runLexer(input);
-    assert(output.size() == 1);
-    assert(output[0] == input);
+    EXPECT_EQ(output.size(), 1);
+    EXPECT_EQ(output[0], input);
 
     env->clear();
     (*env)["a"] = "123";
     input = "abc \\\" db ";
     output = parser.runLexer(input);
-    assert(output.size() == 1);
-    assert(output[0] == input);
+    EXPECT_EQ(output.size(), 1);
+    EXPECT_EQ(output[0], input);
 
     env->clear();
     (*env)["a"] = "123";
     input = "\"abc \\\" db \"";
     output = parser.runLexer(input);
-    assert(output.size() == 1);
-    assert(output[0] == input);
+    EXPECT_EQ(output.size(), 1);
+    EXPECT_EQ(output[0], input);
 
     env->clear();
     (*env)["a"] = "123";
     input = "abc \\| bcd";
     output = parser.runLexer(input);
-    assert(output.size() == 1);
-    assert(output[0] == input);
+    EXPECT_EQ(output.size(), 1);
+    EXPECT_EQ(output[0], input);
 }
-
-void test_lexer_all() {
+TEST(TestLexerAll, lexer_lexer_all) {
     std::string input;
     std::vector<std::string> output;
 
@@ -221,15 +217,15 @@ void test_lexer_all() {
     (*env)["var"] = "echo abc";
     input = "$var|echo \"$a\" \\| | \'pwd $var\' ||";
     output = parser.runLexer(input);
-    assert(output.size() == 5);
-    assert(output[0] == "echo abc");
-    assert(output[1] == "echo \"123\" \\| ");
-    assert(output[2] == " \'pwd $var\' ");
-    assert(output[3] == "");
-    assert(output[4] == "");
+    EXPECT_EQ(output.size(), 5);
+    EXPECT_EQ(output[0], "echo abc");
+    EXPECT_EQ(output[1], "echo \"123\" \\| ");
+    EXPECT_EQ(output[2], " \'pwd $var\' ");
+    EXPECT_EQ(output[3], "");
+    EXPECT_EQ(output[4], "");
 }
 
-void test_lexer_error() {
+TEST(TestLexerError, lexer_error) {
     std::string input;
     std::vector<std::string> output;
     bool is_exeption;
@@ -242,7 +238,7 @@ void test_lexer_error() {
     } catch (const LexerExc & e) {
         is_exeption = true;
     }
-    assert(is_exeption);
+    EXPECT_TRUE(is_exeption);
 
     env->clear();
     input = "abc | \" aasdf";
@@ -252,7 +248,7 @@ void test_lexer_error() {
     } catch (const LexerExc & e) {
         is_exeption = true;
     }
-    assert(is_exeption);
+    EXPECT_TRUE(is_exeption);
 
     env->clear();
     input = "abc | \' asf | \"";
@@ -262,7 +258,7 @@ void test_lexer_error() {
     } catch (const LexerExc & e) {
         is_exeption = true;
     }
-    assert(is_exeption);
+    EXPECT_TRUE(is_exeption);
 
     env->clear();
     input = "abc | \' asf\\\' | \'";
@@ -272,10 +268,10 @@ void test_lexer_error() {
     } catch (const LexerExc & e) {
         is_exeption = true;
     }
-    assert(is_exeption);
+    EXPECT_TRUE(is_exeption);
 }
 
-void test_parser_basic() {
+TEST(TestParserBasic, parser_basic) {
     env->clear();
     std::vector<std::string> input;
     std::vector<token> output;
@@ -288,30 +284,30 @@ void test_parser_basic() {
     output = parser.runParser(input);
     size_t i = 0;
 
-    assert(output[i].name == "cmd");
-    assert(output[i].args.size() == 0);
+    EXPECT_EQ(output[i].name, "cmd");
+    EXPECT_EQ(output[i].args.size(), 0);
     ++i;
 
-    assert(output[i].name == "run_cmd");
-    assert(output[i].args.size() == 0);
+    EXPECT_EQ(output[i].name, "run_cmd");
+    EXPECT_EQ(output[i].args.size(), 0);
     ++i;
 
-    assert(output[i].name == "run_cmd");
-    assert(output[i].args.size() == 3);
-    assert(output[i].args[0] == "arg1");
-    assert(output[i].args[1] == "arg2");
-    assert(output[i].args[2] == "arg3");
+    EXPECT_EQ(output[i].name, "run_cmd");
+    EXPECT_EQ(output[i].args.size(), 3);
+    EXPECT_EQ(output[i].args[0], "arg1");
+    EXPECT_EQ(output[i].args[1], "arg2");
+    EXPECT_EQ(output[i].args[2], "arg3");
     ++i;
 
-    assert(output[i].name == "ab cd");
-    assert(output[i].args.size() == 3);
-    assert(output[i].args[0] == "\"");
-    assert(output[i].args[1] == "\'");
-    assert(output[i].args[2] == "\\");
+    EXPECT_EQ(output[i].name, "ab cd");
+    EXPECT_EQ(output[i].args.size(), 3);
+    EXPECT_EQ(output[i].args[0], "\"");
+    EXPECT_EQ(output[i].args[1], "\'");
+    EXPECT_EQ(output[i].args[2], "\\");
     ++i;
 }
 
-void test_parser_double_quotes() {
+TEST(TestParserDoubleQuotes, parser_double_quotes) {
     env->clear();
     std::vector<std::string> input;
     std::vector<token> output;
@@ -327,36 +323,35 @@ void test_parser_double_quotes() {
     output = parser.runParser(input);
     size_t i = 0;
 
-    assert(output[i].name == "ab 12 $");
-    assert(output[i].args.size() == 0);
+    EXPECT_EQ(output[i].name, "ab 12 $");
+    EXPECT_EQ(output[i].args.size(), 0);
     ++i;
 
-    assert(output[i].name == "ab 12 $12");
-    assert(output[i].args.size() == 0);
+    EXPECT_EQ(output[i].name, "ab 12 $12");
+    EXPECT_EQ(output[i].args.size(), 0);
     ++i;
 
-    assert(output[i].name == "ab 12 $");
-    assert(output[i].args.size() == 0);
+    EXPECT_EQ(output[i].name, "ab 12 $");
+    EXPECT_EQ(output[i].args.size(), 0);
     ++i;
 
-    assert(output[i].name == "ab\\ 12 $");
-    assert(output[i].args.size() == 0);
+    EXPECT_EQ(output[i].name, "ab\\ 12 $");
+    EXPECT_EQ(output[i].args.size(), 0);
     ++i;
 
-    assert(output[i].name == "ab\" 12 $");
-    assert(output[i].args.size() == 0);
+    EXPECT_EQ(output[i].name, "ab\" 12 $");
+    EXPECT_EQ(output[i].args.size(), 0);
     ++i;
 
-    assert(output[i].name == "abcd");
-    assert(output[i].args.size() == 0);
+    EXPECT_EQ(output[i].name, "abcd");
+    EXPECT_EQ(output[i].args.size(), 0);
     ++i;
 
-    assert(output[i].name == "ab\'\'cd");
-    assert(output[i].args.size() == 0);
+    EXPECT_EQ(output[i].name, "ab\'\'cd");
+    EXPECT_EQ(output[i].args.size(), 0);
     ++i;
 }
-
-void test_parser_single_quotes() {
+TEST(TestParserSingleQutes, parser_single_quotes) {
     env->clear();
     std::vector<std::string> input;
     std::vector<token> output;
@@ -372,36 +367,36 @@ void test_parser_single_quotes() {
     output = parser.runParser(input);
     size_t i = 0;
 
-    assert(output[i].name == "ab 12 $");
-    assert(output[i].args.size() == 0);
+    EXPECT_EQ(output[i].name, "ab 12 $");
+    EXPECT_EQ(output[i].args.size(), 0);
     ++i;
 
-    assert(output[i].name == "ab 12 $12");
-    assert(output[i].args.size() == 0);
+    EXPECT_EQ(output[i].name, "ab 12 $12");
+    EXPECT_EQ(output[i].args.size(), 0);
     ++i;
 
-    assert(output[i].name == "ab\\ 12 $");
-    assert(output[i].args.size() == 0);
+    EXPECT_EQ(output[i].name, "ab\\ 12 $");
+    EXPECT_EQ(output[i].args.size(), 0);
     ++i;
 
-    assert(output[i].name == "ab\\\\ 12 $");
-    assert(output[i].args.size() == 0);
+    EXPECT_EQ(output[i].name, "ab\\\\ 12 $");
+    EXPECT_EQ(output[i].args.size(), 0);
     ++i;
 
-    assert(output[i].name == "ab\\\" 12 $");
-    assert(output[i].args.size() == 0);
+    EXPECT_EQ(output[i].name, "ab\\\" 12 $");
+    EXPECT_EQ(output[i].args.size(), 0);
     ++i;
 
-    assert(output[i].name == "abcd");
-    assert(output[i].args.size() == 0);
+    EXPECT_EQ(output[i].name, "abcd");
+    EXPECT_EQ(output[i].args.size(), 0);
     ++i;
 
-    assert(output[i].name == "ab\"\"cd");
-    assert(output[i].args.size() == 0);
+    EXPECT_EQ(output[i].name, "ab\"\"cd");
+    EXPECT_EQ(output[i].args.size(), 0);
     ++i;
 }
 
-void test_parser_assignment() {
+TEST(TestParserAssigment, parser_assignment) {
     env->clear();
     std::vector<std::string> input;
     std::vector<token> output;
@@ -415,35 +410,35 @@ void test_parser_assignment() {
     output = parser.runParser(input);
     size_t i = 0;
 
-    assert(output[i].name == "=");
-    assert(output[i].args[0] == "abc123");
-    assert(output[i].args[1] == "123");
+    EXPECT_EQ(output[i].name ,"=");
+    EXPECT_EQ(output[i].args[0] ,"abc123");
+    EXPECT_EQ(output[i].args[1] ,"123");
     ++i;
 
-    assert(output[i].name == "=");
-    assert(output[i].args[0] == "1a2b3c");
-    assert(output[i].args[1] == "");
+    EXPECT_EQ(output[i].name ,"=");
+    EXPECT_EQ(output[i].args[0] ,"1a2b3c");
+    EXPECT_EQ(output[i].args[1] ,"");
     ++i;
 
-    assert(output[i].name == "=");
-    assert(output[i].args[0] == "1a2b3c");
-    assert(output[i].args[1] == "");
-    assert(output[i].args[2] == "12");
-    assert(output[i].args[3] == "bc");
+    EXPECT_EQ(output[i].name ,"=");
+    EXPECT_EQ(output[i].args[0] ,"1a2b3c");
+    EXPECT_EQ(output[i].args[1] ,"");
+    EXPECT_EQ(output[i].args[2] ,"12");
+    EXPECT_EQ(output[i].args[3] ,"bc");
     ++i;
 
-    assert(output[i].name == "=");
-    assert(output[i].args[0] == "a");
-    assert(output[i].args[1] == "abc");
-    assert(output[i].args[2] == "123");
+    EXPECT_EQ(output[i].name ,"=");
+    EXPECT_EQ(output[i].args[0] ,"a");
+    EXPECT_EQ(output[i].args[1] ,"abc");
+    EXPECT_EQ(output[i].args[2] ,"123");
     ++i;
 
-    assert(output[i].name == "a$=abc");
-    assert(output[i].args.size() == 0);
+    EXPECT_EQ(output[i].name ,"a$=abc");
+    EXPECT_EQ(output[i].args.size() ,0);
     ++i;
 }
 
-void test_parser_all() {
+TEST(TestParserAll, parser_all) {
     env->clear();
     std::vector<std::string> input;
     std::vector<token> output;
@@ -455,26 +450,26 @@ void test_parser_all() {
     output = parser.runParser(input);
     size_t i = 0;
 
-    assert(output[i].name == "cmd");
-    assert(output[i].args.size() == 2);
-    assert(output[i].args[0] == "a=b");
-    assert(output[i].args[1] == "fs");
+    EXPECT_EQ(output[i].name ,"cmd");
+    EXPECT_EQ(output[i].args.size() ,2);
+    EXPECT_EQ(output[i].args[0] ,"a=b");
+    EXPECT_EQ(output[i].args[1] ,"fs");
     ++i;
 
-    assert(output[i].name == "abc=d");
-    assert(output[i].args.size() == 1);
-    assert(output[i].args[0] == "f\"s");
+    EXPECT_EQ(output[i].name ,"abc=d");
+    EXPECT_EQ(output[i].args.size() ,1);
+    EXPECT_EQ(output[i].args[0] ,"f\"s");
     ++i;
 
-    assert(output[i].name == "=");
-    assert(output[i].args.size() == 3);
-    assert(output[i].args[0] == "var");
-    assert(output[i].args[1] == "so d ");
-    assert(output[i].args[2] == "f\"s");
+    EXPECT_EQ(output[i].name ,"=");
+    EXPECT_EQ(output[i].args.size() ,3);
+    EXPECT_EQ(output[i].args[0] ,"var");
+    EXPECT_EQ(output[i].args[1] ,"so d ");
+    EXPECT_EQ(output[i].args[2] ,"f\"s");
     ++i;
 }
 
-void test_parser_error() {
+TEST(TestParserError, parser_error) {
     env->clear();
     std::vector<std::string> input;
     std::vector<token> output;
@@ -487,7 +482,7 @@ void test_parser_error() {
     } catch (const ParserExc & e) {
         is_exception = true;
     }
-    assert(is_exception);
+    EXPECT_TRUE(is_exception);
 
     input = std::vector<std::string>();
     input.push_back("cmd \' a=b\'");
@@ -497,7 +492,7 @@ void test_parser_error() {
     } catch (const ParserExc & e) {
         is_exception = true;
     }
-    assert(!is_exception);
+    EXPECT_TRUE(!is_exception);
 
     input = std::vector<std::string>();
     input.push_back("cmd \" a=b\'");
@@ -507,7 +502,7 @@ void test_parser_error() {
     } catch (const ParserExc & e) {
         is_exception = true;
     }
-    assert(is_exception);
+    EXPECT_TRUE(is_exception);
 
     input = std::vector<std::string>();
     input.push_back("cmd \" a=b\"");
@@ -517,7 +512,7 @@ void test_parser_error() {
     } catch (const ParserExc & e) {
         is_exception = true;
     }
-    assert(!is_exception);
+    EXPECT_TRUE(!is_exception);
 
     input = std::vector<std::string>();
     input.push_back("cmd adf d\\");
@@ -527,7 +522,7 @@ void test_parser_error() {
     } catch (const ParserExc & e) {
         is_exception = true;
     }
-    assert(is_exception);
+    EXPECT_TRUE(is_exception);
 
     input = std::vector<std::string>();
     input.push_back("cmd \\ ");
@@ -537,7 +532,7 @@ void test_parser_error() {
     } catch (const ParserExc & e) {
         is_exception = true;
     }
-    assert(!is_exception);
+    EXPECT_TRUE(!is_exception);
 
     input = std::vector<std::string>();
     input.push_back("cm\"\\");
@@ -547,10 +542,10 @@ void test_parser_error() {
     } catch (const ParserExc & e) {
         is_exception = true;
     }
-    assert(is_exception);
+    EXPECT_TRUE(is_exception);
 }
 
-void test_all() {
+TEST(TestAll, all) {
     std::cout << "Analyzer::Lexer + Analyzer::Parser..." << std::endl;
     std::string input;
     PipeLine output;
@@ -562,65 +557,65 @@ void test_all() {
     input = "$var| echo $a | pwd \\$var | wc $ \\\' | $b \"12  23\" | exit \'$a  $b\'";
     output = parser.process(input);
 
-    assert(output.size() == 6);
+    EXPECT_EQ(output.size() ,6);
 
-    assert(output[0].name == "echo");
-    assert(output[0].args[0] == "a");
-    assert(output[0].args[1] == "b");
-    assert(output[0].args[2] == "c");
+    EXPECT_EQ(output[0].name ,"echo");
+    EXPECT_EQ(output[0].args[0] ,"a");
+    EXPECT_EQ(output[0].args[1] ,"b");
+    EXPECT_EQ(output[0].args[2] ,"c");
 
-    assert(output[1].name == "echo");
-    assert(output[1].args[0] == "123");
+    EXPECT_EQ(output[1].name ,"echo");
+    EXPECT_EQ(output[1].args[0] ,"123");
 
-    assert(output[2].name == "pwd");
-    assert(output[2].args[0] == "$var");
+    EXPECT_EQ(output[2].name ,"pwd");
+    EXPECT_EQ(output[2].args[0] ,"$var");
 
-    assert(output[3].name == "wc");
-    assert(output[3].args[0] == "$");
-    assert(output[3].args[1] == "\'");
+    EXPECT_EQ(output[3].name ,"wc");
+    EXPECT_EQ(output[3].args[0] ,"$");
+    EXPECT_EQ(output[3].args[1] ,"\'");
 
-    assert(output[4].name == "=");
-    assert(output[4].args[0] == "var");
-    assert(output[4].args[1] == "cda");
-    assert(output[4].args[2] == "12  23");
+    EXPECT_EQ(output[4].name ,"=");
+    EXPECT_EQ(output[4].args[0] ,"var");
+    EXPECT_EQ(output[4].args[1] ,"cda");
+    EXPECT_EQ(output[4].args[2] ,"12  23");
 
-    assert(output[5].name == "exit");
-    assert(output[5].args[0] == "$a  $b");
+    EXPECT_EQ(output[5].name ,"exit");
+    EXPECT_EQ(output[5].args[0] ,"$a  $b");
     std::cout << "Analyzer::Lexer + Analyzer::Parser OK!" << std::endl;
 }
 
-void test_lexer() {
-    std::cout << "Analyzer::Lexer..." << std::endl;
-    test_lexer_basic();
-    test_lexer_pipe();
-    test_lexer_replace();
-    test_lexer_single_quotes();
-    test_lexer_double_quotes();
-    test_lexer_bs();
-    test_lexer_all();
-    test_lexer_error();
-    std::cout << "Analyzer::Lexer OK!" << std::endl;
-}
-
-void test_parser() {
-    std::cout << "Analyzer::Parser..." << std::endl;
-    test_parser_basic();
-    test_parser_double_quotes();
-    test_parser_single_quotes();
-    test_parser_assignment();
-    test_parser_all();
-    test_parser_error();
-    std::cout << "Analyzer::Parser OK!" << std::endl;
-
-}
-
-int main(int argc, char* argv[]) {
-
-    std::cout << "Testing Analyzer..." << std::endl;
-    test_lexer();
-    test_parser();
-    test_all();
-    std::cout << "Analyzer OK!" << std::endl;
-
-    return 0;
-};
+//void test_lexer() {
+//    std::cout << "Analyzer::Lexer..." << std::endl;
+//    test_lexer_basic();
+//    test_lexer_pipe();
+//    test_lexer_replace();
+//    test_lexer_single_quotes();
+//    test_lexer_double_quotes();
+//    test_lexer_bs();
+//    test_lexer_all();
+//    test_lexer_error();
+//    std::cout << "Analyzer::Lexer OK!" << std::endl;
+//}
+//
+//void test_parser() {
+//    std::cout << "Analyzer::Parser..." << std::endl;
+//    test_parser_basic();
+//    test_parser_double_quotes();
+//    test_parser_single_quotes();
+//    test_parser_assignment();
+//    test_parser_all();
+//    test_parser_error();
+//    std::cout << "Analyzer::Parser OK!" << std::endl;
+//
+//}
+//
+//int main(int argc, char* argv[]) {
+//
+//    std::cout << "Testing Analyzer..." << std::endl;
+//    test_lexer();
+//    test_parser();
+//    test_all();
+//    std::cout << "Analyzer OK!" << std::endl;
+//
+//    return 0;
+//};

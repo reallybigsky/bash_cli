@@ -4,6 +4,8 @@
 #include "pwd.hpp"
 #include "cat.hpp"
 #include "wc.hpp"
+#include <stdio.h>
+#include <boost/filesystem.hpp>
 
 
 using namespace commands;
@@ -17,6 +19,24 @@ std::string read_file_to_string(FILE* out){
     rewind(out);
 
     return result.str();
+}
+
+const std::string file_content1 = "some text\n"
+                                  "cat cat cat cat\n"
+                                  "dog dog dog\n"
+                                  "\n"
+                                  "or cat?\n";
+const std::string file_content2 =  "Somebody once told me the world is gonna roll me\n"
+                                   "I ain't the sharpest tool in the shed\n";
+
+
+std::string create_testfile(const std::string& file_content) {
+    char* name = std::tmpnam(nullptr);
+    mkstemp(name);
+    std::fstream f(name);
+    f << file_content;
+
+    return name;
 }
 
 TEST(TestEcho, echo) {
@@ -39,6 +59,7 @@ TEST(TestEcho, echo) {
 
     EXPECT_EQ(0, echo_cmd.run(echo_job, env, i_file, o_file, e_file));
     EXPECT_EQ(expected, read_file_to_string(o_file));
+    fclose(o_file);
 }
 
 
@@ -59,12 +80,24 @@ TEST(TestPwd, pwd) {
     pwd_job = {"pwd", {}};
     EXPECT_EQ(0, pwd_cmd.run(pwd_job, env, i_file, o_file, e_file));
     EXPECT_EQ(expected, read_file_to_string(o_file));
+    fclose(o_file);
 }
 
 
 TEST(TestCat, cat) {
     FILE* i_file = nullptr, *o_file = nullptr, *e_file = tmpfile();
-    token cat_job = {"cat", {"./tests/data/test_wc_1.txt"}};
+    boost::filesystem::path temp = boost::filesystem::unique_path();
+    auto filepath1 = temp.native(), filepath2 = temp.native();
+    std::fstream f1(filepath1 + ".txt", std::fstream::in | std::fstream::out | std::fstream::trunc), f2(filepath2 + ".txt", std::fstream::in | std::fstream::out | std::fstream::trunc);
+    if (f1.is_open())
+        f1 << file_content1;
+    else
+        std::cout << filepath1 << "NOT OPENED" << std::endl;
+    f2 << file_content2;
+
+
+
+    token cat_job = {"cat", {filepath1}};
     auto env = std::make_shared<Environment>();
     env->emplace("PWD", std::filesystem::current_path().string());
     Cat cat_cmd;
@@ -81,7 +114,7 @@ TEST(TestCat, cat) {
 
     fclose(o_file);
     o_file = tmpfile();
-    cat_job = {"cat", {"./tests/data/test_wc_1.txt", "./tests/data/test_wc_2.txt"}};
+    cat_job = {"cat", {filepath1, filepath2}};
     expected = "some text\n"
                "cat cat cat cat\n"
                "dog dog dog\n"
@@ -95,7 +128,7 @@ TEST(TestCat, cat) {
 
     fclose(o_file);
     o_file = tmpfile();
-    cat_job = {"cat", {"./tests/data/test_wc_1.txt", "error"}};
+    cat_job = {"cat", {filepath1, "error"}};
     expected = "some text\n"
                "cat cat cat cat\n"
                "dog dog dog\n"
@@ -105,7 +138,7 @@ TEST(TestCat, cat) {
 
     EXPECT_EQ(1, cat_cmd.run(cat_job,  env, i_file, o_file, e_file));
     EXPECT_EQ(expected, read_file_to_string(o_file));
-
+    fclose(o_file);
 //    fclose(o_file);
 //    o_file = tmpfile();
 //    cat_job = {"cat", {}};
@@ -153,6 +186,7 @@ TEST(TestWc, wc) {
     o_file = tmpfile();
     EXPECT_EQ(1, wc_cmd.run(wc_job, env, i_file, o_file, e_file));
     EXPECT_EQ(expected,  read_file_to_string(o_file));
+    fclose(o_file);
 
 //    fclose(o_file);
 //    o_file = tmpfile();

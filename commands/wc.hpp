@@ -73,10 +73,9 @@ public:
      * @param env: current environment variables of the interpreter
      * @param input: input FILE stream
      * @param output: output FILE stream
-     * @param err: error FILE stream (unused)
+     * @param err: error FILE stream
      * @return 0 if there were no errors, 1 otherwise
      *
-     * @throws std::invalid_arguments: Thrown if all files in tok.args not exists or cannot be open
      */
     virtual int run(const token& params, std::shared_ptr<Environment> env, FILE* input, FILE* output, FILE* err) override {
         uint64_t total_cnt_lines = 0, total_cnt_words = 0, total_size = 0;
@@ -141,14 +140,12 @@ public:
         std::string output_str = create_output_format(result);
 
         // если по всем аргументам произошли ошибки, то выбрасывается исключение
-        if (error_count == params.args.size())
-            throw std::invalid_argument(output_str);
+        if (error_count == params.args.size()) {
+            FileUtils::writeToFile(errors.str(), err);
+            return 2;
+        }
 
         FileUtils::writeToFile(output_str, output);
-
-        if(!errors.str().empty()) {
-            FileUtils::writeToFile(errors.str(), err);
-        }
 
         if (error_count > 0) {
             return 1;

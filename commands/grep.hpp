@@ -14,6 +14,17 @@ namespace commands {
     namespace po = boost::program_options;
 
     class Grep : public Cmd {
+        /**
+         * Searches for PATTERNS in each FILE.  PATTERNS is one or more patterns separated by newline characters, and grep prints each
+       line that matches a pattern.
+         * If there are no files, then the search occurs in the lines supplied from the passed input stream
+         * @param params: token with command name in tok.name and command arguments in tok.args
+         * @param env: current environment variables of the interpreter
+         * @param input: input FILE stream
+         * @param output: output FILE stream
+         * @param err: error FILE stream
+         * @return 0 if there were no errors, 1 otherwise
+         */
         po::options_description desc = po::options_description("Usage: grep [OPTION]... PATTERNS [FILE]...\n"
                                                                "Search for PATTERNS in each FILE.\n"
                                                                "Example: grep -i 'hello world' menu.h main.c\n"
@@ -99,7 +110,6 @@ namespace commands {
                         ++error_count;
                         errors << params.name << ": " << filename << ": No such file or directory" << std::endl;
                         result << params.name << ": " << filename << ": No such file or directory" << std::endl;
-
                         continue;
                     }
                     current_path = filename;
@@ -116,17 +126,15 @@ namespace commands {
                 result << matching_in_file(filename, current_path, base_regex, after_context_NUM, greater_one);
             }
 
-            if (error_count == files.size())
-                throw std::invalid_argument(result.str());
+            if (error_count == files.size()) {
+                FileUtils::writeToFile(errors.str(), err);
+                return 2;
+            }
 
             FileUtils::writeToFile(result.str(), output);
 
-            if (!errors.str().empty())
-                FileUtils::writeToFile(errors.str(), err);
-
             if (error_count > 0)
                 return 1;
-
 
             return 0;
         }

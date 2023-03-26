@@ -29,12 +29,11 @@ public:
      * @param err: error FILE stream
      * @return 0 if there were no errors, 1 otherwise
      *
-     * @throws std::invalid_argument: Thrown if tok.args is empty, in other words if there is no left operand of '='
      */
     virtual int run(const token& params, std::shared_ptr<Environment> env, FILE* input, FILE* output, FILE* err) override {
         if (params.args.empty()) {
             FileUtils::writeToFile("Assignment with no arguments!\n", err);
-            throw std::invalid_argument("Assignment with no arguments!");
+            return 2;
         }
 
         std::stringstream result;
