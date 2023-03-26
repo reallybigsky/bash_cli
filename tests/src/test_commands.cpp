@@ -191,8 +191,7 @@ TEST(TestWc, wc) {
     wc_job = {"wc", {filepath1, filepath2}};
     expected = "  5  11  " + std::to_string(std::filesystem::file_size(t1)) + " test1.txt\n"
                "  2  18  " + std::to_string(std::filesystem::file_size(t2)) + " test2.txt\n"
-               "  7  29 " + std::to_string(std::filesystem::file_size(t1))
-                          + std::to_string(std::filesystem::file_size(t2)) + " total\n";
+               "  7  29 " + std::to_string(std::filesystem::file_size(t1) + std::filesystem::file_size(t2)) + " total\n";
 
     fclose(o_file);
     o_file = tmpfile();
