@@ -84,13 +84,13 @@ TEST(TestPwd, pwd) {
     token pwd_job = {"pwd", {"abc", "someone"}};
     auto env = std::make_shared<Environment>();
     std::filesystem::path path(std::filesystem::current_path(), std::filesystem::path::format::generic_format);
-    env->emplace("PWD", path.string());
     Pwd pwd_cmd;
     o_file = tmpfile();
 
-    std::string expected = path.string() + '\n';
+    std::string expected = path.string();
+    env->emplace("PWD", expected);
     EXPECT_EQ(0, pwd_cmd.run(pwd_job, env, i_file, o_file, e_file));
-    EXPECT_EQ(expected, read_file_to_string(o_file));
+    EXPECT_EQ(expected + '\n', read_file_to_string(o_file));
 
     fclose(o_file);
     o_file = tmpfile();
