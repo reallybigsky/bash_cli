@@ -83,7 +83,7 @@ TEST(TestPwd, pwd) {
     FILE* i_file = nullptr, *o_file = nullptr, *e_file = tmpfile();
     token pwd_job = {"pwd", {"abc", "someone"}};
     auto env = std::make_shared<Environment>();
-    std::filesystem::path path(std::filesystem::current_path(), std::filesystem::path::format::native_format);
+    std::filesystem::path path(std::filesystem::current_path(), std::filesystem::path::format::generic_format);
     env->emplace("PWD", path.string());
     Pwd pwd_cmd;
     o_file = tmpfile();
