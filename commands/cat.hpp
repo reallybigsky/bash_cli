@@ -64,7 +64,7 @@ public:
 
         if (error_count == params.args.size()) {
             FileUtils::writeToFile(errors.str(), err);
-            return 2;
+            return 1;
         }
 
         FileUtils::writeToFile(result.str(), output);

@@ -33,7 +33,7 @@ public:
     virtual int run(const token& params, std::shared_ptr<Environment> env, FILE* input, FILE* output, FILE* err) override {
         if (params.args.empty()) {
             FileUtils::writeToFile("Assignment with no arguments!\n", err);
-            return 2;
+            return 1;
         }
 
         std::stringstream result;
