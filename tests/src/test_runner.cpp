@@ -70,8 +70,8 @@ TEST(TestSubstitution, test_substitution) {
     create_testfile(filepath2, {});
     create_testfile(filepath3, {});
 
-    char* input_streams [3] = { "in=input_substitution.txt", "out=out_substitution.txt", "err=error.txt"};
-    Application app(3, input_streams);
+    char* input_streams [4] = {"", "in=input_substitution.txt", "out=out_substitution.txt", "err=error.txt"};
+    Application app(4, input_streams);
     app.run();
 
     std::vector<std::string> result;

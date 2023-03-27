@@ -76,7 +76,9 @@ add_executable(test_commands
         tests/src/test_commands.cpp)
 
 add_executable(test_runner
-        tests/src/test_runner.cpp)
+        tests/src/test_runner.cpp
+        src/application.cpp
+        src/handler.cpp)
 
 if(MINGW)
     target_link_libraries(bash_cli PRIVATE Boost::process Boost::program_options ws2_32)
