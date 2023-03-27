@@ -149,22 +149,22 @@ TEST(TestCat, cat) {
 
     EXPECT_EQ(1, cat_cmd.run(cat_job,  env, i_file, o_file, e_file));
     EXPECT_EQ(expected, read_file_to_string(o_file));
+
+
+    fclose(o_file);
+    o_file = tmpfile();
+    cat_job = {"cat", {"error1", "error2"}};
+    expected = "cat: error1: No such file or directory\n"
+               "cat: error2: No such file or directory\n";
+
+    EXPECT_EQ(2, cat_cmd.run(cat_job,  env, i_file, o_file, e_file));
+    EXPECT_EQ(expected, read_file_to_string(e_file));
+
     fclose(o_file);
     fclose(e_file);
 
     remove(filepath1.c_str());
     remove(filepath2.c_str());
-//    fclose(o_file);
-//    o_file = tmpfile();
-//    cat_job = {"cat", {}};
-//    expected = "No files were transferred";
-//    try {
-//        cat_cmd.run(cat_job,  env, i_file, o_file, e_file);
-//    } catch(const std::invalid_argument& err) {
-//        EXPECT_EQ(expected, err.what());
-//    } catch(...) {
-//        FAIL() << "expected std::invalid_argument";
-//    }
 }
 
 
@@ -209,20 +209,18 @@ TEST(TestWc, wc) {
     EXPECT_EQ(1, wc_cmd.run(wc_job, env, i_file, o_file, e_file));
     EXPECT_EQ(expected,  read_file_to_string(o_file));
     fclose(o_file);
+
+    o_file = tmpfile();
+    wc_job = {"wc", {"error1", "error2"}};
+    expected = "error1: No such file or directory\n"
+               "error2: No such file or directory\n";
+
+    EXPECT_EQ(2, wc_cmd.run(wc_job,  env, i_file, o_file, e_file));
+    EXPECT_EQ(expected, read_file_to_string(e_file));
+
+    fclose(o_file);
     fclose(e_file);
 
     remove(filepath1.c_str());
     remove(filepath2.c_str());
-
-//    fclose(o_file);
-//    o_file = tmpfile();
-//    wc_job = {"wc", {}};
-//    expected = "No files were transferred";
-//    try {
-//        wc_cmd.run(wc_job, env, i_file, o_file, e_file);
-//    } catch(const std::invalid_argument& err) {
-//        EXPECT_EQ(expected, err.what());
-//    } catch(...) {
-//        FAIL() << "expected std::invalid_argument";
-//    }
 }
