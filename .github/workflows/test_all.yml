@@ -84,6 +84,11 @@ jobs:
         shell: bash
         run: tests/Debug/test_commands.exe
 
+      - name: Test commands on windows
+        if: startsWith(matrix.config.os, 'windows')
+        shell: bash
+        run: tests/Debug/test_runner.exe
+
       - name: Test analyzer on ubuntu
         if: startsWith(matrix.config.name, 'Ubuntu_Latest_GCC')
         shell: bash
@@ -93,3 +98,8 @@ jobs:
         if: startsWith(matrix.config.name, 'Ubuntu_Latest_GCC')
         shell: bash
         run: tests/test_commands
+
+      - name: Test commands on ubuntu
+        if: startsWith(matrix.config.name, 'Ubuntu_Latest_GCC')
+        shell: bash
+        run: tests/test_runner

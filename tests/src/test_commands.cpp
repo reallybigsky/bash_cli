@@ -1,33 +1,9 @@
-#include <gtest/gtest.h>
-#include "file_utils.hpp"
+#include "test_utils.hpp"
 #include "echo.hpp"
 #include "pwd.hpp"
 #include "cat.hpp"
 #include "wc.hpp"
-#include <stdio.h>
-#include <boost/filesystem.hpp>
-
-
 using namespace commands;
-
-std::string read_file_to_string(FILE* out){
-    rewind(out);
-    std::stringstream result;
-    while (auto line = FileUtils::readLine(out))
-        result << line.value();
-
-    rewind(out);
-
-    return result.str();
-}
-
-//const std::string file_content1 = "some text\n"
-//                                  "cat cat cat cat\n"
-//                                  "dog dog dog\n"
-//                                  "\n"
-//                                  "or cat?\n";
-//const std::string file_content2 =  "Somebody once told me the world is gonna roll me\n"
-//                                   "I ain't the sharpest tool in the shed\n";
 
 const std::vector<std::string> file_content1 = {
     "some text",
@@ -41,18 +17,6 @@ const std::vector<std::string> file_content2 = {
         "Somebody once told me the world is gonna roll me",
         "I ain't the sharpest tool in the shed",
 };
-
-
-void create_testfile(const std::string& filename, const std::vector<std::string>& file_content) {
-    std::fstream f1(filename, std::fstream::in | std::fstream::out | std::fstream::trunc);
-    if (f1.is_open()) {
-        for (const auto& s : file_content) {
-            f1 << s << std::endl;
-        }
-        f1.close();
-    } else
-        std::cout << filename << "NOT OPENED" << std::endl;
-}
 
 TEST(TestEcho, echo) {
     FILE* i_file = nullptr, *o_file = nullptr, *e_file = tmpfile();
