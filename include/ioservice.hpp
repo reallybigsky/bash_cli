@@ -23,7 +23,7 @@ struct EndOfGlobalInputStream : public std::ios_base::failure {
  */
 class IOservice {
 public:
-    IOservice(int argc, char* argv[])
+    IOservice(int argc, const char* argv[])
         : f_input(nullptr)
         , f_output(nullptr)
         , f_err(nullptr)

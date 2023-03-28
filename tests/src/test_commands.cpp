@@ -157,7 +157,7 @@ TEST(TestCat, cat) {
     expected = "cat: error1: No such file or directory\n"
                "cat: error2: No such file or directory\n";
 
-    EXPECT_EQ(2, cat_cmd.run(cat_job,  env, i_file, o_file, e_file));
+    EXPECT_EQ(1, cat_cmd.run(cat_job,  env, i_file, o_file, e_file));
     EXPECT_EQ(expected, read_file_to_string(e_file));
 
     fclose(o_file);

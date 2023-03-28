@@ -14,7 +14,7 @@
  */
 class Application {
 public:
-    Application(int argc, char* argv[])
+    Application(int argc, const char* argv[])
         : env(std::make_shared<Environment>())
         , ios(std::make_shared<IOservice>(argc, argv))
         , handler(std::make_shared<Handler>(ios))

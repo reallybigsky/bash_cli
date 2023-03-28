@@ -70,7 +70,12 @@ TEST(TestSubstitution, test_substitution) {
     create_testfile(filepath2, {});
     create_testfile(filepath3, {});
 
-    char* input_streams [4] = {"", "in=input_substitution.txt", "out=out_substitution.txt", "err=error.txt"};
+    const char* name = "test";
+    const char* input = "in=input_substitution.txt";
+    const char* output = "out=out_substitution.txt";
+    const char* err = "err=error.txt";
+
+    const char* input_streams [4] = {name, input, output, err};
     Application app(4, input_streams);
     app.run();
 
