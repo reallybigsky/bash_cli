@@ -54,4 +54,6 @@ void Application::run() {
         }
         (*env)["?"] = std::to_string(lastReturnCode);
     }
+    ios->flushOutput();
+    ios->flushErr();
 }

@@ -7,6 +7,7 @@
 #include <string>
 #include <exception>
 #include <stdexcept>
+#include <utility>
 
 /**
  * EndOfInputStream exception
@@ -23,8 +24,9 @@ struct EndOfGlobalInputStream : public std::ios_base::failure {
  */
 class IOservice {
 public:
-    IOservice(int argc, const char* argv[])
-        : f_input(nullptr)
+    IOservice(int argc, const char* argv[], std::string gr)
+        : greeting(std::move(gr))
+        , f_input(nullptr)
         , f_output(nullptr)
         , f_err(nullptr)
     {
@@ -148,6 +150,23 @@ public:
     }
 
     /**
+     * Flushes all buffered data to output
+     */
+    void flushOutput() {
+        if (f_output)
+            fflush(f_output);
+    }
+
+
+    /**
+ * Flushes all buffered data to err output
+ */
+    void flushErr() {
+        if (f_err)
+            fflush(f_err);
+    }
+
+    /**
      * read entire line from global Input stream
      *
      * @return string line from global Input stream
@@ -173,7 +192,7 @@ public:
     }
 
 private:
-    const std::string greeting = "> ";
+    const std::string greeting;
 
     const std::string inArg  = "in=" ;
     const std::string outArg = "out=";
