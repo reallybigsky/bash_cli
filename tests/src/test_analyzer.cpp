@@ -23,6 +23,7 @@ TEST(TestLexerBasic, lexer_basic) {
     EXPECT_EQ(output.size(), 1);
     EXPECT_EQ(output[0], input);
 }
+
 TEST(TestLexerPipe, lexer_pipe) {
     std::string input;
     std::vector<std::string> output;
@@ -84,6 +85,7 @@ TEST(TestLexerReplace, lexer_replace) {
     EXPECT_EQ(output.size(), 1);
     EXPECT_EQ(output[0], "echo | echo | echo");
 }
+
 TEST(TestLexerSingleQuotes, lexer_single_quotes) {
     std::string input;
     std::vector<std::string> output;
@@ -208,6 +210,7 @@ TEST(TestLexerBS, lexer_bs) {
     EXPECT_EQ(output.size(), 1);
     EXPECT_EQ(output[0], input);
 }
+
 TEST(TestLexerAll, lexer_lexer_all) {
     std::string input;
     std::vector<std::string> output;
@@ -351,6 +354,7 @@ TEST(TestParserDoubleQuotes, parser_double_quotes) {
     EXPECT_EQ(output[i].args.size(), 0);
     ++i;
 }
+
 TEST(TestParserSingleQutes, parser_single_quotes) {
     env->clear();
     std::vector<std::string> input;
@@ -583,39 +587,3 @@ TEST(TestAll, all) {
     EXPECT_EQ(output[5].args[0] ,"$a  $b");
     std::cout << "Analyzer::Lexer + Analyzer::Parser OK!" << std::endl;
 }
-
-//void test_lexer() {
-//    std::cout << "Analyzer::Lexer..." << std::endl;
-//    test_lexer_basic();
-//    test_lexer_pipe();
-//    test_lexer_replace();
-//    test_lexer_single_quotes();
-//    test_lexer_double_quotes();
-//    test_lexer_bs();
-//    test_lexer_all();
-//    test_lexer_error();
-//    std::cout << "Analyzer::Lexer OK!" << std::endl;
-//}
-//
-//void test_parser() {
-//    std::cout << "Analyzer::Parser..." << std::endl;
-//    test_parser_basic();
-//    test_parser_double_quotes();
-//    test_parser_single_quotes();
-//    test_parser_assignment();
-//    test_parser_all();
-//    test_parser_error();
-//    std::cout << "Analyzer::Parser OK!" << std::endl;
-//
-//}
-//
-//int main(int argc, char* argv[]) {
-//
-//    std::cout << "Testing Analyzer..." << std::endl;
-//    test_lexer();
-//    test_parser();
-//    test_all();
-//    std::cout << "Analyzer OK!" << std::endl;
-//
-//    return 0;
-//};

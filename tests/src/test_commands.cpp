@@ -35,13 +35,11 @@ TEST(TestEcho, echo) {
     fclose(o_file);
     o_file = tmpfile();
 
-
     EXPECT_EQ(0, echo_cmd.run(echo_job, env, i_file, o_file, e_file));
     EXPECT_EQ(expected, read_file_to_string(o_file));
     fclose(o_file);
     fclose(e_file);
 }
-
 
 TEST(TestPwd, pwd) {
     FILE* i_file = nullptr, *o_file = nullptr, *e_file = tmpfile();
@@ -51,26 +49,25 @@ TEST(TestPwd, pwd) {
     Pwd pwd_cmd;
     o_file = tmpfile();
 
-//    std::string expected = std::filesystem::current_path().make_preferred().string() + '\n';
     EXPECT_EQ(0, pwd_cmd.run(pwd_job, env, i_file, o_file, e_file));
-    EXPECT_EQ(std::filesystem::path(std::filesystem::current_path().string() + '\n', std::filesystem::path::format::generic_format), std::filesystem::path(read_file_to_string(o_file), std::filesystem::path::format::generic_format));
+    EXPECT_EQ(std::filesystem::path(std::filesystem::current_path().string() + '\n', std::filesystem::path::format::generic_format),
+              std::filesystem::path(read_file_to_string(o_file), std::filesystem::path::format::generic_format));
 
     fclose(o_file);
     o_file = tmpfile();
     pwd_job = {"pwd", {}};
     EXPECT_EQ(0, pwd_cmd.run(pwd_job, env, i_file, o_file, e_file));
-    EXPECT_EQ(std::filesystem::path(std::filesystem::current_path().string() + '\n', std::filesystem::path::format::generic_format), std::filesystem::path(read_file_to_string(o_file), std::filesystem::path::format::generic_format));
+    EXPECT_EQ(std::filesystem::path(std::filesystem::current_path().string() + '\n', std::filesystem::path::format::generic_format),
+              std::filesystem::path(read_file_to_string(o_file), std::filesystem::path::format::generic_format));
     fclose(o_file);
     fclose(e_file);
 }
-
 
 TEST(TestCat, cat) {
     FILE* i_file = nullptr, *o_file = nullptr, *e_file = tmpfile();
     std::string filepath1 = "test1.txt", filepath2 = "test2.txt";
     create_testfile(filepath1, file_content1);
     create_testfile(filepath2, file_content2);
-
 
     token cat_job = {"cat", {filepath1}};
     auto env = std::make_shared<Environment>();
@@ -114,7 +111,6 @@ TEST(TestCat, cat) {
     EXPECT_EQ(1, cat_cmd.run(cat_job,  env, i_file, o_file, e_file));
     EXPECT_EQ(expected, read_file_to_string(o_file));
 
-
     fclose(o_file);
     o_file = tmpfile();
     cat_job = {"cat", {"error1", "error2"}};
@@ -130,7 +126,6 @@ TEST(TestCat, cat) {
     remove(filepath1.c_str());
     remove(filepath2.c_str());
 }
-
 
 TEST(TestWc, wc) {
     FILE* i_file = nullptr, *o_file = nullptr, *e_file = tmpfile();
@@ -155,7 +150,7 @@ TEST(TestWc, wc) {
     wc_job = {"wc", {filepath1, filepath2}};
     expected = "  5  11  " + std::to_string(std::filesystem::file_size(t1)) + " test1.txt\n"
                "  2  18  " + std::to_string(std::filesystem::file_size(t2)) + " test2.txt\n"
-               "  7  29 " + std::to_string(std::filesystem::file_size(t1) + std::filesystem::file_size(t2)) + " total\n";
+               "  7  29 "  + std::to_string(std::filesystem::file_size(t1) + std::filesystem::file_size(t2)) + " total\n";
 
     fclose(o_file);
     o_file = tmpfile();

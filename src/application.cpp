@@ -7,6 +7,7 @@ void Application::run() {
     FILE* o_file = nullptr;
     bool prevEOF = false;
     while (!handler->isExit()) {
+        lastReturnCode = 0;
         try {
             if (!prevEOF) {
                 ios->greet();

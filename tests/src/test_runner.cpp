@@ -80,7 +80,6 @@ TEST(TestSubstitution, test_substitution) {
     remove(filepath3.c_str());
 }
 
-
 const std::vector<std::string> input_pipeline_content {
     "echo \"pipe into cat\" | cat",
     "echo \"pipe into wc\" | wc",
