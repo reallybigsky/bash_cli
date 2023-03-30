@@ -39,7 +39,6 @@ public:
                 ("regexp,e", po::value<std::string>(), "use PATTERNS for matching")
                 ("file,f", po::value<std::vector<std::string>>(), "take PATTERNS from FILE")
                 ("ignore-case,i", "ignore case distinctions in patterns and data")
-                ("no-ignore-case", "do not ignore case distinctions (default)")
                 ("word-regexp,w", "match only whole words")
                 ("after-context,A", po::value<int>(), "print NUM lines of output context");
 
