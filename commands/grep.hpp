@@ -149,24 +149,28 @@ private:
         std::stringstream result;
         std::string line;
         boost::smatch base_match;
+        bool first = true;
         while (std::getline(file, line)) {
             if (boost::regex_search(line, base_match, base_regex)) {
+                if (first) {
+                    first = false;
+                }else if (after_context_NUM > 0){
+                    result << "--" << std::endl;
+                }
+
                 if (greater_one)
                     result << original_name << ":";
                 result << line << std::endl;
 
-                for (size_t i = 0; i < after_context_NUM; ++i) {
-                    std::getline(file, line);
-                    if (!line.empty()) {
-                        if (boost::regex_search(line, base_match, base_regex)) {
-                            if (greater_one)
-                                result << original_name << ":";
-                            i = 0;
-                        } else if (greater_one)
-                            result << original_name << "-";
+                for (size_t i = 0; i < after_context_NUM && std::getline(file, line); ++i) {
+                    if (boost::regex_search(line, base_match, base_regex)) {
+                        if (greater_one)
+                            result << original_name << ":";
+                        i = 0;
+                    } else if (greater_one)
+                        result << original_name << "-";
 
-                        result << line << std::endl;
-                    }
+                    result << line << std::endl;
                 }
             }
         }
