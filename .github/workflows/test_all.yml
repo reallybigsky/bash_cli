@@ -84,12 +84,12 @@ jobs:
         shell: bash
         run: tests/Debug/test_commands.exe
 
-      - name: Test commands on windows
+      - name: Test grep on windows
         if: startsWith(matrix.config.os, 'windows')
         shell: bash
         run: tests/Debug/test_grep.exe
 
-      - name: Test commands on windows
+      - name: Test pipes and substitutions on windows
         if: startsWith(matrix.config.os, 'windows')
         shell: bash
         run: tests/Debug/test_runner.exe
@@ -104,12 +104,12 @@ jobs:
         shell: bash
         run: tests/test_commands
 
-      - name: Test commands on ubuntu
+      - name: Test grep on ubuntu
         if: startsWith(matrix.config.name, 'Ubuntu_Latest_GCC')
         shell: bash
         run: tests/test_grep
 
-      - name: Test commands on ubuntu
+      - name: Test pipes and substitutions on ubuntu
         if: startsWith(matrix.config.name, 'Ubuntu_Latest_GCC')
         shell: bash
         run: tests/test_runner
