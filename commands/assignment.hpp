@@ -4,6 +4,7 @@
 #include "cmd.hpp"
 
 #include <regex>
+#include <unordered_set>
 
 namespace commands {
 
@@ -11,6 +12,9 @@ namespace commands {
  * Implementation of assignment command '='
  */
 class Assignment : public Cmd {
+private:
+    std::unordered_set<std::string> protected_variables = {"PWD"};
+
 public:
     /**
      * Assign tok.args[1] to tok.args[0]
@@ -33,6 +37,11 @@ public:
     virtual int run(const token& params, std::shared_ptr<Environment> env, FILE* input, FILE* output, FILE* err) override {
         if (params.args.empty()) {
             FileUtils::writeToFile("Assignment with no arguments!\n", err);
+            return 1;
+        }
+
+        if (protected_variables.count(params.args[0])) {
+            FileUtils::writeToFile("Cannot assign to variable: " + params.args[0] + '\n', err);
             return 1;
         }
 
