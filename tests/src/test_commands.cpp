@@ -218,7 +218,9 @@ TEST(TestLs, ls) {
     expected = "ls: not_exist: No such directory\n";
 
     EXPECT_EQ(1, ls.run(ls_job, env, i_file, o_file, e_file));
-    EXPECT_EQ(expected, read_file_to_string(e_file));
+    EXPECT_EQ(expected, read_file_to_string(o_file));
+
+    fclose(o_file);
 }
 
 TEST(TestLs, cd) {
@@ -273,5 +275,7 @@ TEST(TestLs, cd) {
     cd_job = {"cd", {}};
 
     EXPECT_EQ(0, cd.run(cd_job, env, i_file, o_file, e_file));
-    EXPECT_EQ(expected, read_file_to_string(o_file));
+    EXPECT_EQ(std::filesystem::path(expected, std::filesystem::path::format::generic_format),
+              std::filesystem::path(read_file_to_string(o_file), std::filesystem::path::format::generic_format));
+    fclose(o_file);
 }
