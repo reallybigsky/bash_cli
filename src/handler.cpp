@@ -5,6 +5,7 @@
 #include "wc.hpp"
 #include "grep.hpp"
 #include "assignment.hpp"
+#include "ls.hpp"
 
 Handler::Handler(std::shared_ptr<IOservice> io)
     : exit(false)
@@ -17,6 +18,7 @@ Handler::Handler(std::shared_ptr<IOservice> io)
         {"cat", std::make_shared<commands::Cat>()},
         {"wc", std::make_shared<commands::Wc>()},
         {"grep", std::make_shared<commands::Grep>()},
+        {"ls", std::make_shared<commands::Ls>()},
         {"=", std::make_shared<commands::Assignment>()}
     };
 }

@@ -31,6 +31,16 @@ inline bool is_file_exist(const fs::path &full_filepath) {
 }
 
 /**
+ * Check if directory exists in given path
+ *
+ * @param full_directory_path
+ * @return true if directory exists and false otherwise
+ */
+inline bool is_directory_exist(const fs::path &full_directory_path) {
+    return fs::is_directory(full_directory_path);
+}
+
+/**
  * Check if file is readable
  *
  * @param filepath
