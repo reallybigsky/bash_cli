@@ -67,14 +67,14 @@ public:
 
                 //проверка, существует ли файл
                 if(!FileUtils::is_file_exist(current_path)) {
-                    error << params.args[0] + ": No such file or directory" << std::endl;
+                    error << "cd: " + params.args[0] + ": No such file or directory" << std::endl;
                     FileUtils::writeToFile(error.str(), output);
                     return 1;
                 }
 
                 //проверка, является ли файл директорией
                 if(!FileUtils::is_directory_exist(current_path)) {
-                    error << params.args[0] + ":  Not a directory" << std::endl;
+                    error << "cd: " + params.args[0] + ":  Not a directory" << std::endl;
                     FileUtils::writeToFile(error.str(), output);
                     return 1;
                 }
