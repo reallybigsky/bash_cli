@@ -3,6 +3,8 @@
 #include "pwd.hpp"
 #include "cat.hpp"
 #include "wc.hpp"
+#include "ls.hpp"
+
 using namespace commands;
 
 const std::vector<std::string> file_content1 = {
@@ -182,4 +184,38 @@ TEST(TestWc, wc) {
 
     remove(filepath1.c_str());
     remove(filepath2.c_str());
+}
+
+TEST(TestLs, ls) {
+    FILE *i_file = nullptr, *o_file = nullptr, *e_file = tmpfile();
+    std::string filepath1 = "test_dir_ls/test_ls.txt", filepath2 = "test_dir_ls/test_ls2.txt";
+    std::filesystem::create_directory("test_dir_ls");
+    std::filesystem::create_directory("test_dir_ls/dir");
+    create_testfile(filepath1, file_content1);
+    create_testfile(filepath2, file_content2);
+
+    auto env = std::make_shared<Environment>();
+    env->emplace("PWD", std::filesystem::current_path().string());
+
+    token ls_job = {"ls", {"test_dir_ls"}};
+
+    Ls ls;
+    o_file = tmpfile();
+
+    std::string expected = "dir/\n"
+                           "test_ls.txt\n"
+                           "test_ls2.txt\n\n";
+
+    EXPECT_EQ(0, ls.run(ls_job, env, i_file, o_file, e_file));
+    EXPECT_EQ(expected, read_file_to_string(o_file));
+
+    fclose(o_file);
+    o_file = tmpfile();
+
+    ls_job = {"ls", {"not_exist"}};
+
+    expected = "ls: not_exist: No such directory\n";
+
+    EXPECT_EQ(1, ls.run(ls_job, env, i_file, o_file, e_file));
+    EXPECT_EQ(expected, read_file_to_string(e_file));
 }
