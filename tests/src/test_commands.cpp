@@ -4,6 +4,7 @@
 #include "cat.hpp"
 #include "wc.hpp"
 #include "ls.hpp"
+#include "cd.hpp"
 
 using namespace commands;
 
@@ -218,4 +219,59 @@ TEST(TestLs, ls) {
 
     EXPECT_EQ(1, ls.run(ls_job, env, i_file, o_file, e_file));
     EXPECT_EQ(expected, read_file_to_string(e_file));
+}
+
+TEST(TestLs, cd) {
+    FILE *i_file = nullptr, *o_file = nullptr, *e_file = tmpfile();
+
+    auto env = std::make_shared<Environment>();
+    env->emplace("PWD", std::filesystem::current_path().string());
+
+    std::string path = std::filesystem::current_path().string();
+    Cd cd;
+
+    std::string expected = "cd: too many arguments\n";
+    token cd_job = {"cd", {"many", "arguments"}};
+
+    EXPECT_EQ(1, cd.run(cd_job, env, i_file, o_file, e_file));
+    EXPECT_EQ(expected, read_file_to_string(e_file));
+
+    expected = "cd: error_directory: No such file or directory\n";
+    cd_job = {"cd", {"error_directory"}};
+
+    EXPECT_EQ(1, cd.run(cd_job, env, i_file, o_file, e_file));
+    EXPECT_EQ(expected, read_file_to_string(e_file));
+
+    fclose(e_file);
+    e_file = tmpfile();
+
+    std::string test_file = "test_file_for_cd";
+    std::vector<std::string> content;
+    create_testfile(test_file, content);
+
+    expected = "cd: test_file_for_cd: Not a directory\n";
+    cd_job = {"cd", {"test_file_for_cd"}};
+
+    EXPECT_EQ(1, cd.run(cd_job, env, i_file, o_file, e_file));
+    EXPECT_EQ(expected, read_file_to_string(e_file));
+
+    fclose(e_file);
+    o_file = tmpfile();
+
+    std::filesystem::create_directory("some_dir");
+    expected = path + "\\some_dir\n";
+    cd_job = {"cd", {"some_dir"}};
+
+    EXPECT_EQ(0, cd.run(cd_job, env, i_file, o_file, e_file));
+    EXPECT_EQ(expected, read_file_to_string(o_file));
+
+    fclose(o_file);
+
+    o_file = tmpfile();
+
+    expected = path.substr(0, path.find_first_of("\\") + 1) + '\n';
+    cd_job = {"cd", {}};
+
+    EXPECT_EQ(0, cd.run(cd_job, env, i_file, o_file, e_file));
+    EXPECT_EQ(expected, read_file_to_string(o_file));
 }
