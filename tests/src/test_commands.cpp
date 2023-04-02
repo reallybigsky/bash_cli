@@ -262,18 +262,18 @@ TEST(TestCd, cd) {
 
     std::filesystem::create_directory("some_dir");
     std::filesystem::path exp = std::filesystem::current_path();
-    exp /= "some_dir";
+    exp /= "some_dir\n";
     cd_job = {"cd", {"some_dir"}};
 
     EXPECT_EQ(0, cd.run(cd_job, env, i_file, o_file, e_file));
-    EXPECT_EQ(std::filesystem::path(expected, std::filesystem::path::format::generic_format),
+    EXPECT_EQ(std::filesystem::path(exp, std::filesystem::path::format::generic_format),
               std::filesystem::path(read_file_to_string(o_file), std::filesystem::path::format::generic_format));
 
     fclose(o_file);
 
     o_file = tmpfile();
 
-    expected = std::filesystem::current_path().root_directory().string() + '\n';
+    expected = std::filesystem::current_path().root_path().string() + '\n';
     cd_job = {"cd", {}};
 
     EXPECT_EQ(0, cd.run(cd_job, env, i_file, o_file, e_file));
