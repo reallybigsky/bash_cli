@@ -203,10 +203,18 @@ TEST(TestLs, ls) {
     Ls ls;
     o_file = tmpfile();
 
-    std::string expected = std::filesystem::path("dir/",
+    std::string expected;
+    #if defined(_WIN64) || defined(_WIN32)
+    expected = std::filesystem::path("dir/",
                                                  std::filesystem::path::format::generic_format).string() + '\n'
                            + "test_ls.txt\n"
                            "test_ls2.txt\n\n";
+    #else
+    expected = "test_ls2.txt\n"
+               "test_ls.txt\n"
+               + std::filesystem::path("dir/",
+                                     std::filesystem::path::format::generic_format).string() + "\n\n";
+    #endif
 
     EXPECT_EQ(0, ls.run(ls_job, env, i_file, o_file, e_file));
     EXPECT_EQ(std::filesystem::path(expected,  std::filesystem::path::format::generic_format),
