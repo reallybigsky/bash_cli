@@ -5,6 +5,7 @@
 #include <filesystem>
 #include "cmd.hpp"
 #include "file_utils.hpp"
+#include "boost/algorithm/string/replace.hpp"
 
 namespace commands {
 
@@ -41,7 +42,7 @@ namespace commands {
             int32_t error_count = 0;
             for (auto &directory: params.args) {
                 std::filesystem::path path = current_path;
-                path += "/" + directory;
+                path /= directory;
                 if (!FileUtils::is_directory_exist(path)) {
                     ++error_count;
                     result << params.name << ": " << directory << ": No such directory" << std::endl;
@@ -74,6 +75,7 @@ namespace commands {
             std::stringstream result;
             for (auto const &dir_entry: std::filesystem::directory_iterator(path)) {
                 std::string entry = dir_entry.path().string();
+                boost::algorithm::replace_all(entry, "/", "\\");
                 entry = entry.substr(entry.find_last_of('\\') + 1);
                 if (FileUtils::is_directory_exist(dir_entry.path().string())) {
                     entry += "/";

@@ -203,33 +203,33 @@ TEST(TestLs, ls) {
     Ls ls;
     o_file = tmpfile();
 
-    std::string expected = "dir/\n"
-                           "test_ls.txt\n"
+    std::string expected = std::filesystem::path("dir/",
+                                                 std::filesystem::path::format::generic_format).string() + '\n'
+                           + "test_ls.txt\n"
                            "test_ls2.txt\n\n";
 
     EXPECT_EQ(0, ls.run(ls_job, env, i_file, o_file, e_file));
-    EXPECT_EQ(expected, read_file_to_string(o_file));
+    EXPECT_EQ(std::filesystem::path(expected,  std::filesystem::path::format::generic_format),
+              std::filesystem::path(read_file_to_string(o_file),  std::filesystem::path::format::generic_format));
 
     fclose(o_file);
-    o_file = tmpfile();
+    e_file = tmpfile();
 
     ls_job = {"ls", {"not_exist"}};
 
     expected = "ls: not_exist: No such directory\n";
 
     EXPECT_EQ(1, ls.run(ls_job, env, i_file, o_file, e_file));
-    EXPECT_EQ(expected, read_file_to_string(o_file));
+    EXPECT_EQ(expected, read_file_to_string(e_file));
 
-    fclose(o_file);
+    fclose(e_file);
 }
 
-TEST(TestLs, cd) {
+TEST(TestCd, cd) {
     FILE *i_file = nullptr, *o_file = nullptr, *e_file = tmpfile();
 
     auto env = std::make_shared<Environment>();
     env->emplace("PWD", std::filesystem::current_path().string());
-
-    std::string path = std::filesystem::current_path().string();
     Cd cd;
 
     std::string expected = "cd: too many arguments\n";
@@ -261,17 +261,19 @@ TEST(TestLs, cd) {
     o_file = tmpfile();
 
     std::filesystem::create_directory("some_dir");
-    expected = path + "\\some_dir\n";
+    std::filesystem::path exp = std::filesystem::current_path();
+    exp /= "some_dir";
     cd_job = {"cd", {"some_dir"}};
 
     EXPECT_EQ(0, cd.run(cd_job, env, i_file, o_file, e_file));
-    EXPECT_EQ(expected, read_file_to_string(o_file));
+    EXPECT_EQ(std::filesystem::path(expected, std::filesystem::path::format::generic_format),
+              std::filesystem::path(read_file_to_string(o_file), std::filesystem::path::format::generic_format));
 
     fclose(o_file);
 
     o_file = tmpfile();
 
-    expected = path.substr(0, path.find_first_of("\\") + 1) + '\n';
+    expected = std::filesystem::current_path().root_directory().string() + '\n';
     cd_job = {"cd", {}};
 
     EXPECT_EQ(0, cd.run(cd_job, env, i_file, o_file, e_file));

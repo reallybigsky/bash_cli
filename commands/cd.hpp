@@ -56,9 +56,11 @@ public:
         std::filesystem::path current_path(env->at("PWD").to_string());
         std::string dir;
         std::string new_path = params.args[0];
+        boost::algorithm::replace_all(new_path, "/", "\\");
 
         //путешествуем по введённому пути и проверяем на существование и на принадлежность к директории
         do {
+
             dir = new_path.substr(0, new_path.find_first_of('\\'));
             new_path = new_path.substr(new_path.find_first_of('\\') + 1);
             if(dir == new_path) {
