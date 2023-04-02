@@ -107,7 +107,6 @@ public:
             if (!FileUtils::is_file_exist(current_path)) {
                 if (!FileUtils::is_file_exist(filename)) {
                     ++error_count;
-                    errors << params.name << ": " << filename << ": No such file or directory" << std::endl;
                     result << params.name << ": " << filename << ": No such file or directory" << std::endl;
                     continue;
                 }
@@ -117,7 +116,6 @@ public:
             // проверка на то, можно ли открыть файл на чтение
             if (!FileUtils::is_readable(current_path)) {
                 ++error_count;
-                errors << filename << ": Permission denied" << std::endl;
                 result << filename << ": Permission denied" << std::endl;
                 continue;
             }
@@ -126,7 +124,7 @@ public:
         }
 
         if (error_count == files.size()) {
-            FileUtils::writeToFile(errors.str(), err);
+            FileUtils::writeToFile(result.str(), err);
             return 1;
         }
 
@@ -176,7 +174,6 @@ private:
 
         return result.str();
     }
-
 };
 
 } //commands
