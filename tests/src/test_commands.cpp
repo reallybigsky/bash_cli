@@ -3,6 +3,9 @@
 #include "pwd.hpp"
 #include "cat.hpp"
 #include "wc.hpp"
+#include "ls.hpp"
+#include "cd.hpp"
+
 using namespace commands;
 
 const std::vector<std::string> file_content1 = {
@@ -182,4 +185,107 @@ TEST(TestWc, wc) {
 
     remove(filepath1.c_str());
     remove(filepath2.c_str());
+}
+
+TEST(TestLs, ls) {
+    FILE *i_file = nullptr, *o_file = nullptr, *e_file = tmpfile();
+    std::string filepath1 = "test_dir_ls/test_ls.txt", filepath2 = "test_dir_ls/test_ls2.txt";
+    std::filesystem::create_directory("test_dir_ls");
+    std::filesystem::create_directory("test_dir_ls/dir");
+    create_testfile(filepath1, file_content1);
+    create_testfile(filepath2, file_content2);
+
+    auto env = std::make_shared<Environment>();
+    env->emplace("PWD", std::filesystem::current_path().string());
+
+    token ls_job = {"ls", {"test_dir_ls"}};
+
+    Ls ls;
+    o_file = tmpfile();
+
+    std::string expected;
+    #if defined(_WIN64) || defined(_WIN32)
+    expected = std::filesystem::path("dir/",
+                                                 std::filesystem::path::format::generic_format).string() + '\n'
+                           + "test_ls.txt\n"
+                           "test_ls2.txt\n\n";
+    #else
+    expected = "test_ls2.txt\n"
+               "test_ls.txt\n"
+               + std::filesystem::path("dir/",
+                                     std::filesystem::path::format::generic_format).string() + "\n\n";
+    #endif
+
+    EXPECT_EQ(0, ls.run(ls_job, env, i_file, o_file, e_file));
+    EXPECT_EQ(std::filesystem::path(expected,  std::filesystem::path::format::generic_format),
+              std::filesystem::path(read_file_to_string(o_file),  std::filesystem::path::format::generic_format));
+
+    fclose(o_file);
+    e_file = tmpfile();
+
+    ls_job = {"ls", {"not_exist"}};
+
+    expected = "ls: not_exist: No such directory\n";
+
+    EXPECT_EQ(1, ls.run(ls_job, env, i_file, o_file, e_file));
+    EXPECT_EQ(expected, read_file_to_string(e_file));
+
+    fclose(e_file);
+}
+
+TEST(TestCd, cd) {
+    FILE *i_file = nullptr, *o_file = nullptr, *e_file = tmpfile();
+
+    auto env = std::make_shared<Environment>();
+    env->emplace("PWD", std::filesystem::current_path().string());
+    Cd cd;
+
+    std::string expected = "cd: too many arguments\n";
+    token cd_job = {"cd", {"many", "arguments"}};
+
+    EXPECT_EQ(1, cd.run(cd_job, env, i_file, o_file, e_file));
+    EXPECT_EQ(expected, read_file_to_string(e_file));
+
+    expected = "cd: error_directory: No such file or directory\n";
+    cd_job = {"cd", {"error_directory"}};
+
+    EXPECT_EQ(1, cd.run(cd_job, env, i_file, o_file, e_file));
+    EXPECT_EQ(expected, read_file_to_string(e_file));
+
+    fclose(e_file);
+    e_file = tmpfile();
+
+    std::string test_file = "test_file_for_cd";
+    std::vector<std::string> content;
+    create_testfile(test_file, content);
+
+    expected = "cd: test_file_for_cd: Not a directory\n";
+    cd_job = {"cd", {"test_file_for_cd"}};
+
+    EXPECT_EQ(1, cd.run(cd_job, env, i_file, o_file, e_file));
+    EXPECT_EQ(expected, read_file_to_string(e_file));
+
+    fclose(e_file);
+    o_file = tmpfile();
+
+    std::filesystem::create_directory("some_dir");
+    std::filesystem::path exp = std::filesystem::current_path();
+    exp /= "some_dir\n";
+    cd_job = {"cd", {"some_dir"}};
+
+    EXPECT_EQ(0, cd.run(cd_job, env, i_file, o_file, e_file));
+    EXPECT_EQ(std::filesystem::path(exp, std::filesystem::path::format::generic_format),
+              std::filesystem::path(read_file_to_string(o_file), std::filesystem::path::format::generic_format));
+
+    fclose(o_file);
+
+    o_file = tmpfile();
+
+    expected = std::filesystem::current_path().root_path().string() + '\n';
+    cd_job = {"cd", {}};
+
+    EXPECT_EQ(0, cd.run(cd_job, env, i_file, o_file, e_file));
+    EXPECT_EQ(std::filesystem::path(expected, std::filesystem::path::format::generic_format),
+              std::filesystem::path(read_file_to_string(o_file), std::filesystem::path::format::generic_format));
+    fclose(o_file);
 }
