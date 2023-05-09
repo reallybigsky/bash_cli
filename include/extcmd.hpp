@@ -15,6 +15,7 @@ namespace bp = boost::process;
  */
 class ExtCmd {
 public:
+    ExtCmd() = default;
     /**
      * This function is called when no internal commands with params.name were found,
      *      but external program with this name exists in current or global PATH
@@ -26,7 +27,7 @@ public:
      * @param err: error FILE stream for external program
      * @return return code of the external program
      */
-    int run(const token& params, std::shared_ptr<Environment> env, FILE* input, FILE* output, FILE* err) {
+    int run(const token& params, std::shared_ptr<Environment> env, FILE* input, FILE* output, FILE* err) const {
         std::filesystem::path current_path(env->at("PWD").to_string());
         if (current_path /= params.name; !FileUtils::is_file_exist(current_path)) {
             if (current_path = params.name; !FileUtils::is_file_exist(current_path)) {

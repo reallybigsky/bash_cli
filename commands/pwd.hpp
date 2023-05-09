@@ -27,7 +27,7 @@ public:
      * @param err: error FILE stream (unused)
      * @return 0 always
      */
-    virtual int run(const token&, std::shared_ptr<Environment> env, FILE*, FILE* output, FILE*) override {
+    virtual int run(const token&, std::shared_ptr<Environment> env, FILE*, FILE* output, FILE*) const override {
         std::stringstream result;
         result << env->at("PWD").to_string() << std::endl;
         FileUtils::writeToFile(result.str(), output);

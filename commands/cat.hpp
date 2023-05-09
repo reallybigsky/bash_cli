@@ -27,7 +27,7 @@ public:
      * @return 0 if there were no errors, 1 otherwise
      *
      */
-    virtual int run(const token& params, std::shared_ptr<Environment> env, FILE* input, FILE* output, FILE* err) override {
+    virtual int run(const token& params, std::shared_ptr<Environment> env, FILE* input, FILE* output, FILE* err) const override {
         if (params.args.empty()) {
             while (auto line = FileUtils::readLine(input)) {
                 FileUtils::writeToFile(line.value(), output);

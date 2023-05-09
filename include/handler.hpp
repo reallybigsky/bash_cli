@@ -15,6 +15,8 @@
  */
 class Handler {
 public:
+    typedef std::unordered_map<std::string, std::unique_ptr<Cmd>> CommandDict;
+
     Handler(std::shared_ptr<IOservice> ioserv);
 
     /**
@@ -34,6 +36,6 @@ public:
 private:
     bool exit;
     std::shared_ptr<IOservice> ios;
-    std::unordered_map<std::string, std::shared_ptr<Cmd>> commands;
-    commands::ExtCmd extCmd;
+    const CommandDict commands;
+    const commands::ExtCmd extCmd;
 };

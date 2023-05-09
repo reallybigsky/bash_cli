@@ -47,7 +47,7 @@ public:
     }
 
 
-    virtual int run(const token &params, std::shared_ptr<Environment> env, FILE *input, FILE *output, FILE *err) {
+    virtual int run(const token &params, std::shared_ptr<Environment> env, FILE *input, FILE *output, FILE *err) const override {
         std::vector<const char *> args_with_options;
         args_with_options.push_back(params.name.c_str());
         for (auto &arg: params.args) {
@@ -138,9 +138,7 @@ public:
 
 
 private:
-    std::string
-    matching_in_file(const std::string& original_name, std::filesystem::path &filename, boost::regex &base_regex, size_t after_context_NUM,
-                     bool greater_one) {
+    std::string matching_in_file(const std::string& original_name, std::filesystem::path &filename, boost::regex &base_regex, size_t after_context_NUM, bool greater_one) const {
         std::fstream file(filename);
 
         std::stringstream result;

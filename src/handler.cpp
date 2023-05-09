@@ -6,20 +6,24 @@
 #include "grep.hpp"
 #include "assignment.hpp"
 
+Handler::CommandDict fill_commands() {
+    Handler::CommandDict result;
+
+    result.emplace("echo", std::make_unique<commands::Echo>());
+    result.emplace("pwd", std::make_unique<commands::Pwd>());
+    result.emplace("cat", std::make_unique<commands::Cat>());
+    result.emplace("wc", std::make_unique<commands::Wc>());
+    result.emplace("grep", std::make_unique<commands::Grep>());
+    result.emplace("=", std::make_unique<commands::Assignment>());
+
+    return result;
+}
+
 Handler::Handler(std::shared_ptr<IOservice> io)
     : exit(false)
     , ios(io)
-{
-    /// make cmd executable
-    commands = {
-        {"echo", std::make_shared<commands::Echo>()},
-        {"pwd", std::make_shared<commands::Pwd>()},
-        {"cat", std::make_shared<commands::Cat>()},
-        {"wc", std::make_shared<commands::Wc>()},
-        {"grep", std::make_shared<commands::Grep>()},
-        {"=", std::make_shared<commands::Assignment>()}
-    };
-}
+    , commands(fill_commands())
+{}
 
 int Handler::exec(const token& tok, std::shared_ptr<Environment> env, FILE* i_file, FILE* o_file) {
     try {
