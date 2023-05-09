@@ -52,19 +52,19 @@ private:
         BS_DQ
     };
 
-    static std::string buffer_extract(std::stringstream & ss) {
+    static std::string buffer_extract(std::stringstream& ss) {
         std::string res = ss.str();
-        ss = std::stringstream();
+        ss.str("");
         return res;
     }
 
-    std::string replace_var(const std::string & var) {
+    std::string replace_var(const std::string& var) {
         if (var.empty()) {
             return "$";
-        } else {
-            if (env->find(var) != env->end()) {
-                return env->get(var);
-            }
+        }
+
+        if (env->find(var) != env->end()) {
+            return env->get(var);
         }
 
         return "";
@@ -97,7 +97,7 @@ public:
         bool write_in_buff = true;
         bool inc = true;
 
-        for (size_t i = 0; i < input.size(); inc ? ++i : i) {
+        for (size_t i = 0; i < input.size(); i += inc) {
             char cur_ch = input[i];
             write_in_buff = true;
             inc = true;
@@ -148,7 +148,7 @@ public:
                     if (std::isalpha(cur_ch) || std::isdigit(cur_ch) || cur_ch == '?') {
                         var << cur_ch;
                     } else {
-                        // c_str() just only for windows :)
+                        // c_str() because on windows extra '\0' is added
                         buffer << replace_var(buffer_extract(var)).c_str();
                         inc = false;
                         state = LexerState::Start;
@@ -209,7 +209,7 @@ public:
             bool is_first = true;
             bool inc = true;
 
-            for (size_t i = 0; i < cur_cmd.size(); inc ? ++i : i ) {
+            for (size_t i = 0; i < cur_cmd.size(); i += inc) {
                 char cur_ch = cur_cmd[i];
                 inc = true;
 
