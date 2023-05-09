@@ -1,8 +1,10 @@
-#ifndef BASH_CLI_TEST_UTILS_HPP
-#define BASH_CLI_TEST_UTILS_HPP
-#include <gtest/gtest.h>
+#pragma once
+
 #include "file_utils.hpp"
-#include <stdio.h>
+
+#include <gtest/gtest.h>
+
+#include <cstdio>
 
 
 std::string read_file_to_string(FILE* out){
@@ -26,5 +28,3 @@ void create_testfile(const std::string& filename, const std::vector<std::string>
     } else
         std::cout << filename << "NOT OPENED" << std::endl;
 }
-
-#endif //BASH_CLI_TEST_UTILS_HPP

@@ -1,5 +1,4 @@
-#ifndef BASH_CLI_GETLINE_WIN_HPP
-#define BASH_CLI_GETLINE_WIN_HPP
+#pragma once
 
 #include <cstdio>
 #include <cstdlib>
@@ -84,5 +83,3 @@ inline size_t getline(char **restrict lineptr, size_t *restrict n, FILE *restric
 {
     return getdelim(lineptr, n, '\n', stream);
 }
-
-#endif //BASH_CLI_GETLINE_WIN_HPP

@@ -1,5 +1,4 @@
-#ifndef BASH_CLI_COMMON_HPP
-#define BASH_CLI_COMMON_HPP
+#pragma once
 
 #include <boost/process/environment.hpp>
 
@@ -33,5 +32,3 @@ struct token {
         }
     }
 };
-
-#endif //BASH_CLI_COMMON_HPP

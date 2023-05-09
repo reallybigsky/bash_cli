@@ -1,5 +1,4 @@
-#ifndef BASH_CLI_IOSERVICE_HPP
-#define BASH_CLI_IOSERVICE_HPP
+#pragma once
 
 #include "common.hpp"
 #include "file_utils.hpp"
@@ -202,5 +201,3 @@ private:
     FILE* f_output;
     FILE* f_err;
 };
-
-#endif //BASH_CLI_IOSERVICE_HPP

@@ -1,5 +1,4 @@
-#ifndef BASH_CLI_HANDLER_HPP
-#define BASH_CLI_HANDLER_HPP
+#pragma once
 
 #include "cmd.hpp"
 #include "extcmd.hpp"
@@ -38,6 +37,3 @@ private:
     std::unordered_map<std::string, std::shared_ptr<Cmd>> commands;
     commands::ExtCmd extCmd;
 };
-
-
-#endif //BASH_CLI_HANDLER_HPP

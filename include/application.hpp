@@ -1,5 +1,4 @@
-#ifndef BASH_CLI_APPLICATION_HPP
-#define BASH_CLI_APPLICATION_HPP
+#pragma once
 
 #include "ioservice.hpp"
 #include "handler.hpp"
@@ -39,5 +38,3 @@ private:
     std::shared_ptr<Analyzer> analyzer;
     int lastReturnCode;
 };
-
-#endif //BASH_CLI_APPLICATION_HPP

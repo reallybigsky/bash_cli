@@ -1,5 +1,4 @@
-#ifndef BASH_CLI_EXTCMD_HPP
-#define BASH_CLI_EXTCMD_HPP
+#pragma once
 
 #include "file_utils.hpp"
 
@@ -48,5 +47,3 @@ public:
 };
 
 } // namespace commands
-
-#endif //BASH_CLI_EXTCMD_HPP

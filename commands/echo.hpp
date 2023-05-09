@@ -1,5 +1,4 @@
-#ifndef BASH_CLI_ECHO_HPP
-#define BASH_CLI_ECHO_HPP
+#pragma once
 
 #include "cmd.hpp"
 
@@ -44,5 +43,3 @@ public:
 };
 
 }
-
-#endif //BASH_CLI_ECHO_HPP

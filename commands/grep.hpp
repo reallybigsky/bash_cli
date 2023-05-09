@@ -1,8 +1,8 @@
-#ifndef BASH_CLI_GREP_HPP
-#define BASH_CLI_GREP_HPP
+#pragma once
 
 #include "cmd.hpp"
 #include "file_utils.hpp"
+
 #include <boost/program_options.hpp>
 #include <boost/regex.hpp>
 
@@ -177,4 +177,3 @@ private:
 };
 
 } //commands
-#endif //BASH_CLI_GREP_HPP

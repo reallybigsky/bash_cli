@@ -1,5 +1,4 @@
-#ifndef BASH_CLI_PWD_HPP
-#define BASH_CLI_PWD_HPP
+#pragma once
 
 #include "cmd.hpp"
 #include "file_utils.hpp"
@@ -37,5 +36,3 @@ public:
 };
 
 } // namespace commands
-
-#endif //BASH_CLI_PWD_HPP

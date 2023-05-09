@@ -1,5 +1,4 @@
-#ifndef BASH_CLI_PREPROCESS_HPP
-#define BASH_CLI_PREPROCESS_HPP
+#pragma once
 
 #include "common.hpp"
 
@@ -297,5 +296,3 @@ public:
 private:
     std::shared_ptr<Environment> env;
 };
-
-#endif //BASH_CLI_PREPROCESS_HPP

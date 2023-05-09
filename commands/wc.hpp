@@ -1,5 +1,4 @@
-#ifndef BASH_CLI_WC_HPP
-#define BASH_CLI_WC_HPP
+#pragma once
 
 #include "cmd.hpp"
 #include "file_utils.hpp"
@@ -193,5 +192,3 @@ private:
 };
 
 } // namespace commands
-
-#endif //BASH_CLI_WC_HPP

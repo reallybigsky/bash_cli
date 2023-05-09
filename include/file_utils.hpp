@@ -1,5 +1,4 @@
-#ifndef BASH_CLI_FILE_UTILS_HPP
-#define BASH_CLI_FILE_UTILS_HPP
+#pragma once
 
 #include "common.hpp"
 
@@ -84,5 +83,3 @@ inline std::optional<std::string> readLine(FILE *file) {
 }
 
 } //namespace FIleUtils
-
-#endif //BASH_CLI_FILE_UTILS_HPP

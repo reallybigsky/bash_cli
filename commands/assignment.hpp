@@ -1,5 +1,4 @@
-#ifndef BASH_CLI_ASSIGNMENT_HPP
-#define BASH_CLI_ASSIGNMENT_HPP
+#pragma once
 
 #include "cmd.hpp"
 
@@ -59,6 +58,3 @@ public:
 };
 
 } // namespace commands
-
-
-#endif //BASH_CLI_ASSIGNMENT_HPP

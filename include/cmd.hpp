@@ -1,5 +1,4 @@
-#ifndef BASH_CLI_CMD_HPP
-#define BASH_CLI_CMD_HPP
+#pragma once
 
 #include "common.hpp"
 
@@ -24,5 +23,3 @@ public:
 
     virtual ~Cmd() = default;
 };
-
-#endif //BASH_CLI_CMD_HPP

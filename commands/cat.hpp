@@ -1,5 +1,4 @@
-#ifndef BASH_CLI_CAT_HPP
-#define BASH_CLI_CAT_HPP
+#pragma once
 
 #include "file_utils.hpp"
 #include "cmd.hpp"
@@ -90,5 +89,3 @@ private:
 };
 
 } // namespace commands
-
-#endif //BASH_CLI_CAT_HPP
