@@ -23,14 +23,14 @@ else()
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wpedantic -Wextra -Wunused-parameter \
         -Wcast-align -Wcast-qual -Wduplicated-branches \
         -Wduplicated-cond -Wextra-semi -Wfloat-equal -Wlogical-op \
-        -Wnon-virtual-dtor -Woverloaded-virtual -Wsign-promo \
+        -Wnon-virtual-dtor -Wsign-promo \
         -pedantic-errors \
         -g -fsanitize=address -fno-omit-frame-pointer")
     else()
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wpedantic -Wextra -Wunused-parameter \
         -Wcast-align -Wcast-qual -Wduplicated-branches \
         -Wduplicated-cond -Wextra-semi -Wfloat-equal -Wlogical-op \
-        -Wnon-virtual-dtor -Woverloaded-virtual -Wsign-promo \
+        -Wnon-virtual-dtor -Wsign-promo \
         -pedantic-errors \
         -O3")
     endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
