@@ -7,13 +7,14 @@
 
 #include <unordered_map>
 #include <filesystem>
+#include <span>
 
 /**
  * Main class of the interpreter
  */
 class Application {
 public:
-    Application(int argc, const char* argv[], std::string ios_greeting = "> ")
+    Application(size_t argc, std::span<const char*> argv, std::string ios_greeting = "> ")
         : env(std::make_shared<Environment>())
         , ios(std::make_shared<IOservice>(argc, argv, std::move(ios_greeting)))
         , handler(std::make_shared<Handler>(ios))

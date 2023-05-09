@@ -94,7 +94,7 @@ public:
 
         std::vector<answer_format> result;
         std::stringstream errors;
-        int32_t error_count = 0;
+        size_t error_count = 0;
 
         for (auto &filename: params.args) {
             std::filesystem::path current_path(env->at("PWD").to_string());

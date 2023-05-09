@@ -25,7 +25,7 @@ public:
      * @param output: output FILE stream
      * @return 0 always
      */
-    virtual int run(const token& params, std::shared_ptr<Environment> env, FILE* input, FILE* output, FILE* err) override {
+    virtual int run(const token& params, std::shared_ptr<Environment>, FILE*, FILE* output, FILE*) override {
         std::stringstream result;
         if (params.args.empty()) {
             result << std::endl;

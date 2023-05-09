@@ -16,13 +16,23 @@ if(MSVC)
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX")
     else()
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX /O2")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX /O3")
     endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 else()
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -fsanitize=address -fno-omit-frame-pointer -v")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wpedantic -Wextra -Wunused-parameter \
+        -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Wduplicated-branches \
+        -Wduplicated-cond -Wextra-semi -Wfloat-equal -Wlogical-op \
+        -Wnon-virtual-dtor -Woverloaded-virtual -Wredundant-decls -Wsign-promo \
+        -pedantic-errors \
+        -g -fsanitize=address -fno-omit-frame-pointer")
     else()
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O2")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wpedantic -Wextra -Wunused-parameter \
+        -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Wduplicated-branches \
+        -Wduplicated-cond -Wextra-semi -Wfloat-equal -Wlogical-op \
+        -Wnon-virtual-dtor -Woverloaded-virtual -Wredundant-decls -Wsign-promo \
+        -pedantic-errors \
+        -O3")
     endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif()
 
@@ -54,13 +64,13 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(googletest)
 enable_testing()
-include(GoogleTest)
+include(GoogleTest SYSTEM)
 
 include_directories(include)
 include_directories(commands)
 include_directories(src)
 
-set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 add_executable(bash_cli
         src/main.cpp
         src/application.cpp
@@ -75,7 +85,6 @@ add_executable(test_analyzer
 add_executable(test_commands
         tests/src/test_commands.cpp)
 
-
 add_executable(test_grep
         tests/src/test_grep.cpp)
 
@@ -85,23 +94,23 @@ add_executable(test_runner
         src/handler.cpp)
 
 if(MINGW)
-    target_link_libraries(bash_cli PRIVATE Boost::process Boost::program_options ws2_32)
-    target_link_libraries(test_analyzer PRIVATE GTest::gtest_main Boost::process Boost::program_options ws2_32)
-    target_link_libraries(test_commands PRIVATE GTest::gtest_main Boost::process Boost::program_options ws2_32)
-    target_link_libraries(test_grep PRIVATE GTest::gtest_main Boost::process Boost::program_options ws2_32)
-    target_link_libraries(test_runner PRIVATE GTest::gtest_main Boost::process Boost::program_options ws2_32)
+    target_link_libraries(bash_cli PRIVATE -isystem Boost::process Boost::program_options ws2_32)
+    target_link_libraries(test_analyzer PRIVATE -isystem GTest::gtest_main Boost::process Boost::program_options ws2_32)
+    target_link_libraries(test_commands PRIVATE -isystem GTest::gtest_main Boost::process Boost::program_options ws2_32)
+    target_link_libraries(test_grep PRIVATE -isystem GTest::gtest_main Boost::process Boost::program_options ws2_32)
+    target_link_libraries(test_runner PRIVATE SYSTEM GTest::gtest_main Boost::process Boost::program_options ws2_32)
 else()
     if (Boost_FOUND)
-        target_link_libraries(bash_cli PRIVATE ${Boost_LIBRARIES})
-        target_link_libraries(test_analyzer PRIVATE ${Boost_LIBRARIES} GTest::gtest_main)
-        target_link_libraries(test_commands PRIVATE ${Boost_LIBRARIES} GTest::gtest_main)
-        target_link_libraries(test_grep PRIVATE ${Boost_LIBRARIES} GTest::gtest_main)
-        target_link_libraries(test_runner PRIVATE ${Boost_LIBRARIES} GTest::gtest_main)
+        target_link_libraries(bash_cli PRIVATE -isystem ${Boost_LIBRARIES})
+        target_link_libraries(test_analyzer PRIVATE -isystem ${Boost_LIBRARIES} GTest::gtest_main)
+        target_link_libraries(test_commands PRIVATE -isystem ${Boost_LIBRARIES} GTest::gtest_main)
+        target_link_libraries(test_grep PRIVATE -isystem ${Boost_LIBRARIES} GTest::gtest_main)
+        target_link_libraries(test_runner PRIVATE -isystem ${Boost_LIBRARIES} GTest::gtest_main)
     else()
-        target_link_libraries(bash_cli PRIVATE Boost::process Boost::program_options)
-        target_link_libraries(test_analyzer PRIVATE GTest::gtest_main Boost::process Boost::program_options)
-        target_link_libraries(test_commands PRIVATE GTest::gtest_main Boost::process Boost::program_options)
-        target_link_libraries(test_grep PRIVATE GTest::gtest_main Boost::process Boost::program_options)
-        target_link_libraries(test_runner PRIVATE GTest::gtest_main Boost::process Boost::program_options)
+        target_link_libraries(bash_cli PRIVATE -isystem Boost::process Boost::program_options)
+        target_link_libraries(test_analyzer PRIVATE -isystem GTest::gtest_main Boost::process Boost::program_options)
+        target_link_libraries(test_commands PRIVATE -isystem GTest::gtest_main Boost::process Boost::program_options)
+        target_link_libraries(test_grep PRIVATE -isystem GTest::gtest_main Boost::process Boost::program_options)
+        target_link_libraries(test_runner PRIVATE -isystem GTest::gtest_main Boost::process Boost::program_options)
     endif()
 endif()

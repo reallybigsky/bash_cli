@@ -7,6 +7,7 @@
 #include <exception>
 #include <stdexcept>
 #include <utility>
+#include <span>
 
 /**
  * EndOfInputStream exception
@@ -23,7 +24,7 @@ struct EndOfGlobalInputStream : public std::ios_base::failure {
  */
 class IOservice {
 public:
-    IOservice(int argc, const char* argv[], std::string gr)
+    IOservice(size_t argc, std::span<const char*> argv, std::string gr)
         : greeting(std::move(gr))
         , f_input(nullptr)
         , f_output(nullptr)

@@ -73,7 +73,7 @@ inline std::optional<std::string> readLine(FILE *file) {
     size_t cnt = 0;
     size_t read = getline(&line, &cnt, file);
     std::optional<std::string> res;
-    if (read == -1) {
+    if (read == std::numeric_limits<size_t>::max()) {
         res = std::nullopt;
     } else {
         res = std::string(line, read);
