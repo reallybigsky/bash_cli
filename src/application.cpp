@@ -18,31 +18,24 @@ void Application::run() {
             std::string user_input = ios->readLine();
             PipeLine pipeLine = analyzer->process(user_input);
 
-            if (pipeLine.size() == 1) {
-                lastReturnCode = handler->exec(pipeLine.front(), env, ios->getInput(), ios->getOutput());
-            } else {
-                i_file = tmpfile();
-                for (size_t i = 0; i < pipeLine.size(); ++i) {
+            i_file = tmpfile();
+            for (size_t i = 0; i < pipeLine.size(); ++i) {
+                o_file = tmpfile();
+                FILE* input_stream = (i == 0? ios->getInput() : i_file);
+                FILE* output_stream = (i + 1 == pipeLine.size() ? ios->getOutput() : o_file);
+                lastReturnCode |= handler->exec(pipeLine[i], env, input_stream, output_stream);
+
+                if (lastReturnCode) {
+                    fclose(o_file);
                     o_file = tmpfile();
-                    if (i == 0) {
-                        lastReturnCode |= handler->exec(pipeLine[i], env, ios->getInput(), o_file);
-                    } else if (i == pipeLine.size() - 1) {
-                        lastReturnCode |= handler->exec(pipeLine[i], env, i_file, ios->getOutput());
-                    } else {
-                        lastReturnCode |= handler->exec(pipeLine[i], env, i_file, o_file);
-                    }
-
-                    if (lastReturnCode) {
-                        fclose(o_file);
-                        o_file = tmpfile();
-                    }
-
-                    fclose(i_file);
-                    rewind(o_file);
-                    i_file = o_file;
                 }
+
                 fclose(i_file);
+                rewind(o_file);
+                i_file = o_file;
             }
+            fclose(i_file);
+
         } catch (const SyntaxExc& e) {
             ios->writeErrLine(e.what());
             lastReturnCode = 1;
