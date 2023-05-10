@@ -31,29 +31,29 @@ public:
         , f_err(nullptr)
     {
         for (size_t i = 1; i < argc; ++i) {
-            std::string argument(argv[i]);
-            std::string name;
+            std::string_view argument(argv[i]);
+            std::string_view name;
 
             if (std::size_t pos = argument.find(inArg); pos != std::string_view::npos) {
                 name = argument.substr(pos + inArg.size());
-                f_input = fopen(name.c_str(), "r");
+                f_input = fopen(name.data(), "r");
                 if (!f_input) {
-                    throw std::invalid_argument("Cannot open input file: \"" + name + '"');
+                    throw std::invalid_argument("Cannot open input file: \"" + std::string(name) + '"');
                 }
             } else if (pos = argument.find(outArg); pos != std::string_view::npos) {
                 name = argument.substr(pos + outArg.size());
-                f_output = fopen(name.c_str(), "w");
+                f_output = fopen(name.data(), "w");
                 if (!f_output) {
-                    throw std::invalid_argument("Cannot open output file: \"" + name + '"');
+                    throw std::invalid_argument("Cannot open output file: \"" + std::string(name) + '"');
                 }
             } else if (pos = argument.find(errArg); pos != std::string_view::npos) {
                 name = argument.substr(pos + errArg.size());
-                f_err = fopen(name.c_str(), "w");
+                f_err = fopen(name.data(), "w");
                 if (!f_err) {
-                    throw std::invalid_argument("Cannot open error_output: file \"" + name + '"');
+                    throw std::invalid_argument("Cannot open error_output: file \"" + std::string(name) + '"');
                 }
             } else {
-                writeErrLine("Unknown argument: \"" + argument + '"');
+                writeErrLine("Unknown argument: \"" + std::string(argument) + '"');
             }
         }
     }
