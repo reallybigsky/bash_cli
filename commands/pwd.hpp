@@ -7,7 +7,7 @@
 #include <iostream>
 
 
-namespace  commands {
+namespace  Commands {
 
 /**
  * Implementation of echo command

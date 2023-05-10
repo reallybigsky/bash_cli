@@ -5,7 +5,7 @@
 #include <cstddef>
 #include <numeric>
 
-namespace commands {
+namespace Commands {
 
 /**
  * Implementation of echo command

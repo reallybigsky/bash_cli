@@ -15,9 +15,10 @@
  */
 class Handler {
 public:
-    typedef std::unordered_map<std::string, std::unique_ptr<Cmd>> CommandDict;
-
-    Handler(std::shared_ptr<IOservice> ioserv);
+    Handler(std::shared_ptr<IOservice> io)
+            : exit(false)
+            , ios(io)
+    {}
 
     /**
      * Get flag if 'exit' command was given from user
@@ -36,6 +37,4 @@ public:
 private:
     bool exit;
     std::shared_ptr<IOservice> ios;
-    const CommandDict commands;
-    const commands::ExtCmd extCmd;
 };

@@ -4,7 +4,7 @@
 #include "cmd.hpp"
 
 
-namespace commands {
+namespace Commands {
 
 /**
  * Implementation of cat command

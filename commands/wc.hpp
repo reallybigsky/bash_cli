@@ -4,7 +4,7 @@
 #include "file_utils.hpp"
 
 
-namespace commands {
+namespace Commands {
 
 /**
  * Implementation of wc command

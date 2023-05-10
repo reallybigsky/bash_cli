@@ -5,7 +5,7 @@
 #include <regex>
 #include <unordered_set>
 
-namespace commands {
+namespace Commands {
 
 /**
  * Implementation of assignment command '='

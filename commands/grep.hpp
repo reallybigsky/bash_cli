@@ -6,7 +6,7 @@
 #include <boost/program_options.hpp>
 #include <boost/regex.hpp>
 
-namespace commands {
+namespace Commands {
 
 /**
  * Implementation of echo command

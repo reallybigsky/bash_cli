@@ -2,7 +2,7 @@
 #include "grep.hpp"
 
 
-using namespace commands;
+using namespace Commands;
 
 const std::vector<std::string> file_content1 = {
         "Azure space is aflame up above,",

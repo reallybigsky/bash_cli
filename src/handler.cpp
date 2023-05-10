@@ -6,24 +6,23 @@
 #include "grep.hpp"
 #include "assignment.hpp"
 
-Handler::CommandDict fill_commands() {
-    Handler::CommandDict result;
+typedef std::unordered_map<std::string, std::unique_ptr<Cmd>> CommandDict;
 
-    result.emplace("echo", std::make_unique<commands::Echo>());
-    result.emplace("pwd", std::make_unique<commands::Pwd>());
-    result.emplace("cat", std::make_unique<commands::Cat>());
-    result.emplace("wc", std::make_unique<commands::Wc>());
-    result.emplace("grep", std::make_unique<commands::Grep>());
-    result.emplace("=", std::make_unique<commands::Assignment>());
+CommandDict fill_commands() {
+    CommandDict result;
+
+    result.emplace("echo", std::make_unique<Commands::Echo>());
+    result.emplace("pwd", std::make_unique<Commands::Pwd>());
+    result.emplace("cat", std::make_unique<Commands::Cat>());
+    result.emplace("wc", std::make_unique<Commands::Wc>());
+    result.emplace("grep", std::make_unique<Commands::Grep>());
+    result.emplace("=", std::make_unique<Commands::Assignment>());
 
     return result;
 }
 
-Handler::Handler(std::shared_ptr<IOservice> io)
-    : exit(false)
-    , ios(io)
-    , commands(fill_commands())
-{}
+const CommandDict commands = fill_commands();
+const Commands::ExtCmd extCmd;
 
 int Handler::exec(const token& tok, std::shared_ptr<Environment> env, FILE* i_file, FILE* o_file) {
     try {

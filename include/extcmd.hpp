@@ -6,7 +6,7 @@
 
 #include <numeric>
 
-namespace commands {
+namespace Commands {
 
 namespace bp = boost::process;
 

@@ -3,7 +3,7 @@
 #include "pwd.hpp"
 #include "cat.hpp"
 #include "wc.hpp"
-using namespace commands;
+using namespace Commands;
 
 const std::vector<std::string> file_content1 = {
     "some text",
