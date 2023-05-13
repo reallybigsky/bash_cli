@@ -31,7 +31,9 @@ struct token {
      *
      * @param word: command name or argument.
      */
-    void add_word(const std::string& word) {
+    template <typename T>
+    requires (std::convertible_to<T, std::string>)
+    void add_word(T&& word) {
         if (name.empty()) {
           name = word;
         } else {
