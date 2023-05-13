@@ -76,19 +76,19 @@ public:
      * @return 0 if there were no errors, 1 otherwise
      *
      */
-    virtual int run(const token& params, std::shared_ptr<Environment> env, FILE* input, FILE* output, FILE* err) const override {
+    virtual int run(const token& params, std::shared_ptr<Environment> env, FileStream& input, FileStream& output, FileStream& err) const override {
         uint64_t total_cnt_lines = 0, total_cnt_words = 0, total_size = 0;
 
         if (params.args.empty()) {
-            while (auto line = FileUtils::readLine(input)) {
+            while (auto line = input.read_line()) {
                 ++total_cnt_lines;
                 total_cnt_words += count_of_words_in_string(line.value());
                 total_size += line.value().size();
             }
 
             std::stringstream result;
-            result << total_cnt_lines << "\t" << total_cnt_words << "\t" << total_size << std::endl;
-            FileUtils::writeToFile(result.str(), output);
+            result << total_cnt_lines << '\t' << total_cnt_words << '\t' << total_size << '\n';
+            output << result.str();
             return 0;
         }
 
@@ -100,9 +100,9 @@ public:
             std::filesystem::path filepath = env->current_path / filename;
 
             // проверка на то, существует ли файл в текущей директории
-            if (!FileUtils::is_file_exist(filepath)) {
+            if (!fs::exists(filepath)) {
                 // существует ли файл, если заданный путь полный
-                if (!FileUtils::is_file_exist(filename)) {
+                if (!fs::exists(filename)) {
                     ++error_count;
                     result.emplace_back(": No such file or directory", filename);
                     errors << result.back().get_error() << std::endl;
@@ -111,7 +111,7 @@ public:
                 filepath = filename;
             }
             // проверка на возможность чтения из файла
-            if (!FileUtils::is_readable(filepath)) {
+            if (!std::ifstream(filepath).is_open()) {
                 ++error_count;
                 result.emplace_back(": Permission denied", filename);
                 errors << result.back().get_error() << std::endl;
@@ -139,11 +139,11 @@ public:
 
         // если по всем аргументам произошли ошибки, то выбрасывается исключение
         if (error_count == params.args.size()) {
-            FileUtils::writeToFile(errors.str(), err);
+            err << errors.str();
             return 2;
         }
 
-        FileUtils::writeToFile(output_str, output);
+        output << output_str;
 
         if (error_count > 0) {
             return 1;

@@ -24,7 +24,7 @@ CommandDict fill_commands() {
 const CommandDict commands = fill_commands();
 const Commands::ExtCmd extCmd;
 
-int Handler::exec(const token& tok, std::shared_ptr<Environment> env, FILE* i_file, FILE* o_file) {
+int Handler::exec(const token& tok, std::shared_ptr<Environment> env, FileStream& i_file, FileStream& o_file) {
     try {
         if (tok.name.empty()) {
             return 0;
@@ -36,7 +36,7 @@ int Handler::exec(const token& tok, std::shared_ptr<Environment> env, FILE* i_fi
             return extCmd.run(tok, env, i_file, o_file, ios->getErr());
         }
     } catch (const std::invalid_argument& ia) {
-        ios->writeErrLine(ia.what());
+        ios->writeErr(ia.what());
         return 1;
     }
 

@@ -7,13 +7,13 @@
 #include <cstdio>
 
 
-std::string read_file_to_string(FILE* out){
-    rewind(out);
+std::string read_file_to_string(FileStream& out){
+    out.rewind();
     std::stringstream result;
-    while (auto line = FileUtils::readLine(out))
+    while (auto line = out.read_line())
         result << line.value();
 
-    rewind(out);
+    out.rewind();
 
     return result.str();
 }

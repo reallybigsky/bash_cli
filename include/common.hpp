@@ -14,8 +14,8 @@
 struct Environment {
     Environment() : vars(), current_path(std::filesystem::current_path()) {}
 
-    boost::process::basic_native_environment<char> vars;
-    std::filesystem::path current_path;
+    boost::process::basic_native_environment<char> vars; /// dictionary of varibles with their values
+    std::filesystem::path current_path; /// current working directory
 };
 
 /**

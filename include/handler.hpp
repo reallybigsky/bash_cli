@@ -32,7 +32,7 @@ public:
      *
      * @return return code of the executed token
      */
-    int exec(const token&, std::shared_ptr<Environment>, FILE*, FILE*);
+    int exec(const token&, std::shared_ptr<Environment>, FileStream&, FileStream&);
 
 private:
     bool exit;

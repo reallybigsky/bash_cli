@@ -25,19 +25,16 @@ public:
      * @param output: output FILE stream
      * @return 0 always
      */
-    virtual int run(const token& params, std::shared_ptr<Environment>, FILE*, FILE* output, FILE*) const override {
-        std::stringstream result;
+    virtual int run(const token& params, std::shared_ptr<Environment>, FileStream&, FileStream& output, FileStream&) const override {
         if (params.args.empty()) {
-            result << std::endl;
+            output << "\n";
         } else {
-            result << std::accumulate(std::begin(params.args) + 1,
+            output << std::accumulate(std::begin(params.args) + 1,
                                       std::end(params.args),
                                       params.args[0],
                                       [](std::string s0, std::string const& s1) { return s0 += " " + s1; })
-            << std::endl;
+            << "\n";
         }
-
-        FileUtils::writeToFile(result.str(), output);
         return 0;
     }
 };

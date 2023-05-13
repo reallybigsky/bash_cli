@@ -30,9 +30,10 @@ public:
      * @return 0 if there were no errors, 1 otherwise
      *
      */
-    virtual int run(const token& params, std::shared_ptr<Environment> env, FILE*, FILE*, FILE* err) const override {
+    virtual int run(const token& params, std::shared_ptr<Environment> env, FileStream&, FileStream&, FileStream& err) const override {
         if (params.args.empty()) {
-            FileUtils::writeToFile("Assignment with no arguments!\n", err);
+//            FileUtils::writeToFile("Assignment with no arguments!\n", err);
+            err << "Assignment with no arguments!" << "\n";
             return 1;
         }
 
