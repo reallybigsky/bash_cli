@@ -5,18 +5,11 @@
 void Application::run() {
     FILE* i_file = nullptr;
     FILE* o_file = nullptr;
-    bool prevEOF = false;
     while (!handler->isExit()) {
         lastReturnCode = 0;
         try {
-            if (!prevEOF) {
-                ios->greet();
-            } else {
-                prevEOF = false;
-            }
-
-            std::string user_input = ios->readLine();
-            PipeLine pipeLine = analyzer->process(user_input);
+            ios->greet();
+            PipeLine pipeLine = analyzer->process(ios->readLine());
 
             i_file = tmpfile();
             for (size_t i = 0; i < pipeLine.size(); ++i) {
@@ -40,8 +33,7 @@ void Application::run() {
             ios->writeErrLine(e.what());
             lastReturnCode = 1;
         } catch (const EndOfGlobalInputStream& eof) {
-            ios->resetInput();
-            prevEOF = true;
+            break;
         } catch (const std::exception& e) {
             ios->writeErrLine("Cannot execute command!");
             lastReturnCode = 1;
