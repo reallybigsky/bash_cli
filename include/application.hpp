@@ -21,8 +21,7 @@ public:
         , analyzer(std::make_shared<Analyzer>(env))
         , lastReturnCode(0)
     {
-        env->emplace("PWD", std::filesystem::current_path().string());
-        env->emplace("?", "-1");
+        env->vars.emplace("?", "-1");
     }
 
     /**

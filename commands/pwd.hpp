@@ -29,7 +29,7 @@ public:
      */
     virtual int run(const token&, std::shared_ptr<Environment> env, FILE*, FILE* output, FILE*) const override {
         std::stringstream result;
-        result << env->at("PWD").to_string() << std::endl;
+        result << env->current_path.string() << std::endl;
         FileUtils::writeToFile(result.str(), output);
         return 0;
     }

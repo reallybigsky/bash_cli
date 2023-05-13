@@ -49,7 +49,7 @@ TEST(TestGrepBase, grep_base) {
 
 
     auto env = std::make_shared<Environment>();
-    env->emplace("PWD", std::filesystem::current_path().string());
+//    env->emplace("PWD", std::filesystem::current_path().string());
     Grep grep_cmd;
     std::string expected;
 
@@ -78,7 +78,7 @@ TEST(TestGrepErrors, grep_errors) {
     FILE* i_file = nullptr, *o_file = nullptr, *e_file = nullptr;
 
     auto env = std::make_shared<Environment>();
-    env->emplace("PWD", std::filesystem::current_path().string());
+//    env->emplace("PWD", std::filesystem::current_path().string());
     Grep grep_cmd;
     std::string expected;
     token grep_job;
@@ -119,7 +119,7 @@ TEST(TestGrepOptions, grep_options) {
     create_testfile(filepath2, file_content2);
 
     auto env = std::make_shared<Environment>();
-    env->emplace("PWD", std::filesystem::current_path().string());
+//    env->emplace("PWD", std::filesystem::current_path().string());
     Grep grep_cmd;
     std::string expected;
     token grep_job;
@@ -223,7 +223,7 @@ TEST(TestPatternRegex, pattern_regex) {
     create_testfile(filepath2, file_content2);
 
     auto env = std::make_shared<Environment>();
-    env->emplace("PWD", std::filesystem::current_path().string());
+//    env->emplace("PWD", std::filesystem::current_path().string());
     Grep grep_cmd;
     std::string expected;
     token grep_job;

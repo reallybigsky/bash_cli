@@ -46,7 +46,7 @@ void Application::run() {
             ios->writeErrLine("Cannot execute command!");
             lastReturnCode = 1;
         }
-        (*env)["?"] = std::to_string(lastReturnCode);
+        env->vars["?"] = std::to_string(lastReturnCode);
     }
     ios->flushOutput();
     ios->flushErr();

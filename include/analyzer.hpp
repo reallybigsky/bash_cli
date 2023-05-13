@@ -63,8 +63,8 @@ private:
             return "$";
         }
 
-        if (env->find(var) != env->end()) {
-            return env->get(var);
+        if (env->vars.find(var) != env->vars.end()) {
+            return env->vars.get(var);
         }
 
         return "";

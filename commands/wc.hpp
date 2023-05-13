@@ -96,12 +96,11 @@ public:
         std::stringstream errors;
         size_t error_count = 0;
 
-        for (auto &filename: params.args) {
-            std::filesystem::path current_path(env->at("PWD").to_string());
-            current_path /= filename;
+        for (auto& filename: params.args) {
+            std::filesystem::path filepath = env->current_path / filename;
 
             // проверка на то, существует ли файл в текущей директории
-            if (!FileUtils::is_file_exist(current_path)) {
+            if (!FileUtils::is_file_exist(filepath)) {
                 // существует ли файл, если заданный путь полный
                 if (!FileUtils::is_file_exist(filename)) {
                     ++error_count;
@@ -109,10 +108,10 @@ public:
                     errors << result.back().get_error() << std::endl;
                     continue;
                 }
-                current_path = filename;
+                filepath = filename;
             }
             // проверка на возможность чтения из файла
-            if (!FileUtils::is_readable(current_path)) {
+            if (!FileUtils::is_readable(filepath)) {
                 ++error_count;
                 result.emplace_back(": Permission denied", filename);
                 errors << result.back().get_error() << std::endl;
@@ -120,9 +119,9 @@ public:
             }
 
             // подсчет количества строк, слов, размера и обновление суммарной статистики
-            size_t cnt_lines = get_count_of_lines(current_path);
-            size_t cnt_words = get_count_of_words(current_path);
-            size_t size = get_size(current_path);
+            size_t cnt_lines = get_count_of_lines(filepath);
+            size_t cnt_words = get_count_of_words(filepath);
+            size_t size = get_size(filepath);
             total_cnt_lines += cnt_lines;
             total_cnt_words += cnt_words;
             total_size += size;

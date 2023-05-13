@@ -38,25 +38,24 @@ public:
         std::stringstream result;
         size_t error_count = 0;
         for (auto &filename: params.args) {
-            std::filesystem::path current_path(env->at("PWD").to_string());
-            current_path /= filename;
+            std::filesystem::path filepath = env->current_path / filename;
 
             // проверка на то, существует ли файл в текущей директории
-            if (!FileUtils::is_file_exist(current_path)) {
+            if (!FileUtils::is_file_exist(filepath)) {
                 if (!FileUtils::is_file_exist(filename)) {
                     ++error_count;
                     result << params.name << ": " << filename << ": No such file or directory" << std::endl;
                     continue;
                 }
-                current_path = filename;
+                filepath = filename;
             }
             // проверка на то, можно ли открыть файл на чтение
-            if (!FileUtils::is_readable(current_path)) {
+            if (!FileUtils::is_readable(filepath)) {
                 ++error_count;
                 result << filename << ": Permission denied" << std::endl;
                 continue;
             }
-            result << get_file_contents(current_path);
+            result << get_file_contents(filepath);
         }
 
         if (error_count == params.args.size()) {
@@ -75,7 +74,7 @@ public:
 
 private:
 
-    static std::string get_file_contents(const std::filesystem::path &filename) {
+    static std::string get_file_contents(const std::filesystem::path& filename) {
         std::ifstream t(filename);
         std::string result;
 

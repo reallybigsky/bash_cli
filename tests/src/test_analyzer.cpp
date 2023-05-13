@@ -11,13 +11,13 @@ TEST(TestLexerBasic, lexer_basic) {
     std::string input;
     std::vector<std::string> output;
 
-    env->clear();
+    env->vars.clear();
     input = "pwd";
     output = parser.runLexer(input);
     EXPECT_EQ(output.size(), 1);
     EXPECT_EQ(output[0], input);
 
-    env->clear();
+    env->vars.clear();
     input = "echo a";
     output = parser.runLexer(input);
     EXPECT_EQ(output.size(), 1);
@@ -28,14 +28,14 @@ TEST(TestLexerPipe, lexer_pipe) {
     std::string input;
     std::vector<std::string> output;
 
-    env->clear();
+    env->vars.clear();
     input = "pwd | echo a";
     output = parser.runLexer(input);
     EXPECT_EQ(output.size(), 2);
     EXPECT_EQ(output[0], "pwd ");
     EXPECT_EQ(output[1], " echo a");
 
-    env->clear();
+    env->vars.clear();
     input = "abc a b c | echo | pwd | wc";
     output = parser.runLexer(input);
     EXPECT_EQ(output.size(), 4);
@@ -49,37 +49,37 @@ TEST(TestLexerReplace, lexer_replace) {
     std::string input;
     std::vector<std::string> output;
 
-    env->clear();
-    (*env)["a"] = "123";
+    env->vars.clear();
+    env->vars["a"] = "123";
     input = "$";
     output = parser.runLexer(input);
     EXPECT_EQ(output.size(), 1);
     EXPECT_EQ(output[0], "$");
 
-    env->clear();
-    (*env)["a"] = "123";
+    env->vars.clear();
+    env->vars["a"] = "123";
     input = "$a";
     output = parser.runLexer(input);
     EXPECT_EQ(output.size(), 1);
     EXPECT_EQ(output[0], "123");
 
-    env->clear();
+    env->vars.clear();
     input = "$a";
     output = parser.runLexer(input);
     EXPECT_EQ(output.size(), 1);
     EXPECT_EQ(output[0], "");
 
-    env->clear();
-    (*env)["a"] = "ec";
-    (*env)["b"] = "ho";
+    env->vars.clear();
+    env->vars["a"] = "ec";
+    env->vars["b"] = "ho";
     input = "$a$b";
     output = parser.runLexer(input);
     EXPECT_EQ(output.size(), 1);
     EXPECT_EQ(output[0], "echo");
 
-    env->clear();
-    (*env)["a"] = "|";
-    (*env)["b"] = "echo";
+    env->vars.clear();
+    env->vars["a"] = "|";
+    env->vars["b"] = "echo";
     input = "$b $a $b $a $b";
     output = parser.runLexer(input);
     EXPECT_EQ(output.size(), 1);
@@ -90,38 +90,38 @@ TEST(TestLexerSingleQuotes, lexer_single_quotes) {
     std::string input;
     std::vector<std::string> output;
 
-    env->clear();
-    (*env)["a"] = "123";
+    env->vars.clear();
+    env->vars["a"] = "123";
     input = "\'\"\'";
     output = parser.runLexer(input);
     EXPECT_EQ(output.size(), 1);
     EXPECT_EQ(output[0], input);
 
-    env->clear();
-    (*env)["a"] = "123";
+    env->vars.clear();
+    env->vars["a"] = "123";
     input = "\'a\'";
     output = parser.runLexer(input);
     EXPECT_EQ(output.size(), 1);
     EXPECT_EQ(output[0], input);
 
-    env->clear();
-    (*env)["a"] = "123";
+    env->vars.clear();
+    env->vars["a"] = "123";
     input = "\'$a\'";
     output = parser.runLexer(input);
     EXPECT_EQ(output.size(), 1);
     EXPECT_EQ(output[0], input);
 
-    env->clear();
-    (*env)["a"] = "123";
-    (*env)["b"] = "cde";
-    (*env)["a"] = "123";
+    env->vars.clear();
+    env->vars["a"] = "123";
+    env->vars["b"] = "cde";
+    env->vars["a"] = "123";
     input = "\'$a | $b | $var\'";
     output = parser.runLexer(input);
     EXPECT_EQ(output.size(), 1);
     EXPECT_EQ(output[0], input);
 
-    env->clear();
-    (*env)["a"] = "123";
+    env->vars.clear();
+    env->vars["a"] = "123";
     input = "\'|\'|\'$a\'";
     output = parser.runLexer(input);
     EXPECT_EQ(output.size() ,2);
@@ -133,37 +133,37 @@ TEST(TestLexerDoubleQuotes, lexer_double_quotes) {
     std::string input;
     std::vector<std::string> output;
 
-    env->clear();
+    env->vars.clear();
     input = "\"\'\"";
     output = parser.runLexer(input);
     EXPECT_EQ(output.size(), 1);
     EXPECT_EQ(output[0], input);
 
-    env->clear();
-    (*env)["a"] = "123";
+    env->vars.clear();
+    env->vars["a"] = "123";
     input = "\"a\"";
     output = parser.runLexer(input);
     EXPECT_EQ(output.size(), 1);
     EXPECT_EQ(output[0], input);
 
-    env->clear();
-    (*env)["a"] = "123";
+    env->vars.clear();
+    env->vars["a"] = "123";
     input = "\"$a\"";
     output = parser.runLexer(input);
     EXPECT_EQ(output.size(), 1);
     EXPECT_EQ(output[0], "\"123\"");
 
-    env->clear();
-    (*env)["a"] = "123";
-    (*env)["b"] = "cde";
-    (*env)["var"] = "abc dba";
+    env->vars.clear();
+    env->vars["a"] = "123";
+    env->vars["b"] = "cde";
+    env->vars["var"] = "abc dba";
     input = "\"$a | $b | $var\"";
     output = parser.runLexer(input);
     EXPECT_EQ(output.size(), 1);
     EXPECT_EQ(output[0], "\"123 | cde | abc dba\"");
 
-    env->clear();
-    (*env)["a"] = "123";
+    env->vars.clear();
+    env->vars["a"] = "123";
     input = "\"|\"|\"$a\"";
     output = parser.runLexer(input);
     EXPECT_EQ(output.size() ,2);
@@ -175,36 +175,36 @@ TEST(TestLexerBS, lexer_bs) {
     std::string input;
     std::vector<std::string> output;
 
-    env->clear();
-    (*env)["a"] = "123";
+    env->vars.clear();
+    env->vars["a"] = "123";
     input = "\\$a";
     output = parser.runLexer(input);
     EXPECT_EQ(output.size(), 1);
     EXPECT_EQ(output[0], input);
 
-    env->clear();
-    (*env)["a"] = "123";
+    env->vars.clear();
+    env->vars["a"] = "123";
     input = "\"\\$a\"";
     output = parser.runLexer(input);
     EXPECT_EQ(output.size(), 1);
     EXPECT_EQ(output[0], input);
 
-    env->clear();
-    (*env)["a"] = "123";
+    env->vars.clear();
+    env->vars["a"] = "123";
     input = "abc \\\" db ";
     output = parser.runLexer(input);
     EXPECT_EQ(output.size(), 1);
     EXPECT_EQ(output[0], input);
 
-    env->clear();
-    (*env)["a"] = "123";
+    env->vars.clear();
+    env->vars["a"] = "123";
     input = "\"abc \\\" db \"";
     output = parser.runLexer(input);
     EXPECT_EQ(output.size(), 1);
     EXPECT_EQ(output[0], input);
 
-    env->clear();
-    (*env)["a"] = "123";
+    env->vars.clear();
+    env->vars["a"] = "123";
     input = "abc \\| bcd";
     output = parser.runLexer(input);
     EXPECT_EQ(output.size(), 1);
@@ -215,9 +215,9 @@ TEST(TestLexerAll, lexer_lexer_all) {
     std::string input;
     std::vector<std::string> output;
 
-    env->clear();
-    (*env)["a"] = "123";
-    (*env)["var"] = "echo abc";
+    env->vars.clear();
+    env->vars["a"] = "123";
+    env->vars["var"] = "echo abc";
     input = "$var|echo \"$a\" \\| | \'pwd $var\' ||";
     output = parser.runLexer(input);
     EXPECT_EQ(output.size(), 5);
@@ -233,7 +233,7 @@ TEST(TestLexerError, lexer_error) {
     std::vector<std::string> output;
     bool is_exeption;
 
-    env->clear();
+    env->vars.clear();
     input = "abc \\";
     is_exeption = false;
     try {
@@ -243,7 +243,7 @@ TEST(TestLexerError, lexer_error) {
     }
     EXPECT_TRUE(is_exeption);
 
-    env->clear();
+    env->vars.clear();
     input = "abc | \" aasdf";
     is_exeption = false;
     try {
@@ -253,7 +253,7 @@ TEST(TestLexerError, lexer_error) {
     }
     EXPECT_TRUE(is_exeption);
 
-    env->clear();
+    env->vars.clear();
     input = "abc | \' asf | \"";
     is_exeption = false;
     try {
@@ -263,7 +263,7 @@ TEST(TestLexerError, lexer_error) {
     }
     EXPECT_TRUE(is_exeption);
 
-    env->clear();
+    env->vars.clear();
     input = "abc | \' asf\\\' | \'";
     is_exeption = false;
     try {
@@ -275,14 +275,14 @@ TEST(TestLexerError, lexer_error) {
 }
 
 TEST(TestParserBasic, parser_basic) {
-    env->clear();
+    env->vars.clear();
     std::vector<std::string> input;
     std::vector<token> output;
 
-    input.push_back("cmd");
-    input.push_back("run_cmd");
-    input.push_back("run_cmd arg1 arg2 arg3");
-    input.push_back("ab\\ cd \\\" \\\' \\\\");
+    input.emplace_back("cmd");
+    input.emplace_back("run_cmd");
+    input.emplace_back("run_cmd arg1 arg2 arg3");
+    input.emplace_back("ab\\ cd \\\" \\\' \\\\");
 
     output = parser.runParser(input);
     size_t i = 0;
@@ -311,17 +311,17 @@ TEST(TestParserBasic, parser_basic) {
 }
 
 TEST(TestParserDoubleQuotes, parser_double_quotes) {
-    env->clear();
+    env->vars.clear();
     std::vector<std::string> input;
     std::vector<token> output;
 
-    input.push_back("\"ab 12 $\"");
-    input.push_back("\"ab 12 $\"12");
-    input.push_back("\"ab\\ 12 $\"");
-    input.push_back("\"ab\\\\ 12 $\"");
-    input.push_back("\"ab\\\" 12 $\"");
-    input.push_back("\"ab\"\"cd\"");
-    input.push_back("\"ab\'\'cd\"");
+    input.emplace_back("\"ab 12 $\"");
+    input.emplace_back("\"ab 12 $\"12");
+    input.emplace_back("\"ab\\ 12 $\"");
+    input.emplace_back("\"ab\\\\ 12 $\"");
+    input.emplace_back("\"ab\\\" 12 $\"");
+    input.emplace_back("\"ab\"\"cd\"");
+    input.emplace_back("\"ab\'\'cd\"");
 
     output = parser.runParser(input);
     size_t i = 0;
@@ -356,17 +356,17 @@ TEST(TestParserDoubleQuotes, parser_double_quotes) {
 }
 
 TEST(TestParserSingleQutes, parser_single_quotes) {
-    env->clear();
+    env->vars.clear();
     std::vector<std::string> input;
     std::vector<token> output;
 
-    input.push_back("\'ab 12 $\'");
-    input.push_back("\'ab 12 $\'12");
-    input.push_back("\'ab\\ 12 $\'");
-    input.push_back("\'ab\\\\ 12 $\'");
-    input.push_back("\'ab\\\" 12 $\'");
-    input.push_back("\'ab\'\'cd\'");
-    input.push_back("\'ab\"\"cd\'");
+    input.emplace_back("\'ab 12 $\'");
+    input.emplace_back("\'ab 12 $\'12");
+    input.emplace_back("\'ab\\ 12 $\'");
+    input.emplace_back("\'ab\\\\ 12 $\'");
+    input.emplace_back("\'ab\\\" 12 $\'");
+    input.emplace_back("\'ab\'\'cd\'");
+    input.emplace_back("\'ab\"\"cd\'");
 
     output = parser.runParser(input);
     size_t i = 0;
@@ -401,15 +401,15 @@ TEST(TestParserSingleQutes, parser_single_quotes) {
 }
 
 TEST(TestParserAssigment, parser_assignment) {
-    env->clear();
+    env->vars.clear();
     std::vector<std::string> input;
     std::vector<token> output;
 
-    input.push_back("abc123=123");
-    input.push_back("1a2b3c=");
-    input.push_back("1a2b3c= 12 bc");
-    input.push_back("a=abc 123");
-    input.push_back("a$=abc");
+    input.emplace_back("abc123=123");
+    input.emplace_back("1a2b3c=");
+    input.emplace_back("1a2b3c= 12 bc");
+    input.emplace_back("a=abc 123");
+    input.emplace_back("a$=abc");
 
     output = parser.runParser(input);
     size_t i = 0;
@@ -443,13 +443,13 @@ TEST(TestParserAssigment, parser_assignment) {
 }
 
 TEST(TestParserAll, parser_all) {
-    env->clear();
+    env->vars.clear();
     std::vector<std::string> input;
     std::vector<token> output;
 
-    input.push_back("cmd a=b \"f\"\'s\'");
-    input.push_back("a\"bc\"=d f\\\"s");
-    input.push_back("var=so\" d \" f\\\"s");
+    input.emplace_back("cmd a=b \"f\"\'s\'");
+    input.emplace_back("a\"bc\"=d f\\\"s");
+    input.emplace_back("var=so\" d \" f\\\"s");
 
     output = parser.runParser(input);
     size_t i = 0;
@@ -474,12 +474,12 @@ TEST(TestParserAll, parser_all) {
 }
 
 TEST(TestParserError, parser_error) {
-    env->clear();
+    env->vars.clear();
     std::vector<std::string> input;
     std::vector<token> output;
 
     input = std::vector<std::string>();
-    input.push_back("cmd\' a=b");
+    input.emplace_back("cmd\' a=b");
     bool is_exception = false;
     try {
         output = parser.runParser(input);
@@ -489,7 +489,7 @@ TEST(TestParserError, parser_error) {
     EXPECT_TRUE(is_exception);
 
     input = std::vector<std::string>();
-    input.push_back("cmd \' a=b\'");
+    input.emplace_back("cmd \' a=b\'");
     is_exception = false;
     try {
         output = parser.runParser(input);
@@ -499,7 +499,7 @@ TEST(TestParserError, parser_error) {
     EXPECT_TRUE(!is_exception);
 
     input = std::vector<std::string>();
-    input.push_back("cmd \" a=b\'");
+    input.emplace_back("cmd \" a=b\'");
     is_exception = false;
     try {
         output = parser.runParser(input);
@@ -509,7 +509,7 @@ TEST(TestParserError, parser_error) {
     EXPECT_TRUE(is_exception);
 
     input = std::vector<std::string>();
-    input.push_back("cmd \" a=b\"");
+    input.emplace_back("cmd \" a=b\"");
     is_exception = false;
     try {
         output = parser.runParser(input);
@@ -519,7 +519,7 @@ TEST(TestParserError, parser_error) {
     EXPECT_TRUE(!is_exception);
 
     input = std::vector<std::string>();
-    input.push_back("cmd adf d\\");
+    input.emplace_back("cmd adf d\\");
     is_exception = false;
     try {
         output = parser.runParser(input);
@@ -529,7 +529,7 @@ TEST(TestParserError, parser_error) {
     EXPECT_TRUE(is_exception);
 
     input = std::vector<std::string>();
-    input.push_back("cmd \\ ");
+    input.emplace_back("cmd \\ ");
     is_exception = false;
     try {
         output = parser.runParser(input);
@@ -539,7 +539,7 @@ TEST(TestParserError, parser_error) {
     EXPECT_TRUE(!is_exception);
 
     input = std::vector<std::string>();
-    input.push_back("cm\"\\");
+    input.emplace_back("cm\"\\");
     is_exception = false;
     try {
         output = parser.runParser(input);
@@ -554,10 +554,10 @@ TEST(TestAll, all) {
     std::string input;
     PipeLine output;
 
-    env->clear();
-    (*env)["var"] = "echo a b c";
-    (*env)["a"] = "123";
-    (*env)["b"] = "var=cda";
+    env->vars.clear();
+    env->vars["var"] = "echo a b c";
+    env->vars["a"] = "123";
+    env->vars["b"] = "var=cda";
     input = "$var| echo $a | pwd \\$var | wc $ \\\' | $b \"12  23\" | exit \'$a  $b\'";
     output = parser.process(input);
 

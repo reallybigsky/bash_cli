@@ -6,10 +6,17 @@
 #include <vector>
 #include <cstdio>
 #include <optional>
+#include <filesystem>
 
-struct token;
-using Environment = boost::process::basic_native_environment<char>;
-using PipeLine = std::vector<token>;
+/**
+ * Represents interpretator environment
+ */
+struct Environment {
+    Environment() : vars(), current_path(std::filesystem::current_path()) {}
+
+    boost::process::basic_native_environment<char> vars;
+    std::filesystem::path current_path;
+};
 
 /**
  * Represents command name with its arguments after syntax analysis
@@ -32,3 +39,5 @@ struct token {
         }
     }
 };
+
+using PipeLine = std::vector<token>;

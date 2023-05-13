@@ -28,10 +28,10 @@ public:
      * @return return code of the external program
      */
     int run(const token& params, std::shared_ptr<Environment> env, FILE* input, FILE* output, FILE* err) const {
-        std::filesystem::path current_path(env->at("PWD").to_string());
-        if (current_path /= params.name; !FileUtils::is_file_exist(current_path)) {
-            if (current_path = params.name; !FileUtils::is_file_exist(current_path)) {
-                if (current_path = bp::search_path(params.name).string(); current_path == "") {
+        std::filesystem::path tmp = env->current_path;
+        if (tmp /= params.name; !FileUtils::is_file_exist(tmp)) {
+            if (tmp = params.name; !FileUtils::is_file_exist(tmp)) {
+                if (tmp = bp::search_path(params.name).string(); tmp == "") {
                     throw std::invalid_argument(params.name + ": command not found");
                 }
             }
@@ -40,9 +40,9 @@ public:
         if (!params.args.empty()) {
             std::string seq_args = std::accumulate(std::begin(params.args) + 1, std::end(params.args), params.args[0],
                                        [](std::string s0, std::string const &s1) { return s0 += " " + s1; });
-            return bp::system(current_path.string(), seq_args, *env, bp::std_out = output, bp::std_err = err, bp::std_in = input);
+            return bp::system(tmp.string(), seq_args, env->vars, bp::std_out = output, bp::std_err = err, bp::std_in = input);
         } else {
-            return bp::system(current_path.string(), *env, bp::std_out = output, bp::std_err = err, bp::std_in = input);
+            return bp::system(tmp.string(), env->vars, bp::std_out = output, bp::std_err = err, bp::std_in = input);
         }
     }
 };

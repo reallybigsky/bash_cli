@@ -11,9 +11,6 @@ namespace Commands {
  * Implementation of assignment command '='
  */
 class Assignment : public Cmd {
-private:
-    std::unordered_set<std::string> protected_variables = {"PWD"};
-
 public:
     /**
      * Assign tok.args[1] to tok.args[0]
@@ -39,20 +36,15 @@ public:
             return 1;
         }
 
-        if (protected_variables.count(params.args[0])) {
-            FileUtils::writeToFile("Cannot assign to variable: " + params.args[0] + '\n', err);
-            return 1;
-        }
-
         std::stringstream result;
         if (params.args.size() > 1) {
-            std::regex spec_symbols(R"('|"|\\|\$)");
+            static const std::regex spec_symbols(R"('|"|\\|\$)");
             result << std::regex_replace(params.args[1], spec_symbols, "\\$&");
         } else {
             result << "";
         }
 
-        (*env)[params.args[0]] = result.str();
+        env->vars[params.args[0]] = result.str();
         return 0;
     }
 };

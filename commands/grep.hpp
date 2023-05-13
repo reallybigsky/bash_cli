@@ -100,27 +100,26 @@ public:
         bool greater_one = files.size() > 1;
         size_t error_count = 0;
         for (auto &filename: files) {
-            std::filesystem::path current_path(env->at("PWD").to_string());
-            current_path /= filename;
+            std::filesystem::path filepath = env->current_path / filename;
 
             // проверка на то, существует ли файл в текущей директории
-            if (!FileUtils::is_file_exist(current_path)) {
+            if (!FileUtils::is_file_exist(filepath)) {
                 if (!FileUtils::is_file_exist(filename)) {
                     ++error_count;
                     result << params.name << ": " << filename << ": No such file or directory" << std::endl;
                     continue;
                 }
-                current_path = filename;
+                filepath = filename;
             }
 
             // проверка на то, можно ли открыть файл на чтение
-            if (!FileUtils::is_readable(current_path)) {
+            if (!FileUtils::is_readable(filepath)) {
                 ++error_count;
                 result << filename << ": Permission denied" << std::endl;
                 continue;
             }
 
-            result << matching_in_file(filename, current_path, base_regex, after_context_NUM, greater_one);
+            result << matching_in_file(filename, filepath, base_regex, after_context_NUM, greater_one);
         }
 
         if (error_count == files.size()) {
@@ -138,7 +137,7 @@ public:
 
 
 private:
-    std::string matching_in_file(const std::string& original_name, std::filesystem::path &filename, boost::regex &base_regex, size_t after_context_NUM, bool greater_one) const {
+    std::string matching_in_file(const std::string& original_name, std::filesystem::path& filename, boost::regex& base_regex, size_t after_context_NUM, bool greater_one) const {
         std::fstream file(filename);
 
         std::stringstream result;

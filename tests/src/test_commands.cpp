@@ -22,7 +22,6 @@ TEST(TestEcho, echo) {
     FILE* i_file = nullptr, *o_file = nullptr, *e_file = tmpfile();
     token echo_job = {"echo", {"abc", "testtt", "someone"}};
     auto env = std::make_shared<Environment>();
-    env->emplace("PWD", std::filesystem::current_path().string());
     Echo echo_cmd;
     o_file = tmpfile();
 
@@ -45,7 +44,6 @@ TEST(TestPwd, pwd) {
     FILE* i_file = nullptr, *o_file = nullptr, *e_file = tmpfile();
     token pwd_job = {"pwd", {"abc", "someone"}};
     auto env = std::make_shared<Environment>();
-    env->emplace("PWD", std::filesystem::current_path().string());
     Pwd pwd_cmd;
     o_file = tmpfile();
 
@@ -71,7 +69,6 @@ TEST(TestCat, cat) {
 
     token cat_job = {"cat", {filepath1}};
     auto env = std::make_shared<Environment>();
-    env->emplace("PWD", std::filesystem::current_path().string());
     Cat cat_cmd;
     o_file = tmpfile();
 
@@ -135,7 +132,6 @@ TEST(TestWc, wc) {
 
     token wc_job = {"wc", {filepath1}};
     auto env = std::make_shared<Environment>();
-    env->emplace("PWD", std::filesystem::current_path().string());
     Wc wc_cmd;
     o_file = tmpfile();
 
