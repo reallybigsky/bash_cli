@@ -59,14 +59,23 @@ public:
         close_buffer();
     }
 
+    /**
+     * Get c underlying FILE*
+     */
     FILE* to_FILE() const {
         return file;
     }
 
+    /**
+     * Flush streambuffer
+     */
     void flush() {
         fflush(file);
     }
 
+    /**
+     * Close underlying file and filestream
+     */
     void close_buffer() {
         if (file != nullptr) {
             fclose(file);
@@ -75,10 +84,18 @@ public:
         fname.clear();
     }
 
-    void set_start_pos() {
+    /**
+     * Set stream position to the beginning of the underlying file
+     */
+    void seek_begin() {
         ::rewind(file);
     }
 
+    /**
+     * Close current buffer if it exists and reopen stream with new file
+     * @param name: filename
+     * @param mode: access mode
+     */
     void reset(const std::string& name = "", std::string mode = "rw") {
         close_buffer();
         fname = name;

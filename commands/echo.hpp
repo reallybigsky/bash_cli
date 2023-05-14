@@ -23,6 +23,7 @@ public:
      * @param env: current environment of the interpreter
      * @param input: input FileStream (unused)
      * @param output: output FileStream
+     * @param err: error FileStream (unused)
      * @return 0 always
      */
     virtual int run(const CmdToken& params, std::shared_ptr<Environment>, FileStream&, FileStream& output, FileStream&) const override {

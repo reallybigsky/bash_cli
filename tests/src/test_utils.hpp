@@ -8,13 +8,12 @@
 
 
 std::string read_file_to_string(FileStream& out){
-    out.rewind();
+    out.seek_begin();
     std::stringstream result;
     while (auto line = out.read_line())
         result << line.value();
 
-    out.rewind();
-
+    out.seek_begin();
     return result.str();
 }
 
@@ -24,7 +23,7 @@ void create_testfile(const std::string& filename, const std::vector<std::string>
         for (const auto& s : file_content) {
             f1 << s << std::endl;
         }
-        f1.close();
-    } else
+    } else {
         std::cout << filename << "NOT OPENED" << std::endl;
+    }
 }

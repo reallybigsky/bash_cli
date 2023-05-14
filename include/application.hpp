@@ -32,6 +32,12 @@ public:
     void run();
 
 private:
+
+    /**
+     * Executes given command pipeline
+     */
+    void exec_pipeline(const PipeLine&);
+
     std::shared_ptr<Environment> env;
     std::shared_ptr<IOService> ios;
     std::shared_ptr<Handler> handler;

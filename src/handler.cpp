@@ -24,19 +24,19 @@ CommandDict fill_commands() {
 const CommandDict commands = fill_commands();
 const Commands::ExtCmd extCmd;
 
-int Handler::exec(const CmdToken& token, std::shared_ptr<Environment> env, FileStream& i_file, FileStream& o_file) {
+int Handler::exec(const CmdToken& token, std::shared_ptr<Environment> env, FileStream& input, FileStream& output) {
     try {
         if (token.name.empty()) {
             return 0;
         } else if (token.name == "exit") {
             exit = true;
         } else if (commands.contains(token.name)) {
-            return commands.at(token.name)->run(token, env, i_file, o_file, ios->getErr());
+            return commands.at(token.name)->run(token, env, input, output, ios->get_err());
         } else {
-            return extCmd.run(token, env, i_file, o_file, ios->getErr());
+            return extCmd.run(token, env, input, output, ios->get_err());
         }
     } catch (const std::invalid_argument& ia) {
-        ios->writeErr(ia.what());
+        ios->write_err(ia.what());
         return 1;
     }
 

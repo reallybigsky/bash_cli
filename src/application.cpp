@@ -2,42 +2,44 @@
 
 #include <iostream>
 
-void Application::run() {
+void Application::exec_pipeline(const PipeLine& pipeline) {
     FileStream i_file;
     FileStream o_file;
+
+    for (size_t i = 0; i < pipeline.size(); ++i) {
+        FileStream& input_stream = (i == 0 ? ios->get_input() : i_file);
+        FileStream& output_stream = (i + 1 == pipeline.size() ? ios->get_output() : o_file);
+        last_return_code |= handler->exec(pipeline[i], env, input_stream, output_stream);
+
+        if (last_return_code) {
+            o_file.reset();
+        }
+
+        i_file.close_buffer();
+        o_file.seek_begin();
+        i_file = std::move(o_file);
+        o_file.reset();
+    }
+}
+
+void Application::run() {
     while (!handler->is_exit()) {
         last_return_code = 0;
         try {
             ios->greet();
-            PipeLine pipeline = analyzer->process(ios->readLine());
-
-            i_file.reset();
-            for (size_t i = 0; i < pipeline.size(); ++i) {
-                o_file.reset();
-                FileStream& input_stream = (i == 0 ? ios->getInput() : i_file);
-                FileStream& output_stream = (i + 1 == pipeline.size() ? ios->getOutput() : o_file);
-                last_return_code |= handler->exec(pipeline[i], env, input_stream, output_stream);
-
-                if (last_return_code) {
-                    o_file.reset();
-                }
-
-                i_file.close_buffer();
-                o_file.set_start_pos();
-                i_file = std::move(o_file);
-            }
-
+            PipeLine pipeline = analyzer->process(ios->read_line());
+            exec_pipeline(pipeline);
         } catch (const SyntaxExc& e) {
-            ios->writeErr(e.what());
+            ios->write_err(e.what());
             last_return_code = 1;
         } catch (const EndOfInputStream& eof) {
             break;
         } catch (const std::exception& e) {
-            ios->writeErr("Cannot execute command!\n");
+            ios->write_err("Cannot execute command!\n");
             last_return_code = 1;
         }
         env->vars["?"] = std::to_string(last_return_code);
     }
-    ios->getOutput().flush();
-    ios->getErr().flush();
+    ios->get_output().flush();
+    ios->get_err().flush();
 }

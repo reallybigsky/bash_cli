@@ -45,21 +45,21 @@ public:
     /**
      * @return global Input FileStream
      */
-    FileStream& getInput() {
+    FileStream& get_input() {
         return f_input;
     }
 
     /**
      * @return global Output FileStream
      */
-    FileStream& getOutput() {
+    FileStream& get_output() {
         return f_output;
     }
 
     /**
      * @return global Error FileStream
      */
-    FileStream& getErr() {
+    FileStream& get_err() {
         return f_err;
     }
 
@@ -81,7 +81,7 @@ public:
      *
      * @throws std::runtime_error: if there was an error while writing
      */
-    void writeErr(const std::string& str) {
+    void write_err(const std::string& str) {
         f_err << str;
     }
 
@@ -99,7 +99,7 @@ public:
      *
      * @throws EndOfInputStream: if end of Input stream was reached
      */
-    std::string readLine() const {
+    std::string read_line() const {
         auto str = f_input.read_line();
         if (!str) {
             throw EndOfInputStream("");
