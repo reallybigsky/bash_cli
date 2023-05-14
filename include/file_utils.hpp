@@ -56,7 +56,7 @@ public:
         if (file == stdin || file == stdout || file == stderr) {
             return;
         }
-        clear();
+        close_buffer();
     }
 
     FILE* to_FILE() const {
@@ -67,7 +67,7 @@ public:
         fflush(file);
     }
 
-    void clear() {
+    void close_buffer() {
         if (file != nullptr) {
             fclose(file);
             file = nullptr;
@@ -75,12 +75,12 @@ public:
         fname.clear();
     }
 
-    void rewind() {
+    void set_start_pos() {
         ::rewind(file);
     }
 
     void reset(const std::string& name = "", std::string mode = "rw") {
-        clear();
+        close_buffer();
         fname = name;
         if (fname.empty()) {
             file = tmpfile();

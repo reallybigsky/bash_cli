@@ -22,8 +22,8 @@ void Application::run() {
                     o_file.reset();
                 }
 
-                i_file.clear();
-                o_file.rewind();
+                i_file.close_buffer();
+                o_file.set_start_pos();
                 i_file = std::move(o_file);
             }
 
