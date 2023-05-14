@@ -3,22 +3,21 @@
 #include <iostream>
 
 void Application::exec_pipeline(const PipeLine& pipeline) {
-    FileStream i_file;
-    FileStream o_file;
+    FileStream ifs;
+    FileStream ofs;
 
     for (size_t i = 0; i < pipeline.size(); ++i) {
-        FileStream& input_stream = (i == 0 ? ios->get_input() : i_file);
-        FileStream& output_stream = (i + 1 == pipeline.size() ? ios->get_output() : o_file);
+        FileStream& input_stream = (i == 0 ? ios->get_input() : ifs);
+        FileStream& output_stream = (i + 1 == pipeline.size() ? ios->get_output() : ofs);
         last_return_code |= handler->exec(pipeline[i], env, input_stream, output_stream);
 
         if (last_return_code) {
-            o_file.reset();
+            ofs.reset();
         }
 
-        i_file.close_buffer();
-        o_file.seek_begin();
-        i_file = std::move(o_file);
-        o_file.reset();
+        ifs = std::move(ofs);
+        ifs.seek_begin();
+        ofs = FileStream{};
     }
 }
 

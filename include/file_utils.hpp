@@ -45,6 +45,7 @@ public:
 
     FileStream& operator=(FileStream&& other) noexcept {
         if (this != &other) {
+            close_buffer();
             file = other.file;
             other.file = nullptr;
             fname = std::move(other.fname);
@@ -53,9 +54,6 @@ public:
     }
 
     ~FileStream() {
-        if (file == stdin || file == stdout || file == stderr) {
-            return;
-        }
         close_buffer();
     }
 
@@ -77,7 +75,9 @@ public:
      * Close underlying file and filestream
      */
     void close_buffer() {
-        if (file != nullptr) {
+        if (file == stdin || file == stdout || file == stderr) {
+            file = nullptr;
+        } else if (file != nullptr) {
             fclose(file);
             file = nullptr;
         }
