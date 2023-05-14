@@ -10,16 +10,15 @@ namespace Commands {
  * Implementation of wc command
  */
 class Wc : public Cmd {
-
 private:
-    struct answer_format {
+    struct AnswerFormat {
         size_t count_of_lines_;
         size_t count_of_words_;
         size_t size_;
         std::string filename_;
         std::string error_;
 
-        answer_format(std::string err, std::string filename)
+        AnswerFormat(std::string err, std::string filename)
             : count_of_lines_(0)
             , count_of_words_(0)
             , size_(0)
@@ -27,8 +26,8 @@ private:
             , error_(std::move(err))
         {}
 
-        answer_format(size_t count_of_lines, size_t count_of_words,
-                      size_t size, std::string filename)
+        AnswerFormat(size_t count_of_lines, size_t count_of_words,
+                     size_t size, std::string filename)
             : count_of_lines_(count_of_lines)
             , count_of_words_(count_of_words)
             , size_(size)
@@ -66,18 +65,20 @@ public:
      * Calculates the number of words, lines, and bytes in the input and outputs to the output stream.
      * How it is written in interpreter syntax:  <wc file*>
      *
-     * If token.args is empty, then the reading is from the input stream
+     * If params.args is empty, then the reading is from the input stream
      *
-     * @param params: token with command name in tok.name and command arguments in tok.args
-     * @param env: current environment variables of the interpreter
-     * @param input: input FILE stream
-     * @param output: output FILE stream
-     * @param err: error FILE stream
+     * @param params: CmdToken with command name in params.name and command arguments in params.args
+     * @param env: current environment of the interpreter
+     * @param input: input FileStream
+     * @param output: output FileStream
+     * @param err: error FileStream
      * @return 0 if there were no errors, 1 otherwise
      *
      */
-    virtual int run(const token& params, std::shared_ptr<Environment> env, FileStream& input, FileStream& output, FileStream& err) const override {
-        uint64_t total_cnt_lines = 0, total_cnt_words = 0, total_size = 0;
+    virtual int run(const CmdToken& params, std::shared_ptr<Environment> env, FileStream& input, FileStream& output, FileStream& err) const override {
+        uint64_t total_cnt_lines = 0;
+        uint64_t total_cnt_words = 0;
+        uint64_t total_size = 0;
 
         if (params.args.empty()) {
             while (auto line = input.read_line()) {
@@ -86,13 +87,11 @@ public:
                 total_size += line.value().size();
             }
 
-            std::stringstream result;
-            result << total_cnt_lines << '\t' << total_cnt_words << '\t' << total_size << '\n';
-            output << result.str();
+            output << std::to_string(total_cnt_lines) << "\t" << std::to_string(total_cnt_words) << "\t" << std::to_string(total_size) << "\n";
             return 0;
         }
 
-        std::vector<answer_format> result;
+        std::vector<AnswerFormat> result;
         std::stringstream errors;
         size_t error_count = 0;
 
@@ -110,6 +109,7 @@ public:
                 }
                 filepath = filename;
             }
+
             // проверка на возможность чтения из файла
             if (!std::ifstream(filepath).is_open()) {
                 ++error_count;
@@ -134,16 +134,13 @@ public:
             result.emplace_back(total_cnt_lines, total_cnt_words, total_size, "total");
         }
 
-        // создание форматированной результирующей строки
-        std::string output_str = create_output_format(result);
-
         // если по всем аргументам произошли ошибки, то выбрасывается исключение
         if (error_count == params.args.size()) {
             err << errors.str();
             return 2;
         }
-
-        output << output_str;
+        // создание форматированной результирующей строки
+        output << create_output_format(result);
 
         if (error_count > 0) {
             return 1;
@@ -159,31 +156,31 @@ private:
         return std::distance(std::istream_iterator<std::string>(stream), std::istream_iterator<std::string>());
     }
 
-    static std::string create_output_format(const std::vector<answer_format> &result) {
-        size_t max_filead_size = 0;
-        for (auto &file_stat: result) {
-            max_filead_size = std::max(max_filead_size, file_stat.get_max_size());
+    static std::string create_output_format(const std::vector<AnswerFormat>& result) {
+        size_t max_fileaf_size = 0;
+        for (auto& file_stat: result) {
+            max_fileaf_size = std::max(max_fileaf_size, file_stat.get_max_size());
         }
 
         std::stringstream str_result;
-        for (auto &file_stat: result) {
-            str_result << file_stat.get_formatted_values(max_filead_size) << std::endl;
+        for (auto& file_stat: result) {
+            str_result << file_stat.get_formatted_values(max_fileaf_size) << std::endl;
         }
 
         return str_result.str();
     }
 
-    static uint64_t get_count_of_lines(const std::filesystem::path &filepath) {
+    static uint64_t get_count_of_lines(const std::filesystem::path& filepath) {
         std::ifstream file(filepath);
         return std::count(std::istreambuf_iterator<char>(file),
                           std::istreambuf_iterator<char>(), '\n');
     }
 
-    static uint64_t get_size(const std::filesystem::path &filepath) {
+    static uint64_t get_size(const std::filesystem::path& filepath) {
         return std::filesystem::file_size(filepath);
     }
 
-    static uint64_t get_count_of_words(const std::filesystem::path &filepath) {
+    static uint64_t get_count_of_words(const std::filesystem::path& filepath) {
         std::ifstream file(filepath);
         return std::distance(std::istream_iterator<std::string>(file),
                              std::istream_iterator<std::string>());

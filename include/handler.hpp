@@ -15,7 +15,7 @@
  */
 class Handler {
 public:
-    Handler(std::shared_ptr<IOservice> io)
+    Handler(std::shared_ptr<IOService> io)
             : exit(false)
             , ios(io)
     {}
@@ -25,16 +25,16 @@ public:
      *
      * @return true if 'exit' was executed, else 0
      */
-    bool isExit() const { return exit; }
+    bool is_exit() const { return exit; }
 
     /**
      * Execute token on current Environment and given IO streams
      *
      * @return return code of the executed token
      */
-    int exec(const token&, std::shared_ptr<Environment>, FileStream&, FileStream&);
+    int exec(const CmdToken&, std::shared_ptr<Environment>, FileStream&, FileStream&);
 
 private:
     bool exit;
-    std::shared_ptr<IOservice> ios;
+    std::shared_ptr<IOService> ios;
 };

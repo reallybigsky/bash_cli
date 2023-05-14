@@ -22,7 +22,7 @@ TEST(TestEcho, echo) {
     FileStream i_file;
     FileStream o_file;
     FileStream e_file;
-    token echo_job = {"echo", {"abc", "testtt", "someone"}};
+    CmdToken echo_job = {"echo", {"abc", "testtt", "someone"}};
     auto env = std::make_shared<Environment>();
     Echo echo_cmd;
 
@@ -42,7 +42,7 @@ TEST(TestPwd, pwd) {
     FileStream i_file;
     FileStream o_file;
     FileStream e_file;
-    token pwd_job = {"pwd", {"abc", "someone"}};
+    CmdToken pwd_job = {"pwd", {"abc", "someone"}};
     auto env = std::make_shared<Environment>();
     Pwd pwd_cmd;
 
@@ -66,7 +66,7 @@ TEST(TestCat, cat) {
     create_testfile(filepath1, file_content1);
     create_testfile(filepath2, file_content2);
 
-    token cat_job = {"cat", {filepath1}};
+    CmdToken cat_job = {"cat", {filepath1}};
     auto env = std::make_shared<Environment>();
     Cat cat_cmd;
 
@@ -124,7 +124,7 @@ TEST(TestWc, wc) {
     create_testfile(filepath1, file_content1);
     create_testfile(filepath2, file_content2);
 
-    token wc_job = {"wc", {filepath1}};
+    CmdToken wc_job = {"wc", {filepath1}};
     auto env = std::make_shared<Environment>();
     Wc wc_cmd;
 

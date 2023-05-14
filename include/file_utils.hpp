@@ -34,7 +34,6 @@ public:
         reset(name, mode);
     }
 
-//    FileStream() : file(tmpfile()), fname("tmpfile" + std::to_string(fileno(file))) {}
     explicit FileStream(FILE* c_file) : file(c_file), fname(std::to_string(fileno(file))) {}
 
     FileStream(const FileStream&) = delete;
@@ -68,10 +67,6 @@ public:
         fflush(file);
     }
 
-    void clearerr() {
-        ::clearerr(file);
-    }
-
     void clear() {
         if (file != nullptr) {
             fclose(file);
@@ -96,10 +91,9 @@ public:
     }
 
     /**
-     * Write string to FILE stream
+     * Write string to current FILE
      *
      * @param str: string to write
-     * @param file: FILE stream where str will be written
      * @return 1 there was an error in writing, else 0
      */
     void write_to_file(const std::string& str) const {
@@ -108,9 +102,8 @@ public:
     }
 
     /**
-     * Read one line from file
+     * Read one line from current FILE
      *
-     * @param file: FILE stream to read from
      * @return string line from file if EOF or errors weren't encountered, std::nullopt otherwise
      */
     std::optional<std::string> read_line() const {

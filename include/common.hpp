@@ -9,25 +9,25 @@
 #include <filesystem>
 
 /**
- * Represents interpretator environment
+ * Interpreter environment
  */
 struct Environment {
-    Environment() : vars(), current_path(std::filesystem::current_path()) {}
+    Environment() : current_path(std::filesystem::current_path()) {}
 
-    boost::process::basic_native_environment<char> vars; /// dictionary of varibles with their values
-    std::filesystem::path current_path; /// current working directory
+    boost::process::basic_native_environment<char> vars; /// dictionary of variables with their values
+    std::filesystem::path current_path;                  /// current working directory
 };
 
 /**
- * Represents command name with its arguments after syntax analysis
+ * Command name with its arguments after syntax analysis
  */
-struct token {
-    std::string name; /// name of the command
+struct CmdToken {
+    std::string name;              /// name of the command
     std::vector<std::string> args; /// command arguments
 
     /**
-     * Add a word to token: if name is empty then assigns this word to token.name,
-     *                    else add word to token.args.
+     * Add a word to CmdToken: if name is empty then assigns this word to CmdToken.name,
+     *                         else add word to CmdToken.args.
      *
      * @param word: command name or argument.
      */
@@ -42,4 +42,4 @@ struct token {
     }
 };
 
-using PipeLine = std::vector<token>;
+using PipeLine = std::vector<CmdToken>;

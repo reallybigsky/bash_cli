@@ -15,9 +15,9 @@
  *
  * IO streams are represented as C FILE* streams
  */
-class IOservice {
+class IOService {
 public:
-    IOservice(size_t argc, std::span<const char*> argv, std::string gr)
+    IOService(size_t argc, std::span<const char*> argv, std::string gr)
         : greeting(std::move(gr))
         , f_input(stdin)
         , f_output(stdout)
@@ -92,23 +92,6 @@ public:
         f_output << greeting;
     }
 
-//    /**
-//     * Flushes all buffered data to output
-//     */
-//    void flushOutput() {
-//        if (f_output)
-//            fflush(f_output);
-//    }
-
-
-//    /**
-// * Flushes all buffered data to err output
-// */
-//    void flushErr() {
-//        if (f_err)
-//            fflush(f_err);
-//    }
-
     /**
      * read entire line from global Input stream
      *
@@ -123,16 +106,6 @@ public:
         }
         return std::move(str.value());
     }
-
-//    /**
-//     * clear error from global input stream for next user input
-//     */
-//    void resetInput() {
-//        if (f_input)
-//            clearerr(f_input);
-//        else
-//            clearerr(stdin);
-//    }
 
 private:
     const std::string greeting;

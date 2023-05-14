@@ -8,23 +8,13 @@
 
 namespace Commands {
 
-/**
- * Implementation of echo command
- */
 namespace po = boost::program_options;
 
-class Grep : public Cmd {
 /**
- * Searches for PATTERNS in each FILE.  PATTERNS is one or more patterns separated by newline characters, and grep prints each
-line that matches a pattern.
- * If there are no files, then the search occurs in the lines supplied from the passed input stream
- * @param params: token with command name in tok.name and command arguments in tok.args
- * @param env: current environment variables of the interpreter
- * @param input: input FILE stream
- * @param output: output FILE stream
- * @param err: error FILE stream
- * @return 0 if there were no errors, 1 otherwise
- */
+    * Implementation of grep command
+*/
+class Grep : public Cmd {
+
     po::options_description desc = po::options_description("Usage: grep [OPTION]... PATTERNS [FILE]...\n"
                                                            "Search for PATTERNS in each FILE.\n"
                                                            "Example: grep -i 'hello world' menu.h main.c\n"
@@ -46,19 +36,29 @@ public:
         p.add("file", -1);
     }
 
-
-    virtual int run(const token &params, std::shared_ptr<Environment> env, FileStream& input, FileStream& output, FileStream& err) const override {
-        std::vector<const char *> args_with_options;
+    /**
+    * Searches for PATTERNS in each FILE.
+    * PATTERNS is one or more patterns separated by newline characters, and grep prints each line that matches a pattern.
+    * If there are no files, then the search occurs in the lines supplied from the passed input stream
+    *
+    * @param params: CmdToken with command name in params.name and command arguments in params.args
+    * @param env: current environment variables of the interpreter
+    * @param input: input FileStream
+    * @param output: output FileStream
+    * @param err: error FileStream
+    * @return 0 if there were no errors, 1 otherwise
+    */
+    virtual int run(const CmdToken& params, std::shared_ptr<Environment> env, FileStream& input, FileStream& output, FileStream& err) const override {
+        std::vector<const char*> args_with_options;
         args_with_options.push_back(params.name.c_str());
-        for (auto &arg: params.args) {
+        for (auto& arg: params.args) {
             args_with_options.push_back(arg.c_str());
         }
 
         po::variables_map vm;
-        po::store(po::command_line_parser((int32_t) args_with_options.size(), args_with_options.data()).
+        po::store(po::command_line_parser(static_cast<int>(args_with_options.size()), args_with_options.data()).
                 options(desc).positional(p).run(), vm);
         po::notify(vm);
-
 
         if (vm.count("help")) {
             std::stringstream result;
@@ -66,7 +66,6 @@ public:
             output << result.str();
             return 0;
         }
-
 
         if (!vm.count("regexp")) {
             err << "Usage: grep [OPTION]... PATTERNS [FILE]...\n"
@@ -96,10 +95,10 @@ public:
         }
 
 
-        auto &files = vm["file"].as<std::vector<std::string>>();
+        auto& files = vm["file"].as<std::vector<std::string>>();
         bool greater_one = files.size() > 1;
         size_t error_count = 0;
-        for (auto &filename: files) {
+        for (auto& filename: files) {
             std::filesystem::path filepath = env->current_path / filename;
 
             // проверка на то, существует ли файл в текущей директории
@@ -148,7 +147,7 @@ private:
             if (boost::regex_search(line, base_match, base_regex)) {
                 if (first) {
                     first = false;
-                }else if (after_context_NUM > 0){
+                } else if (after_context_NUM > 0){
                     result << "--" << std::endl;
                 }
 

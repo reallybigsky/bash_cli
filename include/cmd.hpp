@@ -13,14 +13,14 @@ public:
     /**
      * This function is called when internal command is executed
      *
-     * @param tok: token with command name in tok.name and command arguments in tok.args
+     * @param params: CmdToken with command name in params.name and command arguments in params.args
      * @param env: current environment variables of the interpreter
-     * @param input: input FILE stream (unused)
-     * @param output: output FILE stream (unused)
-     * @param err: error FILE stream
+     * @param input: input FileStream
+     * @param output: output FileStream
+     * @param err: error FileStream
      * @return 0 if there were no errors, 1 otherwise
      */
-    virtual int run(const token& params, std::shared_ptr<Environment> env, FileStream& input, FileStream& output, FileStream& err) const = 0;
+    virtual int run(const CmdToken& params, std::shared_ptr<Environment> env, FileStream& input, FileStream& output, FileStream& err) const = 0;
 
     virtual ~Cmd() = default;
 };

@@ -54,7 +54,7 @@ TEST(TestGrepBase, grep_base) {
     Grep grep_cmd;
     std::string expected;
 
-    token grep_job = {"grep", {"Azure", filepath1}};
+    CmdToken grep_job = {"grep", {"Azure", filepath1}};
 
     expected = "Azure space is aflame up above,\n";
     EXPECT_EQ(0, grep_cmd.run(grep_job,  env, i_file, o_file, e_file));
@@ -79,7 +79,7 @@ TEST(TestGrepErrors, grep_errors) {
     auto env = std::make_shared<Environment>();
     Grep grep_cmd;
     std::string expected;
-    token grep_job;
+    CmdToken grep_job;
 
     grep_job = {"grep", {}};
 
@@ -109,7 +109,7 @@ TEST(TestGrepOptions, grep_options) {
     auto env = std::make_shared<Environment>();
     Grep grep_cmd;
     std::string expected;
-    token grep_job;
+    CmdToken grep_job;
 
     grep_job = {"grep", {"-i", "azure", filepath1}};
 
@@ -192,7 +192,7 @@ TEST(TestPatternRegex, pattern_regex) {
     auto env = std::make_shared<Environment>();
     Grep grep_cmd;
     std::string expected;
-    token grep_job;
+    CmdToken grep_job;
 
     o_file.reset();
     e_file.reset();

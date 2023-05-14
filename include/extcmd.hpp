@@ -21,13 +21,13 @@ public:
      *      but external program with this name exists in current or global PATH
      *
      * @param params: name and args of the external program
-     * @param env: current environment variables of the interpreter
-     * @param input: input FILE stream for external program
-     * @param output: output FILE stream for external program
-     * @param err: error FILE stream for external program
+     * @param env: current environment of the interpreter
+     * @param input: input FileStream for external program
+     * @param output: output FileStream for external program
+     * @param err: error FileStream for external program
      * @return return code of the external program
      */
-    int run(const token& params, std::shared_ptr<Environment> env, FileStream& input, FileStream& output, FileStream& err) const {
+    int run(const CmdToken& params, std::shared_ptr<Environment> env, FileStream& input, FileStream& output, FileStream& err) const {
         std::filesystem::path tmp = env->current_path;
         if (tmp /= params.name; !fs::exists(tmp)) {
             if (tmp = params.name; !fs::exists(tmp)) {

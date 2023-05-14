@@ -12,22 +12,22 @@ namespace Commands {
 class Cat : public Cmd {
 public:
     /**
-     * Concatenates tok.args[0], tok.args[1], ..., tok.args[n] and outputs to the output stream
+     * Concatenates params.args[0], params.args[1], ..., params.args[n] and outputs to the output stream
      * How it is written in interpreter syntax:  <cat file1 file2 ...>
      *
-     * Absence of tok.args is valid, however the read is from the incoming stream:
+     * Absence of params.args is valid, however the read is from the incoming stream:
      * cat some text in console
      * some text in console
      *
-     * @param params: token with command name in tok.name and command arguments in tok.args
-     * @param env: current environment variables of the interpreter
-     * @param input: input FILE stream
-     * @param output: output FILE stream
-     * @param err: error FILE stream
+     * @param params: CmdToken with command name in params.name and command arguments in params.args
+     * @param env: current environment of the interpreter
+     * @param input: input FileStream
+     * @param output: output FileStream
+     * @param err: error FileStream
      * @return 0 if there were no errors, 1 otherwise
      *
      */
-    virtual int run(const token& params, std::shared_ptr<Environment> env, FileStream& input, FileStream& output, FileStream& err) const override {
+    virtual int run(const CmdToken& params, std::shared_ptr<Environment> env, FileStream& input, FileStream& output, FileStream& err) const override {
         if (params.args.empty()) {
             while (auto line = input.read_line()) {
                 output << line.value();
@@ -37,7 +37,7 @@ public:
 
         std::stringstream result;
         size_t error_count = 0;
-        for (auto &filename: params.args) {
+        for (auto& filename: params.args) {
             std::filesystem::path filepath = env->current_path / filename;
 
             // проверка на то, существует ли файл в текущей директории
@@ -49,6 +49,7 @@ public:
                 }
                 filepath = filename;
             }
+
             // проверка на то, можно ли открыть файл на чтение
             if (!std::ifstream(filepath).is_open()) {
                 ++error_count;
@@ -75,14 +76,14 @@ public:
 private:
 
     static std::string get_file_contents(const std::filesystem::path& filename) {
-        std::ifstream t(filename);
+        std::ifstream ifs(filename);
         std::string result;
 
-        t.seekg(0, std::ios::end);
-        result.reserve(t.tellg());
-        t.seekg(0, std::ios::beg);
+        ifs.seekg(0, std::ios::end);
+        result.reserve(ifs.tellg());
+        ifs.seekg(0, std::ios::beg);
 
-        result.assign((std::istreambuf_iterator<char>(t)),std::istreambuf_iterator<char>());
+        result.assign((std::istreambuf_iterator<char>(ifs)),std::istreambuf_iterator<char>());
         return result;
     }
 };
