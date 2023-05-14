@@ -26,7 +26,6 @@ void Application::run() {
                 o_file.rewind();
                 i_file = std::move(o_file);
             }
-            i_file.clear();
 
         } catch (const SyntaxExc& e) {
             ios->writeErr(e.what());
