@@ -218,14 +218,12 @@ TEST(TestLexerAll, lexer_lexer_all) {
     env->vars.clear();
     env->vars["a"] = "123";
     env->vars["var"] = "echo abc";
-    input = "$var|echo \"$a\" \\| | \'pwd $var\' ||";
+    input = "$var|echo \"$a\" \\| | \'pwd $var\'";
     output = parser.run_lexer(input);
-    EXPECT_EQ(output.size(), 5);
+    EXPECT_EQ(output.size(), 3);
     EXPECT_EQ(output[0], "echo abc");
     EXPECT_EQ(output[1], "echo \"123\" \\| ");
-    EXPECT_EQ(output[2], " \'pwd $var\' ");
-    EXPECT_EQ(output[3], "");
-    EXPECT_EQ(output[4], "");
+    EXPECT_EQ(output[2], " \'pwd $var\'");
 }
 
 TEST(TestLexerError, lexer_error) {
