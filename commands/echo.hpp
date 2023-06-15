@@ -27,15 +27,13 @@ public:
      * @return 0 always
      */
     virtual int run(const CmdToken& params, std::shared_ptr<Environment>, FileStream&, FileStream& output, FileStream&) const override {
-        if (params.args.empty()) {
-            output << "\n";
-        } else {
-            output << std::accumulate(std::begin(params.args) + 1,
-                                      std::end(params.args),
-                                      params.args[0],
-                                      [](std::string s0, const std::string& s1) { return s0 += " " + s1; })
-            << "\n";
+        if (!params.args.empty()) {
+            output << params.args[0];
+            for (size_t i = 1; i < params.args.size(); ++i)
+                output << " " << params.args[i];
         }
+
+        output << "\n";
         return 0;
     }
 };

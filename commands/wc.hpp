@@ -18,7 +18,7 @@ private:
         std::string filename_;
         std::string error_;
 
-        AnswerFormat(std::string err, std::string filename)
+        AnswerFormat(std::string filename, std::string err)
             : count_of_lines_(0)
             , count_of_words_(0)
             , size_(0)
@@ -92,36 +92,21 @@ public:
         }
 
         std::vector<AnswerFormat> result;
-        std::stringstream errors;
-        size_t error_count = 0;
+        std::stringstream result_stream;
+        size_t error_counter = 0;
 
         for (auto& filename: params.args) {
-            std::filesystem::path filepath = env->current_path / filename;
 
-            // проверка на то, существует ли файл в текущей директории
-            if (!fs::exists(filepath)) {
-                // существует ли файл, если заданный путь полный
-                if (!fs::exists(filename)) {
-                    ++error_count;
-                    result.emplace_back(": No such file or directory", filename);
-                    errors << result.back().get_error() << std::endl;
-                    continue;
-                }
-                filepath = filename;
-            }
-
-            // проверка на возможность чтения из файла
-            if (!std::ifstream(filepath).is_open()) {
-                ++error_count;
-                result.emplace_back(": Permission denied", filename);
-                errors << result.back().get_error() << std::endl;
+            auto result_validation = file_validation_check(result_stream, params.name, env->current_path, filename, error_counter);
+            if (!result_validation.error_message.empty()) {
+                result.emplace_back(filename, result_validation.error_message);
                 continue;
             }
 
             // подсчет количества строк, слов, размера и обновление суммарной статистики
-            size_t cnt_lines = get_count_of_lines(filepath);
-            size_t cnt_words = get_count_of_words(filepath);
-            size_t size = get_size(filepath);
+            size_t cnt_lines = get_count_of_lines(result_validation.full_filepath);
+            size_t cnt_words = get_count_of_words(result_validation.full_filepath);
+            size_t size = get_size(result_validation.full_filepath);
             total_cnt_lines += cnt_lines;
             total_cnt_words += cnt_words;
             total_size += size;
@@ -129,20 +114,20 @@ public:
             result.emplace_back(cnt_lines, cnt_words, size, filename);
         }
 
-        // если была подсчитана хоть одна статистика, то добавляется поле total
-        if (params.args.size() > 1 && error_count < params.args.size()) {
+        // если была подсчитано больше одной статистики, то добавляется поле total
+        if (params.args.size() > 1 && error_counter < params.args.size()) {
             result.emplace_back(total_cnt_lines, total_cnt_words, total_size, "total");
         }
 
         // если по всем аргументам произошли ошибки, то выбрасывается исключение
-        if (error_count == params.args.size()) {
-            err << errors.str();
+        if (error_counter == params.args.size()) {
+            err << result_stream.str();
             return 2;
         }
         // создание форматированной результирующей строки
         output << create_output_format(result);
 
-        if (error_count > 0) {
+        if (error_counter > 0) {
             return 1;
         }
 

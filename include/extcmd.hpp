@@ -37,13 +37,7 @@ public:
             }
         }
 
-        if (!params.args.empty()) {
-            std::string seq_args = std::accumulate(std::begin(params.args) + 1, std::end(params.args), params.args[0],
-                                       [](std::string s0, std::string const &s1) { return s0 += " " + s1; });
-            return bp::system(tmp.string(), seq_args, env->vars, bp::std_out = output.to_FILE(), bp::std_err = err.to_FILE(), bp::std_in = input.to_FILE());
-        } else {
-            return bp::system(tmp.string(), env->vars, bp::std_out = output.to_FILE(), bp::std_err = err.to_FILE(), bp::std_in = input.to_FILE());
-        }
+        return bp::system(tmp.string(), params.args, env->vars, bp::std_out = output.to_FILE(), bp::std_err = err.to_FILE(), bp::std_in = input.to_FILE());
     }
 };
 
