@@ -7,6 +7,11 @@
 
 namespace Commands {
 
+    /**
+     * read data from file into vector
+     * @param filename - name of file
+     * @return vector of file lines
+     */
     std::vector<std::string> read_whole_file( const std::filesystem::path& filename) {
         std::fstream file(filename);
         std::vector<std::string> file_content;
@@ -17,16 +22,36 @@ namespace Commands {
         return file_content;
     }
 
+    /**
+     * Create error message into stream and increase error counter
+     * @param error_stream
+     * @param command_name
+     * @param filename
+     * @param error_mesage
+     * @param error_counter
+     */
     void  print_error_message(std::stringstream& error_stream, const std::string& command_name, const std::string& filename, const std::string& error_mesage, size_t& error_counter) {
         ++error_counter;
         error_stream << command_name << ": " << filename << error_mesage << std::endl;
     }
 
+    /**
+     * Contains filepath and error message for file validation
+     */
     struct result_file_validation {
         std::filesystem::path full_filepath = "";
         std::string error_message;
     };
 
+    /**
+     * Сhecks the file for existence and returns the path to it or an error message
+     * @param error_stream output stream
+     * @param command_name command name
+     * @param current_path path to main directory
+     * @param filename file name
+     * @param error_counter error counter when executing a command
+     * @return the full path to the file or the error message contained in the result_file_validation
+     */
     result_file_validation file_validation_check(std::stringstream& error_stream, const std::string& command_name, const std::filesystem::path& current_path, const std::string& filename, size_t& error_counter) {
         result_file_validation result;
         if (filename.empty()) {
