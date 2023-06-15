@@ -37,7 +37,7 @@ public:
         }
 
         size_t error_counter = 0;
-        for (auto& filename: params.args) {
+        for (const auto& filename: params.args) {
             auto result_validation = file_validation_check(err, params.name, env->current_path, filename, error_counter);
             if (!result_validation.error_message.empty()) {
                 continue;

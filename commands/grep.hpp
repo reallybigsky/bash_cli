@@ -52,7 +52,7 @@ public:
     virtual int run(const CmdToken& params, std::shared_ptr<Environment> env, FileStream& input, FileStream& output, FileStream& err) const override {
         std::vector<const char*> args_with_options;
         args_with_options.push_back(params.name.c_str());
-        for (auto& arg: params.args) {
+        for (const auto& arg: params.args) {
             args_with_options.push_back(arg.c_str());
         }
 
@@ -107,7 +107,7 @@ public:
 
         std::stringstream errors;
         size_t error_counter = 0;
-        for (auto& filename: files) {
+        for (const auto& filename: files) {
             auto result_validation = file_validation_check(err, params.name, env->current_path, filename, error_counter);
             if (!result_validation.error_message.empty())
                 continue;
@@ -129,19 +129,20 @@ private:
     std::string matching_in_file(
             const std::string& original_name,
             const std::vector<std::string>& file_content,
-            boost::regex& base_regex,
+            const boost::regex& base_regex,
             int after_context_NUM,
             bool b_more_than_one_file) const {
 
         std::stringstream result;
         boost::smatch base_match;
-        bool first = true, skipped = false;
-        auto line = file_content.begin();
-        while (line != file_content.end()) {
+        bool first = true;
+        bool skipped = false;
+
+        for (auto line = file_content.begin(); line != file_content.end(); ) {
             if (boost::regex_search(*line, base_match, base_regex)) {
                 if (first) {
                     first = false;
-                }else if (skipped && after_context_NUM > 0){
+                } else if (skipped && after_context_NUM > 0) {
                     result << "--" << std::endl;
                 }
 
@@ -155,8 +156,9 @@ private:
                         if (b_more_than_one_file)
                             result << original_name << ":";
                         lines_after_context = 0;
-                    } else if (b_more_than_one_file)
+                    } else if (b_more_than_one_file) {
                         result << original_name << "-";
+                    }
 
                     result << *line << std::endl;
                 }

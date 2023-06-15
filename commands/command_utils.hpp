@@ -1,4 +1,5 @@
 #pragma once
+
 #include <string>
 #include <iostream>
 #include <sstream>
@@ -38,9 +39,9 @@ namespace Commands {
      */
 
     template <typename Stream> requires is_stream<Stream>
-    void  print_error_message(Stream& error_stream, const std::string& command_name, const std::string& filename, const std::string& error_mesage, size_t& error_counter) {
+    void print_error_message(Stream& error_stream, const std::string& command_name, const std::string& filename, const std::string& error_message, size_t& error_counter) {
         ++error_counter;
-        error_stream << command_name << ": " << filename << error_mesage << "\n";
+        error_stream << command_name << ": " << filename << error_message << "\n";
     }
 
     /**
