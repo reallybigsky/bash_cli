@@ -184,6 +184,11 @@ public:
             throw LexerExc("Exception: wrong syntax!");
         }
 
+        if (output.size() > 1)
+            for (const std::string& str : output)
+                if (str.empty() || std::all_of(str.begin(), str.end(), [](char c) { return std::isspace(c); }))
+                    throw LexerExc("Exception: wrong syntax!");
+
         return output;
     }
 
