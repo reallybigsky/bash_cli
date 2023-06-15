@@ -105,26 +105,20 @@ public:
         auto& files = vm["file"].as<std::vector<std::string>>();
         bool greater_one = files.size() > 1;
 
-        std::stringstream result, errors;
+        std::stringstream errors;
         size_t error_counter = 0;
         for (auto& filename: files) {
-            auto result_validation = file_validation_check(result, params.name, env->current_path, filename, error_counter);
+            auto result_validation = file_validation_check(err, params.name, env->current_path, filename, error_counter);
             if (!result_validation.error_message.empty())
                 continue;
 
             auto file_content = read_whole_file(result_validation.full_filepath);
-            result << matching_in_file(filename, file_content, base_regex, after_context_NUM, greater_one);
+            output << matching_in_file(filename, file_content, base_regex, after_context_NUM, greater_one);
         }
 
         if (error_counter == files.size()) {
-            err << result.str();
             return 1;
         }
-
-        output << result.str();
-
-        if (error_counter > 0)
-            return 1;
 
         return 0;
     }

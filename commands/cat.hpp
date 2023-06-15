@@ -36,24 +36,17 @@ public:
             return 0;
         }
 
-        std::stringstream result_stream;
         size_t error_counter = 0;
         for (auto& filename: params.args) {
-            auto result_validation = file_validation_check(result_stream, params.name, env->current_path, filename, error_counter);
-            if (!result_validation.error_message.empty())
+            auto result_validation = file_validation_check(err, params.name, env->current_path, filename, error_counter);
+            if (!result_validation.error_message.empty()) {
                 continue;
+            }
 
-            result_stream << get_file_contents(result_validation.full_filepath);
+            output << get_file_contents(result_validation.full_filepath);
         }
 
         if (error_counter == params.args.size()) {
-            err << result_stream.str();
-            return 1;
-        }
-
-        output << result_stream.str();
-
-        if (error_counter > 0) {
             return 1;
         }
 

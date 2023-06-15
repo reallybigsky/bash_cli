@@ -61,7 +61,6 @@ TEST(TestPwd, pwd) {
 TEST(TestCat, cat) {
     FileStream i_file;
     FileStream o_file;
-    FileStream e_file;
     std::string filepath1 = "test1.txt", filepath2 = "test2.txt";
     create_testfile(filepath1, file_content1);
     create_testfile(filepath2, file_content2);
@@ -76,7 +75,7 @@ TEST(TestCat, cat) {
                            "\n"
                            "or cat?\n";
 
-    EXPECT_EQ(0, cat_cmd.run(cat_job,  env, i_file, o_file, e_file));
+    EXPECT_EQ(0, cat_cmd.run(cat_job,  env, i_file, o_file, o_file));
     EXPECT_EQ(expected, read_file_to_string(o_file));
 
     o_file.reset();
@@ -89,7 +88,7 @@ TEST(TestCat, cat) {
                "Somebody once told me the world is gonna roll me\n"
                "I ain't the sharpest tool in the shed\n";
 
-    EXPECT_EQ(0, cat_cmd.run(cat_job,  env, i_file, o_file, e_file));
+    EXPECT_EQ(0, cat_cmd.run(cat_job,  env, i_file, o_file, o_file));
     EXPECT_EQ(expected, read_file_to_string(o_file));
 
     o_file.reset();
@@ -101,7 +100,7 @@ TEST(TestCat, cat) {
                "or cat?\n"
                "cat: error: No such file or directory\n";
 
-    EXPECT_EQ(1, cat_cmd.run(cat_job,  env, i_file, o_file, e_file));
+    EXPECT_EQ(0, cat_cmd.run(cat_job,  env, i_file, o_file, o_file));
     EXPECT_EQ(expected, read_file_to_string(o_file));
 
     o_file.reset();
@@ -109,8 +108,8 @@ TEST(TestCat, cat) {
     expected = "cat: error1: No such file or directory\n"
                "cat: error2: No such file or directory\n";
 
-    EXPECT_EQ(1, cat_cmd.run(cat_job,  env, i_file, o_file, e_file));
-    EXPECT_EQ(expected, read_file_to_string(e_file));
+    EXPECT_EQ(1, cat_cmd.run(cat_job,  env, i_file, o_file, o_file));
+    EXPECT_EQ(expected, read_file_to_string(o_file));
 
     remove(filepath1.c_str());
     remove(filepath2.c_str());
@@ -152,7 +151,7 @@ TEST(TestWc, wc) {
                " 5 11 " + std::to_string(std::filesystem::file_size(t1)) + " total\n";
 
     o_file.reset();
-    EXPECT_EQ(1, wc_cmd.run(wc_job, env, i_file, o_file, e_file));
+    EXPECT_EQ(0, wc_cmd.run(wc_job, env, i_file, o_file, o_file));
     EXPECT_EQ(expected,  read_file_to_string(o_file));
 
     o_file.reset();
@@ -160,8 +159,8 @@ TEST(TestWc, wc) {
     expected = "wc: error1: No such file or directory\n"
                "wc: error2: No such file or directory\n";
 
-    EXPECT_EQ(2, wc_cmd.run(wc_job,  env, i_file, o_file, e_file));
-    EXPECT_EQ(expected, read_file_to_string(e_file));
+    EXPECT_EQ(1, wc_cmd.run(wc_job,  env, i_file, o_file, o_file));
+    EXPECT_EQ(expected, read_file_to_string(o_file));
 
     remove(filepath1.c_str());
     remove(filepath2.c_str());

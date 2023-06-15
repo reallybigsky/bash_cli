@@ -123,14 +123,10 @@ public:
         // если по всем аргументам произошли ошибки, то выбрасывается исключение
         if (error_counter == params.args.size()) {
             err << result_stream.str();
-            return 2;
+            return 1;
         }
         // создание форматированной результирующей строки
         output << create_output_format(result);
-
-        if (error_counter > 0) {
-            return 1;
-        }
 
         return 0;
     }

@@ -4,6 +4,7 @@
 #include <sstream>
 #include <optional>
 #include <iterator>
+#include <concepts>
 
 namespace Commands {
 
@@ -22,6 +23,11 @@ namespace Commands {
         return file_content;
     }
 
+    template <typename Stream>
+    concept is_stream = requires (Stream&& stream, const std::string& str) {
+        stream << str;
+    };
+
     /**
      * Create error message into stream and increase error counter
      * @param error_stream
@@ -30,9 +36,11 @@ namespace Commands {
      * @param error_mesage
      * @param error_counter
      */
-    void  print_error_message(std::stringstream& error_stream, const std::string& command_name, const std::string& filename, const std::string& error_mesage, size_t& error_counter) {
+
+    template <typename Stream> requires is_stream<Stream>
+    void  print_error_message(Stream& error_stream, const std::string& command_name, const std::string& filename, const std::string& error_mesage, size_t& error_counter) {
         ++error_counter;
-        error_stream << command_name << ": " << filename << error_mesage << std::endl;
+        error_stream << command_name << ": " << filename << error_mesage << "\n";
     }
 
     /**
@@ -52,7 +60,9 @@ namespace Commands {
      * @param error_counter error counter when executing a command
      * @return the full path to the file or the error message contained in the result_file_validation
      */
-    result_file_validation file_validation_check(std::stringstream& error_stream, const std::string& command_name, const std::filesystem::path& current_path, const std::string& filename, size_t& error_counter) {
+
+    template <typename Stream> requires is_stream<Stream>
+    result_file_validation file_validation_check(Stream& error_stream, const std::string& command_name, const std::filesystem::path& current_path, const std::string& filename, size_t& error_counter) {
         result_file_validation result;
         if (filename.empty()) {
             result.error_message = ": No such file or directory";
