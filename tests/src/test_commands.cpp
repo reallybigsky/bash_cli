@@ -157,8 +157,8 @@ TEST(TestWc, wc) {
 
     o_file.reset();
     wc_job = {"wc", {"error1", "error2"}};
-    expected = "error1: No such file or directory\n"
-               "error2: No such file or directory\n";
+    expected = "wc: error1: No such file or directory\n"
+               "wc: error2: No such file or directory\n";
 
     EXPECT_EQ(2, wc_cmd.run(wc_job,  env, i_file, o_file, e_file));
     EXPECT_EQ(expected, read_file_to_string(e_file));

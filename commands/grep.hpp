@@ -2,6 +2,7 @@
 
 #include "cmd.hpp"
 #include "file_utils.hpp"
+#include "command_utils.hpp"
 
 #include <boost/program_options.hpp>
 #include <boost/regex.hpp>
@@ -90,11 +91,13 @@ public:
 
         if (!vm.count("file")) {
             boost::smatch base_match;
+            std::vector<std::string> istream_content;
             while (auto line = input.read_line()) {
-                if (boost::regex_search(line.value(), base_match, base_regex)) {
-                    output << line.value();
-                }
+                line.value().erase(line.value().length() - 1);
+                istream_content.push_back(line.value());
             }
+
+            output << matching_in_file("", istream_content, base_regex, after_context_NUM, false);
             return 0;
         }
 
@@ -109,7 +112,8 @@ public:
             if (!result_validation.error_message.empty())
                 continue;
 
-            result << matching_in_file(filename, result_validation.full_filepath, base_regex, after_context_NUM, greater_one);
+            auto file_content = read_whole_file(result_validation.full_filepath);
+            result << matching_in_file(filename, file_content, base_regex, after_context_NUM, greater_one);
         }
 
         if (error_counter == files.size()) {
@@ -127,44 +131,46 @@ public:
 
 
 private:
+
     std::string matching_in_file(
             const std::string& original_name,
-            std::filesystem::path& filename,
+            const std::vector<std::string>& file_content,
             boost::regex& base_regex,
             int after_context_NUM,
-            bool greater_one) const {
-
-        std::fstream file(filename);
+            bool b_more_than_one_file) const {
 
         std::stringstream result;
-        std::string line;
         boost::smatch base_match;
-        bool first = true;
-        while (std::getline(file, line)) {
-            if (!boost::regex_search(line, base_match, base_regex))
-                continue;
+        bool first = true, skipped = false;
+        auto line = file_content.begin();
+        while (line != file_content.end()) {
+            if (boost::regex_search(*line, base_match, base_regex)) {
+                if (first) {
+                    first = false;
+                }else if (skipped && after_context_NUM > 0){
+                    result << "--" << std::endl;
+                }
 
-            if (first) {
-                first = false;
-            } else if (after_context_NUM > 0) {
-                result << "--" << std::endl;
+                if (b_more_than_one_file)
+                    result << original_name << ":";
+                result << *line << std::endl;
+
+                ++line;
+                for (int lines_after_context = 0; lines_after_context < after_context_NUM && line != file_content.end(); ++lines_after_context, ++line) {
+                    if (boost::regex_search(*line, base_match, base_regex)) {
+                        if (b_more_than_one_file)
+                            result << original_name << ":";
+                        lines_after_context = 0;
+                    } else if (b_more_than_one_file)
+                        result << original_name << "-";
+
+                    result << *line << std::endl;
+                }
+                skipped = false;
+            } else {
+                skipped = true;
+                ++line;
             }
-
-            if (greater_one)
-                result << original_name << ":";
-            result << line << std::endl;
-
-            for (size_t i = 0; i < after_context_NUM && std::getline(file, line); ++i) {
-                if (boost::regex_search(line, base_match, base_regex)) {
-                    if (greater_one)
-                        result << original_name << ":";
-                    i = 0;
-                } else if (greater_one)
-                    result << original_name << "-";
-
-                result << line << std::endl;
-            }
-
         }
 
         return result.str();

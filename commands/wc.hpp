@@ -2,6 +2,7 @@
 
 #include "cmd.hpp"
 #include "file_utils.hpp"
+#include "command_utils.hpp"
 
 
 namespace Commands {
