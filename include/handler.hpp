@@ -1,5 +1,4 @@
-#ifndef BASH_CLI_HANDLER_HPP
-#define BASH_CLI_HANDLER_HPP
+#pragma once
 
 #include "cmd.hpp"
 #include "extcmd.hpp"
@@ -16,28 +15,26 @@
  */
 class Handler {
 public:
-    Handler(std::shared_ptr<IOservice> ioserv);
+    Handler(std::shared_ptr<IOService> io)
+            : exit(false)
+            , ios(io)
+    {}
 
     /**
      * Get flag if 'exit' command was given from user
      *
      * @return true if 'exit' was executed, else 0
      */
-    bool isExit() const { return exit; }
+    bool is_exit() const { return exit; }
 
     /**
      * Execute token on current Environment and given IO streams
      *
      * @return return code of the executed token
      */
-    int exec(const token&, std::shared_ptr<Environment>, FILE*, FILE*);
+    int exec(const CmdToken&, std::shared_ptr<Environment>, FileStream&, FileStream&);
 
 private:
     bool exit;
-    std::shared_ptr<IOservice> ios;
-    std::unordered_map<std::string, std::shared_ptr<Cmd>> commands;
-    commands::ExtCmd extCmd;
+    std::shared_ptr<IOService> ios;
 };
-
-
-#endif //BASH_CLI_HANDLER_HPP
