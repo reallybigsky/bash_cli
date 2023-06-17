@@ -1,64 +1,50 @@
-#ifndef BASH_CLI_ASSIGNMENT_HPP
-#define BASH_CLI_ASSIGNMENT_HPP
+#pragma once
 
 #include "cmd.hpp"
 
 #include <regex>
 #include <unordered_set>
 
-namespace commands {
+namespace Commands {
 
 /**
  * Implementation of assignment command '='
  */
 class Assignment : public Cmd {
-private:
-    std::unordered_set<std::string> protected_variables = {"PWD"};
-
 public:
     /**
-     * Assign tok.args[1] to tok.args[0]
-     * How it is written in the interpreter syntax:  <tok.args[0]>=<tok.args[1]>
+     * Assign params.args[1] to params.args[0]
+     * How it is written in the interpreter syntax:  <params.args[0]>=<params.args[1]>
      *
-     * Absence of <tok.args[1]> is valid:
-     * <tok.args[0]>=
-     * Then empty string will be assigned to tok.args[0]
+     * Absence of <params.args[1]> is valid:
+     * <params.args[0]>=
+     * Then empty string will be assigned to params.args[0]
      *
-     * All arguments after tok.args[1] are ignored
+     * All arguments after params.args[1] are ignored
      *
-     * @param tok: token with command name in tok.name and command arguments in tok.args
-     * @param env: current environment variables of the interpreter
-     * @param input: input FILE stream (unused)
-     * @param output: output FILE stream (unused)
-     * @param err: error FILE stream
+     * @param params: CmdToken with command name in params.name and command arguments in params.args
+     * @param env: current environment of the interpreter
+     * @param input: input FileStream (unused)
+     * @param output: output FileStream (unused)
+     * @param err: error FileStream
      * @return 0 if there were no errors, 1 otherwise
      *
      */
-    virtual int run(const token& params, std::shared_ptr<Environment> env, FILE* input, FILE* output, FILE* err) override {
+    virtual int run(const CmdToken& params, std::shared_ptr<Environment> env, FileStream&, FileStream&, FileStream& err) const override {
         if (params.args.empty()) {
-            FileUtils::writeToFile("Assignment with no arguments!\n", err);
+            err << "Assignment with no arguments!\n";
             return 1;
         }
 
-        if (protected_variables.count(params.args[0])) {
-            FileUtils::writeToFile("Cannot assign to variable: " + params.args[0] + '\n', err);
-            return 1;
-        }
-
-        std::stringstream result;
         if (params.args.size() > 1) {
-            std::regex spec_symbols(R"('|"|\\|\$)");
-            result << std::regex_replace(params.args[1], spec_symbols, "\\$&");
+            static const std::regex spec_symbols(R"('|"|\\|\$)");
+            env->vars[params.args[0]] = std::regex_replace(params.args[1], spec_symbols, "\\$&");
         } else {
-            result << "";
+            env->vars[params.args[0]] = "";
         }
 
-        (*env)[params.args[0]] = result.str();
         return 0;
     }
 };
 
 } // namespace commands
-
-
-#endif //BASH_CLI_ASSIGNMENT_HPP

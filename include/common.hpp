@@ -1,5 +1,4 @@
-#ifndef BASH_CLI_COMMON_HPP
-#define BASH_CLI_COMMON_HPP
+#pragma once
 
 #include <boost/process/environment.hpp>
 
@@ -7,25 +6,34 @@
 #include <vector>
 #include <cstdio>
 #include <optional>
-
-struct token;
-using Environment = boost::process::basic_native_environment<char>;
-using PipeLine = std::vector<token>;
+#include <filesystem>
 
 /**
- * Represents command name with its arguments after syntax analysis
+ * Interpreter environment
  */
-struct token {
-    std::string name; /// name of the command
+struct Environment {
+    Environment() : current_path(std::filesystem::current_path()) {}
+
+    boost::process::basic_native_environment<char> vars; /// dictionary of variables with their values
+    std::filesystem::path current_path;                  /// current working directory
+};
+
+/**
+ * Command name with its arguments after syntax analysis
+ */
+struct CmdToken {
+    std::string name;              /// name of the command
     std::vector<std::string> args; /// command arguments
 
     /**
-     * Add a word to token: if name is empty then assigns this word to token.name,
-     *                    else add word to token.args.
+     * Add a word to CmdToken: if name is empty then assigns this word to CmdToken.name,
+     *                         else add word to CmdToken.args.
      *
      * @param word: command name or argument.
      */
-    void add_word(const std::string& word) {
+    template <typename T>
+    requires (std::convertible_to<T, std::string>)
+    void add_word(T&& word) {
         if (name.empty()) {
           name = word;
         } else {
@@ -34,4 +42,4 @@ struct token {
     }
 };
 
-#endif //BASH_CLI_COMMON_HPP
+using PipeLine = std::vector<CmdToken>;

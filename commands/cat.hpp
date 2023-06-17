@@ -1,11 +1,11 @@
-#ifndef BASH_CLI_CAT_HPP
-#define BASH_CLI_CAT_HPP
+#pragma once
 
 #include "file_utils.hpp"
+#include "command_utils.hpp"
 #include "cmd.hpp"
 
 
-namespace commands {
+namespace Commands {
 
 /**
  * Implementation of cat command
@@ -13,61 +13,40 @@ namespace commands {
 class Cat : public Cmd {
 public:
     /**
-     * Concatenates tok.args[0], tok.args[1], ..., tok.args[n] and outputs to the output stream
+     * Concatenates params.args[0], params.args[1], ..., params.args[n] and outputs to the output stream
      * How it is written in interpreter syntax:  <cat file1 file2 ...>
      *
-     * Absence of tok.args is valid, however the read is from the incoming stream:
+     * Absence of params.args is valid, however the read is from the incoming stream:
      * cat some text in console
      * some text in console
      *
-     * @param params: token with command name in tok.name and command arguments in tok.args
-     * @param env: current environment variables of the interpreter
-     * @param input: input FILE stream
-     * @param output: output FILE stream
-     * @param err: error FILE stream
+     * @param params: CmdToken with command name in params.name and command arguments in params.args
+     * @param env: current environment of the interpreter
+     * @param input: input FileStream
+     * @param output: output FileStream
+     * @param err: error FileStream
      * @return 0 if there were no errors, 1 otherwise
      *
      */
-    virtual int run(const token& params, std::shared_ptr<Environment> env, FILE* input, FILE* output, FILE* err) override {
+    virtual int run(const CmdToken& params, std::shared_ptr<Environment> env, FileStream& input, FileStream& output, FileStream& err) const override {
         if (params.args.empty()) {
-            while (auto line = FileUtils::readLine(input)) {
-                FileUtils::writeToFile(line.value(), output);
+            while (auto line = input.read_line()) {
+                output << line.value();
             }
             return 0;
         }
 
-        std::stringstream result;
-        int32_t error_count = 0;
-        for (auto &filename: params.args) {
-            std::filesystem::path current_path(env->at("PWD").to_string());
-            current_path /= filename;
-
-            // проверка на то, существует ли файл в текущей директории
-            if (!FileUtils::is_file_exist(current_path)) {
-                if (!FileUtils::is_file_exist(filename)) {
-                    ++error_count;
-                    result << params.name << ": " << filename << ": No such file or directory" << std::endl;
-                    continue;
-                }
-                current_path = filename;
-            }
-            // проверка на то, можно ли открыть файл на чтение
-            if (!FileUtils::is_readable(current_path)) {
-                ++error_count;
-                result << filename << ": Permission denied" << std::endl;
+        size_t error_counter = 0;
+        for (const auto& filename: params.args) {
+            auto result_validation = file_validation_check(err, params.name, env->current_path, filename, error_counter);
+            if (!result_validation.error_message.empty()) {
                 continue;
             }
-            result << get_file_contents(current_path);
+
+            output << get_file_contents(result_validation.full_filepath);
         }
 
-        if (error_count == params.args.size()) {
-            FileUtils::writeToFile(result.str(), err);
-            return 1;
-        }
-
-        FileUtils::writeToFile(result.str(), output);
-
-        if (error_count > 0) {
+        if (error_counter == params.args.size()) {
             return 1;
         }
 
@@ -76,19 +55,17 @@ public:
 
 private:
 
-    static std::string get_file_contents(const std::filesystem::path &filename) {
-        std::ifstream t(filename);
+    static std::string get_file_contents(const std::filesystem::path& filename) {
+        std::ifstream ifs(filename);
         std::string result;
 
-        t.seekg(0, std::ios::end);
-        result.reserve(t.tellg());
-        t.seekg(0, std::ios::beg);
+        ifs.seekg(0, std::ios::end);
+        result.reserve(ifs.tellg());
+        ifs.seekg(0, std::ios::beg);
 
-        result.assign((std::istreambuf_iterator<char>(t)),std::istreambuf_iterator<char>());
+        result.assign((std::istreambuf_iterator<char>(ifs)),std::istreambuf_iterator<char>());
         return result;
     }
 };
 
 } // namespace commands
-
-#endif //BASH_CLI_CAT_HPP
