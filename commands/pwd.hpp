@@ -1,5 +1,4 @@
-#ifndef BASH_CLI_PWD_HPP
-#define BASH_CLI_PWD_HPP
+#pragma once
 
 #include "cmd.hpp"
 #include "file_utils.hpp"
@@ -8,7 +7,7 @@
 #include <iostream>
 
 
-namespace  commands {
+namespace  Commands {
 
 /**
  * Implementation of echo command
@@ -16,26 +15,23 @@ namespace  commands {
 class Pwd: public Cmd {
 public:
     /**
-     * Print work directory to output stream
-     * How it is written in interpreter syntax:  <pwd>
+     * Print working directory to output stream
+     * How it is written in interpreter syntax: <pwd>
      *
-     * All tok.args are ignored
+     * All params.args are ignored
      *
-     * @param params: token with command name in tok.name and command arguments in tok.args
-     * @param env: current environment variables of the interpreter
-     * @param input: input FILE stream (unused)
-     * @param output: output FILE stream
-     * @param err: error FILE stream (unused)
+     * @param params: CmdToken with command name in params.name and command arguments in params.args
+     * @param env: current environment of the interpreter
+     * @param input: input FileStream (unused)
+     * @param output: output FileStream
+     * @param err: error FileStream (unused)
      * @return 0 always
      */
-    virtual int run(const token& params, std::shared_ptr<Environment> env, FILE* input, FILE* output, FILE* err) override {
-        std::stringstream result;
-        result << env->at("PWD").to_string() << std::endl;
-        FileUtils::writeToFile(result.str(), output);
+    virtual int run(const CmdToken&, std::shared_ptr<Environment> env, FileStream&, FileStream& output, FileStream&) const override {
+        output << env->current_path.string() << "\n";
         return 0;
     }
+
 };
 
 } // namespace commands
-
-#endif //BASH_CLI_PWD_HPP

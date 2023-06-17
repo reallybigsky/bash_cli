@@ -1,5 +1,4 @@
-#ifndef BASH_CLI_PREPROCESS_HPP
-#define BASH_CLI_PREPROCESS_HPP
+#pragma once
 
 #include "common.hpp"
 
@@ -53,19 +52,17 @@ private:
         BS_DQ
     };
 
-    static std::string buffer_extract(std::stringstream & ss) {
+    static std::string buffer_extract(std::stringstream& ss) {
         std::string res = ss.str();
-        ss = std::stringstream();
+        ss.str("");
         return res;
     }
 
-    std::string replace_var(const std::string & var) {
+    std::string replace_var(const std::string& var) {
         if (var.empty()) {
             return "$";
-        } else {
-            if (env->find(var) != env->end()) {
-                return env->get(var);
-            }
+        } else if (env->vars.find(var) != env->vars.end()) {
+            return env->vars.get(var);
         }
 
         return "";
@@ -78,10 +75,10 @@ public:
      * Start analysis
      *
      * @param input: string which will be analysed
-     * @return vector of tokens
+     * @return PipeLine
      */
     PipeLine process(const std::string& input) {
-        return runParser(runLexer(input));
+        return run_parser(run_lexer(input));
     }
 
     /**
@@ -90,7 +87,7 @@ public:
      * @param input: string with user`s input (command or piped commands).
      * @return vector of strings, each string is a separate command with it`s arguments.
      */
-    std::vector<std::string> runLexer(const std::string& input) {
+    std::vector<std::string> run_lexer(const std::string& input) {
         std::vector<std::string> output;
         std::stringstream buffer;
         std::stringstream var;
@@ -98,7 +95,7 @@ public:
         bool write_in_buff = true;
         bool inc = true;
 
-        for (size_t i = 0; i < input.size(); inc ? ++i : i) {
+        for (size_t i = 0; i < input.size(); i += inc) {
             char cur_ch = input[i];
             write_in_buff = true;
             inc = true;
@@ -149,7 +146,7 @@ public:
                     if (std::isalpha(cur_ch) || std::isdigit(cur_ch) || cur_ch == '?') {
                         var << cur_ch;
                     } else {
-                        // c_str() just only for windows :)
+                        // c_str() because on windows extra '\0' is added
                         buffer << replace_var(buffer_extract(var)).c_str();
                         inc = false;
                         state = LexerState::Start;
@@ -187,6 +184,11 @@ public:
             throw LexerExc("Exception: wrong syntax!");
         }
 
+        if (output.size() > 1)
+            for (const std::string& str : output)
+                if (str.empty() || std::all_of(str.begin(), str.end(), [](char c) { return std::isspace(c); }))
+                    throw LexerExc("Exception: wrong syntax!");
+
         return output;
     }
 
@@ -198,19 +200,19 @@ public:
     * @return vector of tokens, token.name - name of command,
     *                                 token.args - arguments of command.
     */
-    PipeLine runParser(const std::vector<std::string>& input) {
+    PipeLine run_parser(const std::vector<std::string>& input) {
         PipeLine output(input.size());
 
         for (size_t cmd_ind = 0; cmd_ind < input.size(); ++cmd_ind) {
-            const std::string & cur_cmd = input[cmd_ind];
-            token& cur_tok = output[cmd_ind];
+            const std::string& cur_cmd = input[cmd_ind];
+            CmdToken& cur_tok = output[cmd_ind];
 
             std::stringstream buffer;
             ParserState state = ParserState::Empty;
             bool is_first = true;
             bool inc = true;
 
-            for (size_t i = 0; i < cur_cmd.size(); inc ? ++i : i ) {
+            for (size_t i = 0; i < cur_cmd.size(); i += inc) {
                 char cur_ch = cur_cmd[i];
                 inc = true;
 
@@ -297,5 +299,3 @@ public:
 private:
     std::shared_ptr<Environment> env;
 };
-
-#endif //BASH_CLI_PREPROCESS_HPP

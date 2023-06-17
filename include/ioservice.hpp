@@ -1,5 +1,4 @@
-#ifndef BASH_CLI_IOSERVICE_HPP
-#define BASH_CLI_IOSERVICE_HPP
+#pragma once
 
 #include "common.hpp"
 #include "file_utils.hpp"
@@ -8,13 +7,7 @@
 #include <exception>
 #include <stdexcept>
 #include <utility>
-
-/**
- * EndOfInputStream exception
- */
-struct EndOfGlobalInputStream : public std::ios_base::failure {
-    EndOfGlobalInputStream(const std::string& str) : std::ios_base::failure(str) {}
-};
+#include <span>
 
 
 /**
@@ -22,76 +15,52 @@ struct EndOfGlobalInputStream : public std::ios_base::failure {
  *
  * IO streams are represented as C FILE* streams
  */
-class IOservice {
+class IOService {
 public:
-    IOservice(int argc, const char* argv[], std::string gr)
+    IOService(size_t argc, std::span<const char*> argv, std::string gr)
         : greeting(std::move(gr))
-        , f_input(nullptr)
-        , f_output(nullptr)
-        , f_err(nullptr)
+        , f_input(stdin)
+        , f_output(stdout)
+        , f_err(stderr)
     {
         for (size_t i = 1; i < argc; ++i) {
-            std::string argument(argv[i]);
+            std::string_view argument(argv[i]);
             std::string name;
 
             if (std::size_t pos = argument.find(inArg); pos != std::string_view::npos) {
                 name = argument.substr(pos + inArg.size());
-                f_input = fopen(name.c_str(), "r");
-                if (!f_input) {
-                    throw std::invalid_argument("Cannot open input file: \"" + name + '"');
-                }
+                f_input = FileStream(name, "r");
             } else if (pos = argument.find(outArg); pos != std::string_view::npos) {
                 name = argument.substr(pos + outArg.size());
-                f_output = fopen(name.c_str(), "w");
-                if (!f_output) {
-                    throw std::invalid_argument("Cannot open output file: \"" + name + '"');
-                }
+                f_output = FileStream(name, "w");
             } else if (pos = argument.find(errArg); pos != std::string_view::npos) {
                 name = argument.substr(pos + errArg.size());
-                f_err = fopen(name.c_str(), "w");
-                if (!f_err) {
-                    throw std::invalid_argument("Cannot open error_output: file \"" + name + '"');
-                }
+                f_err = FileStream(name, "w");
             } else {
-                writeErrLine("Unknown argument: \"" + argument + '"');
+                f_err << "Unknown argument: \"" + std::string(argument) + '"';
             }
         }
     }
 
-    ~IOservice() {
-        if (f_input)
-            fclose(f_input);
-        if (f_output)
-            fclose(f_output);
-        if (f_err)
-            fclose(f_err);
+    /**
+     * @return global Input FileStream
+     */
+    FileStream& get_input() {
+        return f_input;
     }
 
     /**
-     * @return global Input FILE stream
+     * @return global Output FileStream
      */
-    FILE* getInput() const {
-        if (f_input)
-            return f_input;
-        return stdin;
+    FileStream& get_output() {
+        return f_output;
     }
 
     /**
-     * @return global Output FILE stream
+     * @return global Error FileStream
      */
-    FILE* getOutput() const {
-        if (f_output)
-            return f_output;
-        return stdout;
-    }
-
-    /**
-     * @return global Error FILE stream
-     */
-    FILE* getErr() const {
-        if (f_err)
-            return f_err;
-        return stderr;
+    FileStream& get_err() {
+        return f_err;
     }
 
     /**
@@ -101,21 +70,8 @@ public:
      *
      * @throws std::runtime_error: if there was an error while writing
      */
-    void write(const std::string& str) const {
-        if (FileUtils::writeToFile(str, getOutput())) {
-            throw std::runtime_error("Cannot write to out!");
-        }
-    }
-
-    /**
-     * Append newline symbol to string and write it in global Output stream
-     *
-     * @param str: string to be appended with newline and then written
-     *
-     * @throws std::runtime_error: if there was an error while writing
-     */
-    void writeLine(const std::string& str) const {
-        write(str + '\n');
+    void write(const std::string& str) {
+        f_output << str;
     }
 
     /**
@@ -125,45 +81,15 @@ public:
      *
      * @throws std::runtime_error: if there was an error while writing
      */
-    void writeErr(const std::string& str) const {
-        if (FileUtils::writeToFile(str, getErr())) {
-            throw std::runtime_error("Cannot write to err!");
-        }
-    }
-
-    /**
-     * Append newline symbol to string and write it in global Error stream
-     *
-     * @param str: string to be appended with newline and then written
-     *
-     * @throws std::runtime_error: if there was an error while writing
-     */
-    void writeErrLine(const std::string& str) const {
-        writeErr(str + '\n');
+    void write_err(const std::string& str) {
+        f_err << str;
     }
 
     /**
      * Write greeting to the global Output stream
      */
-    void greet() const {
-        write(greeting);
-    }
-
-    /**
-     * Flushes all buffered data to output
-     */
-    void flushOutput() {
-        if (f_output)
-            fflush(f_output);
-    }
-
-
-    /**
- * Flushes all buffered data to err output
- */
-    void flushErr() {
-        if (f_err)
-            fflush(f_err);
+    void greet() {
+        f_output << greeting;
     }
 
     /**
@@ -173,22 +99,12 @@ public:
      *
      * @throws EndOfInputStream: if end of Input stream was reached
      */
-    std::string readLine() const {
-        auto str = FileUtils::readLine(getInput());
+    std::string read_line() const {
+        auto str = f_input.read_line();
         if (!str) {
-            throw EndOfGlobalInputStream("");
+            throw EndOfInputStream("");
         }
-        return str.value();
-    }
-
-    /**
-     * clear error from global input stream for next user input
-     */
-    void resetInput() {
-        if (f_input)
-            clearerr(f_input);
-        else
-            clearerr(stdin);
+        return std::move(str.value());
     }
 
 private:
@@ -198,9 +114,7 @@ private:
     const std::string outArg = "out=";
     const std::string errArg = "err=";
 
-    FILE* f_input;
-    FILE* f_output;
-    FILE* f_err;
+    FileStream f_input;
+    FileStream f_output;
+    FileStream f_err;
 };
-
-#endif //BASH_CLI_IOSERVICE_HPP

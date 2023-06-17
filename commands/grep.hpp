@@ -1,30 +1,21 @@
-#ifndef BASH_CLI_GREP_HPP
-#define BASH_CLI_GREP_HPP
+#pragma once
 
 #include "cmd.hpp"
 #include "file_utils.hpp"
+#include "command_utils.hpp"
+
 #include <boost/program_options.hpp>
 #include <boost/regex.hpp>
 
-namespace commands {
+namespace Commands {
 
-/**
- * Implementation of echo command
- */
 namespace po = boost::program_options;
 
-class Grep : public Cmd {
 /**
- * Searches for PATTERNS in each FILE.  PATTERNS is one or more patterns separated by newline characters, and grep prints each
-line that matches a pattern.
- * If there are no files, then the search occurs in the lines supplied from the passed input stream
- * @param params: token with command name in tok.name and command arguments in tok.args
- * @param env: current environment variables of the interpreter
- * @param input: input FILE stream
- * @param output: output FILE stream
- * @param err: error FILE stream
- * @return 0 if there were no errors, 1 otherwise
- */
+    * Implementation of grep command
+*/
+class Grep : public Cmd {
+
     po::options_description desc = po::options_description("Usage: grep [OPTION]... PATTERNS [FILE]...\n"
                                                            "Search for PATTERNS in each FILE.\n"
                                                            "Example: grep -i 'hello world' menu.h main.c\n"
@@ -46,31 +37,40 @@ public:
         p.add("file", -1);
     }
 
-
-    virtual int run(const token &params, std::shared_ptr<Environment> env, FILE *input, FILE *output, FILE *err) {
-        std::vector<const char *> args_with_options;
+    /**
+    * Searches for PATTERNS in each FILE.
+    * PATTERNS is one or more patterns separated by newline characters, and grep prints each line that matches a pattern.
+    * If there are no files, then the search occurs in the lines supplied from the passed input stream
+    *
+    * @param params: CmdToken with command name in params.name and command arguments in params.args
+    * @param env: current environment variables of the interpreter
+    * @param input: input FileStream
+    * @param output: output FileStream
+    * @param err: error FileStream
+    * @return 0 if there were no errors, 1 otherwise
+    */
+    virtual int run(const CmdToken& params, std::shared_ptr<Environment> env, FileStream& input, FileStream& output, FileStream& err) const override {
+        std::vector<const char*> args_with_options;
         args_with_options.push_back(params.name.c_str());
-        for (auto &arg: params.args) {
+        for (const auto& arg: params.args) {
             args_with_options.push_back(arg.c_str());
         }
 
         po::variables_map vm;
-        po::store(po::command_line_parser((int32_t) args_with_options.size(), args_with_options.data()).
+        po::store(po::command_line_parser(static_cast<int>(args_with_options.size()), args_with_options.data()).
                 options(desc).positional(p).run(), vm);
         po::notify(vm);
-
 
         if (vm.count("help")) {
             std::stringstream result;
             result << desc << "\n";
-            FileUtils::writeToFile(result.str(), output);
+            output << result.str();
             return 0;
         }
 
-
         if (!vm.count("regexp")) {
-            FileUtils::writeToFile("Usage: grep [OPTION]... PATTERNS [FILE]...\n"
-                                        "Try 'grep --help' for more information.", err);
+            err << "Usage: grep [OPTION]... PATTERNS [FILE]...\n"
+                   "Try 'grep --help' for more information.";
             return 1;
         }
 
@@ -78,97 +78,94 @@ public:
         boost::regex_constants::syntax_option_type flags = vm.contains("ignore-case")
                                                            ? boost::regex_constants::icase
                                                            : boost::regex_constants::normal;
-        size_t after_context_NUM = vm.contains("after-context") ? vm["after-context"].as<int>() : 0;
+        int after_context_NUM = vm.contains("after-context") ? vm["after-context"].as<int>() : 0;
         std::string pattern = vm.contains("word-regexp") ? "[[:<:]]" + vm["regexp"].as<std::string>() + "[[:>:]]"
                                                          : vm["regexp"].as<std::string>();
 
-        std::stringstream result, errors;
+        if(after_context_NUM < 0) {
+            err << params.name << ": " << std::to_string(after_context_NUM) << ": invalid context length argument";
+            return 1;
+        }
+
         boost::regex base_regex(pattern, flags);
 
         if (!vm.count("file")) {
             boost::smatch base_match;
-            while (auto line = FileUtils::readLine(input)) {
-                if (boost::regex_search(line.value(), base_match, base_regex)) {
-                    FileUtils::writeToFile(line.value(), output);
-                }
+            std::vector<std::string> istream_content;
+            while (auto line = input.read_line()) {
+                line.value().erase(line.value().length() - 1);
+                istream_content.push_back(line.value());
             }
+
+            output << matching_in_file("", istream_content, base_regex, after_context_NUM, false);
             return 0;
         }
 
 
-        auto &files = vm["file"].as<std::vector<std::string>>();
+        auto& files = vm["file"].as<std::vector<std::string>>();
         bool greater_one = files.size() > 1;
-        size_t error_count = 0;
-        for (auto &filename: files) {
-            std::filesystem::path current_path(env->at("PWD").to_string());
-            current_path /= filename;
 
-            // проверка на то, существует ли файл в текущей директории
-            if (!FileUtils::is_file_exist(current_path)) {
-                if (!FileUtils::is_file_exist(filename)) {
-                    ++error_count;
-                    result << params.name << ": " << filename << ": No such file or directory" << std::endl;
-                    continue;
-                }
-                current_path = filename;
-            }
-
-            // проверка на то, можно ли открыть файл на чтение
-            if (!FileUtils::is_readable(current_path)) {
-                ++error_count;
-                result << filename << ": Permission denied" << std::endl;
+        std::stringstream errors;
+        size_t error_counter = 0;
+        for (const auto& filename: files) {
+            auto result_validation = file_validation_check(err, params.name, env->current_path, filename, error_counter);
+            if (!result_validation.error_message.empty())
                 continue;
-            }
 
-            result << matching_in_file(filename, current_path, base_regex, after_context_NUM, greater_one);
+            auto file_content = read_whole_file(result_validation.full_filepath);
+            output << matching_in_file(filename, file_content, base_regex, after_context_NUM, greater_one);
         }
 
-        if (error_count == files.size()) {
-            FileUtils::writeToFile(result.str(), err);
+        if (error_counter == files.size()) {
             return 1;
         }
-
-        FileUtils::writeToFile(result.str(), output);
-
-        if (error_count > 0)
-            return 1;
 
         return 0;
     }
 
 
 private:
-    std::string
-    matching_in_file(const std::string& original_name, std::filesystem::path &filename, boost::regex &base_regex, size_t after_context_NUM,
-                     bool greater_one) {
-        std::fstream file(filename);
+
+    std::string matching_in_file(
+            const std::string& original_name,
+            const std::vector<std::string>& file_content,
+            const boost::regex& base_regex,
+            int after_context_NUM,
+            bool b_more_than_one_file) const {
 
         std::stringstream result;
-        std::string line;
         boost::smatch base_match;
         bool first = true;
-        while (std::getline(file, line)) {
-            if (boost::regex_search(line, base_match, base_regex)) {
+        bool skipped = false;
+
+        for (auto line = file_content.begin(); line != file_content.end(); ) {
+            if (boost::regex_search(*line, base_match, base_regex)) {
                 if (first) {
                     first = false;
-                }else if (after_context_NUM > 0){
+                } else if (skipped && after_context_NUM > 0) {
                     result << "--" << std::endl;
                 }
 
-                if (greater_one)
+                if (b_more_than_one_file)
                     result << original_name << ":";
-                result << line << std::endl;
+                result << *line << std::endl;
 
-                for (size_t i = 0; i < after_context_NUM && std::getline(file, line); ++i) {
-                    if (boost::regex_search(line, base_match, base_regex)) {
-                        if (greater_one)
+                ++line;
+                for (int lines_after_context = 0; lines_after_context < after_context_NUM && line != file_content.end(); ++lines_after_context, ++line) {
+                    if (boost::regex_search(*line, base_match, base_regex)) {
+                        if (b_more_than_one_file)
                             result << original_name << ":";
-                        i = 0;
-                    } else if (greater_one)
+                        lines_after_context = 0;
+                    } else if (b_more_than_one_file) {
                         result << original_name << "-";
+                    }
 
-                    result << line << std::endl;
+                    result << *line << std::endl;
                 }
+                skipped = false;
+            } else {
+                skipped = true;
+                ++line;
             }
         }
 
@@ -177,4 +174,3 @@ private:
 };
 
 } //commands
-#endif //BASH_CLI_GREP_HPP

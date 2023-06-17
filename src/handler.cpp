@@ -6,34 +6,37 @@
 #include "grep.hpp"
 #include "assignment.hpp"
 
-Handler::Handler(std::shared_ptr<IOservice> io)
-    : exit(false)
-    , ios(io)
-{
-    /// make cmd executable
-    commands = {
-        {"echo", std::make_shared<commands::Echo>()},
-        {"pwd", std::make_shared<commands::Pwd>()},
-        {"cat", std::make_shared<commands::Cat>()},
-        {"wc", std::make_shared<commands::Wc>()},
-        {"grep", std::make_shared<commands::Grep>()},
-        {"=", std::make_shared<commands::Assignment>()}
-    };
+typedef std::unordered_map<std::string, std::unique_ptr<Cmd>> CommandDict;
+
+CommandDict fill_commands() {
+    CommandDict result;
+
+    result.emplace("echo", std::make_unique<Commands::Echo>());
+    result.emplace("pwd", std::make_unique<Commands::Pwd>());
+    result.emplace("cat", std::make_unique<Commands::Cat>());
+    result.emplace("wc", std::make_unique<Commands::Wc>());
+    result.emplace("grep", std::make_unique<Commands::Grep>());
+    result.emplace("=", std::make_unique<Commands::Assignment>());
+
+    return result;
 }
 
-int Handler::exec(const token& tok, std::shared_ptr<Environment> env, FILE* i_file, FILE* o_file) {
+const CommandDict commands = fill_commands();
+const Commands::ExtCmd extCmd;
+
+int Handler::exec(const CmdToken& token, std::shared_ptr<Environment> env, FileStream& input, FileStream& output) {
     try {
-        if (tok.name.empty()) {
+        if (token.name.empty()) {
             return 0;
-        } else if (tok.name == "exit") {
+        } else if (token.name == "exit") {
             exit = true;
-        } else if (commands.contains(tok.name)) {
-            return commands.at(tok.name)->run(tok, env, i_file, o_file, ios->getErr());
+        } else if (commands.contains(token.name)) {
+            return commands.at(token.name)->run(token, env, input, output, ios->get_err());
         } else {
-            return extCmd.run(tok, env, i_file, o_file, ios->getErr());
+            return extCmd.run(token, env, input, output, ios->get_err());
         }
     } catch (const std::invalid_argument& ia) {
-        ios->writeErrLine(ia.what());
+        ios->write_err(ia.what());
         return 1;
     }
 

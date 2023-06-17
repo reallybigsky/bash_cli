@@ -1,18 +1,19 @@
-#ifndef BASH_CLI_TEST_UTILS_HPP
-#define BASH_CLI_TEST_UTILS_HPP
-#include <gtest/gtest.h>
+#pragma once
+
 #include "file_utils.hpp"
-#include <stdio.h>
+
+#include <gtest/gtest.h>
+
+#include <cstdio>
 
 
-std::string read_file_to_string(FILE* out){
-    rewind(out);
+std::string read_file_to_string(FileStream& out){
+    out.seek_begin();
     std::stringstream result;
-    while (auto line = FileUtils::readLine(out))
+    while (auto line = out.read_line())
         result << line.value();
 
-    rewind(out);
-
+    out.seek_begin();
     return result.str();
 }
 
@@ -22,9 +23,7 @@ void create_testfile(const std::string& filename, const std::vector<std::string>
         for (const auto& s : file_content) {
             f1 << s << std::endl;
         }
-        f1.close();
-    } else
+    } else {
         std::cout << filename << "NOT OPENED" << std::endl;
+    }
 }
-
-#endif //BASH_CLI_TEST_UTILS_HPP
